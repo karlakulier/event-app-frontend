@@ -1,4 +1,4 @@
-package com.example.myapplicationn
+package com.example.eventapp
 
 
 import android.content.Intent
