@@ -21,7 +21,10 @@ class SignUpActivity : AppCompatActivity() {
         val editDob = findViewById<EditText>(R.id.edit_dob)
         val calendarIcon = findViewById<ImageView>(R.id.calendar_icon)
 
-
+        signUpButton.setOnClickListener {
+            val intent = Intent(this, ControlNumberActivity::class.java)
+            startActivity(intent)
+        }
 
 
         val showDatePicker = {
