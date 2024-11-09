@@ -43,5 +43,11 @@ class RegistrationActivity : AppCompatActivity() {
             }
         }
 
+        btnNext.setOnClickListener {
+
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
