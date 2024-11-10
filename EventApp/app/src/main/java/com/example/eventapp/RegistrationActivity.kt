@@ -17,8 +17,8 @@ class RegistrationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             RegistrationScreen(onNextClick = {
-                // Pokreće novu aktivnost kada se klikne "Next"
-                //startActivity(Intent(this, ControlNumberActivity::class.java))
+
+                startActivity(Intent(this, SignUpActivity::class.java))
             })
         }
     }
