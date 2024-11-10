@@ -21,8 +21,8 @@ class SignUpActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SignUpScreen(onSignUpClick = {
-                // Pokrenite sljedeću aktivnost nakon klika na "Sign up"
-                // startActivity(Intent(this, NextActivity::class.java))
+
+                 startActivity(Intent(this, ControlNumberActivity::class.java))
             })
         }
     }
