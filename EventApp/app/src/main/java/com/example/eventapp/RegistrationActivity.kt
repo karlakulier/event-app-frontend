@@ -1,47 +1,102 @@
 package com.example.eventapp
 
-
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.eventapp.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
-
-class RegistrationActivity : AppCompatActivity() {
-
-    private var selectedRole: String? = null
-
+class RegistrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.registration_activity)
+        setContent {
+            RegistrationScreen(onNextClick = {
+                // Pokreće novu aktivnost kada se klikne "Next"
+                //startActivity(Intent(this, ControlNumberActivity::class.java))
+            })
+        }
+    }
+}
 
-        val roleSpinner = findViewById<Spinner>(R.id.role_spinner)
-        val btnNext = findViewById<Button>(R.id.btn_next)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RegistrationScreen(onNextClick: () -> Unit) {
+    var selectedRole by remember { mutableStateOf("Choose role") }
+    val roles = listOf("Choose role", "Organizer", "Musician")
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Logo", style = MaterialTheme.typography.headlineMedium)
 
-        val roles = listOf("Choose role", "Organizer", "Musician")
+        Spacer(modifier = Modifier.height(16.dp))
 
+        Text(text = "Registration", style = MaterialTheme.typography.headlineSmall)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, roles)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        roleSpinner.adapter = adapter
+        Spacer(modifier = Modifier.height(16.dp))
 
+        Text(text = "Select Role")
 
-        roleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedRole = if (position != 0) roles[position] else null
+        RoleDropdownMenu(
+            selectedRole = selectedRole,
+            options = roles,
+            onOptionSelected = { selectedOption ->
+                selectedRole = selectedOption
             }
+        )
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedRole = null
-            }
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = { onNextClick() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text("Next")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RoleDropdownMenu(
+    selectedRole: String,
+    options: List<String>,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = selectedRole)
         }
 
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(text = option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
