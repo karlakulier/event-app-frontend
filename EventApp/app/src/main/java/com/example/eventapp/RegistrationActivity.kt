@@ -61,6 +61,7 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
+                .height(40.dp)
         ) {
             Text("Next")
         }
