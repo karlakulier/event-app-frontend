@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.EventApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.LoginPage" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>
