@@ -38,8 +38,6 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-       // Text(text = "Logo", style = MaterialTheme.typography.headlineMedium)
-        //Spacer(modifier = Modifier.height(32.dp))
 
 
         Text(text = "Registration", style = MaterialTheme.typography.headlineSmall)
