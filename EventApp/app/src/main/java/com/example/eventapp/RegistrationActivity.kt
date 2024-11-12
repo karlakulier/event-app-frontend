@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 class RegistrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,15 +37,17 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Logo", style = MaterialTheme.typography.headlineMedium)
 
-        Spacer(modifier = Modifier.height(16.dp))
+       // Text(text = "Logo", style = MaterialTheme.typography.headlineMedium)
+        //Spacer(modifier = Modifier.height(32.dp))
+
 
         Text(text = "Registration", style = MaterialTheme.typography.headlineSmall)
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Select Role")
+
+        Text(text = "Select Role", fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(8.dp))
 
         RoleDropdownMenu(
             selectedRole = selectedRole,
@@ -56,13 +59,15 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+
         Button(
             onClick = { onNextClick() },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .height(56.dp)
+                .padding(horizontal = 32.dp)
         ) {
-            Text("Next")
+            Text("Next", style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -76,15 +81,28 @@ fun RoleDropdownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = selectedRole)
-        }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selectedRole,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Role") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
+        )
 
-        DropdownMenu(
+        ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
