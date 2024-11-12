@@ -42,7 +42,6 @@ fun LoginAndRegistration(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // New User Section
         Text(text = "New user", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
@@ -54,7 +53,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Already Have Account Section
+
         Text(text = "Already have account", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
@@ -66,7 +65,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Divider with "or"
+
         Row (
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -91,6 +90,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //mjesto na kojem će se dodati gumb za google prijavu
 
     }
 }
