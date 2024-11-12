@@ -11,24 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-class RegistrationActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            RegistrationScreen(onNextClick = {
-
-                startActivity(Intent(this, SignUpActivity::class.java))
-            })
-        }
-    }
-}
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(onNextClick: () -> Unit) {
+fun RegistrationScreen(navController: NavController) {
     var selectedRole by remember { mutableStateOf("Choose role") }
     val roles = listOf("Choose role", "Organizer", "Musician")
+    var navController = navController
 
     Column(
         modifier = Modifier
@@ -58,7 +48,7 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
 
 
         Button(
-            onClick = { onNextClick() },
+            onClick = { navController.navigate("signUp") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)

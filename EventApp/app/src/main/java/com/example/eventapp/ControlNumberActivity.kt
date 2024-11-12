@@ -9,19 +9,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
-class ControlNumberActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ControlNumberScreen()
-        }
-    }
-}
+import androidx.navigation.NavController
 
 @Composable
-fun ControlNumberScreen() {
+fun ControlNumberScreen(navController: NavController) {
     var controlNumber by remember { mutableStateOf("") }
 
     Column(

@@ -14,23 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import java.util.*
-
-class SignUpActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SignUpScreen(onSignUpClick = {
-
-                 startActivity(Intent(this, ControlNumberActivity::class.java))
-            })
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(onSignUpClick: () -> Unit) {
+fun SignUpScreen(navController : NavController) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
@@ -149,7 +138,7 @@ fun SignUpScreen(onSignUpClick: () -> Unit) {
 
 
         Button(
-            onClick = { onSignUpClick() },
+            onClick = { navController.navigate("controlNumber") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)

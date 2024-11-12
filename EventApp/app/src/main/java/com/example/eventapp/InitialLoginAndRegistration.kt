@@ -22,10 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 
 @Composable
-fun LoginAndRegistration(modifier: Modifier = Modifier) {
+fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavController) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -45,7 +46,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier) {
         Text(text = "New user", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { /* TODO: Handle sign up */ },
+            onClick = { navController.navigate("registration")},
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Sign up")
