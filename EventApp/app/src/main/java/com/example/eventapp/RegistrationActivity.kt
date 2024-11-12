@@ -39,7 +39,6 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
     ) {
 
 
-
         Text(text = "Registration", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
 
