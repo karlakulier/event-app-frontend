@@ -44,6 +44,9 @@ class MainActivity : ComponentActivity() {
                         composable("controlNumber") {
                             ControlNumberScreen(navController = navController)
                         }
+                        composable("eventInputScreen") {
+                            EventInputScreen(navController = navController)
+                        }
 
                     }
                 }
