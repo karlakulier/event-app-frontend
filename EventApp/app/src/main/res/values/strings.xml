@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">EventApp</string>
+    <string name="app_logo">App Logo</string>
+    <string name="new_user">Don\'t have an account?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="existing_user">Already have an account?</string>
+    <string name="login">Login</string>
+    <string name="or">or</string>
+    <string name="google_login">Google login</string>
 </resources>
