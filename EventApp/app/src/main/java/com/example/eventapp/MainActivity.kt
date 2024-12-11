@@ -13,6 +13,7 @@ import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.StartScreen
 import com.example.eventapp.userInterface.SignUp
 import com.example.eventapp.userInterface.MusicianRegistrationScreen
+import com.example.eventapp.userInterface.OrganizerRegistrationScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -49,11 +50,13 @@ class MainActivity : ComponentActivity() {
                         "roleSelection" -> SignUp(
                             onNextClick = { role ->
                                 selectedRole = role
-                                if (role == "Musician") {
-                                    currentScreen = "musicianRegistration"
-                                } else {
-                                    Log.d("RoleSelection", "Selected role: $role")
-                                    currentScreen = "start"
+                                when (role) {
+                                    "Musician" -> currentScreen = "musicianRegistration"
+                                    "Organizer" -> currentScreen = "organizerRegistration"
+                                    else -> {
+                                        Log.d("RoleSelection", "Selected role: $role")
+                                        currentScreen = "start"
+                                    }
                                 }
                             },
                             onBackClick = { currentScreen = "start" }
@@ -63,6 +66,13 @@ class MainActivity : ComponentActivity() {
                             onRegisterClick = { registrationData ->
                                 Log.d("Registration", "Musician data: $registrationData")
                                 currentScreen = "start" // Navigacija na početni ekran nakon registracije
+                            }
+                        )
+                        "organizerRegistration" -> OrganizerRegistrationScreen(
+                            onBackClick = { currentScreen = "roleSelection" },
+                            onRegisterClick = { registrationData ->
+                                Log.d("Organizer Registration", "Organizer Data: $registrationData")
+                                currentScreen = "start" // Ili idite na drugi ekran
                             }
                         )
                     }
