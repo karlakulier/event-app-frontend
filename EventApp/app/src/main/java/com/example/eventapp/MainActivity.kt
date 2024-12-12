@@ -18,12 +18,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.login.LoginManager
+import com.facebook.CallbackManager
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.facebook.FacebookCallback
 
 class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var callbackManager: CallbackManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FacebookSdk.sdkInitialize(applicationContext)
+        callbackManager = CallbackManager.Factory.create()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
@@ -45,6 +56,22 @@ class MainActivity : ComponentActivity() {
                             onGoogleLoginClick = {
                                 val signInIntent = googleSignInClient.signInIntent
                                 startActivityForResult(signInIntent, RC_SIGN_IN)
+                            },
+                            onFacebookLoginClick = {
+                                LoginManager.getInstance().registerCallback(callbackManager,
+                                    object : FacebookCallback<LoginResult> {
+                                        override fun onSuccess(result: LoginResult) {
+                                            Log.d("FacebookLogin", "Success: ${result.accessToken.token}")
+                                        }
+
+                                        override fun onCancel() {
+                                            Log.d("FacebookLogin", "Cancelled")
+                                        }
+
+                                        override fun onError(error: FacebookException) {
+                                            Log.e("FacebookLogin", "Error: ${error.message}")
+                                        }
+                                    })
                             }
                         )
                         "roleSelection" -> SignUp(
@@ -83,6 +110,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        callbackManager = CallbackManager.Factory.create()
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {

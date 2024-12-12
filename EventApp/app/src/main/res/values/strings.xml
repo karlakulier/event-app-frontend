@@ -7,4 +7,7 @@
     <string name="login">Login</string>
     <string name="or">or</string>
     <string name="google_login">Google login</string>
+    <string name="facebook_app_id">1740923206668613</string>
+    <string name="fb_login_protocol_scheme">fb1740923206668613</string>
+    <string name="facebook_client_token">609bd9b6b2971c915b68207f1ed74090</string>
 </resources>

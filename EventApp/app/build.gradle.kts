@@ -60,5 +60,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.google.auth) // Google Sign-In
     implementation("androidx.compose.material:material-icons-extended:<latest-version>")
+    implementation ("com.facebook.android:facebook-login:latest.release")
 
 }
