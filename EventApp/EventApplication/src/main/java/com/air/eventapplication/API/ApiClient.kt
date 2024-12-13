@@ -1,13 +1,17 @@
 package com.air.eventapplication.API
-
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.21.183:5205/" //trenutno moj lokalni api
+    private const val BASE_URL = "http://192.168.xxx.xxx:5205/" //staviti svoj lokalni ip na mreži na kojoj se nalazi i mobitel
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .build()
 
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 }

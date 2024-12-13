@@ -28,9 +28,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.air.eventapplication.ApplicationModul
 import com.air.eventapplication.models.Application
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -100,6 +103,14 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { ApplicationModul.SendApplication(context,1,1) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "test")
+        }
 
     }
 }
+
+
