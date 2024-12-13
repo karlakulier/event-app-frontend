@@ -103,12 +103,6 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = { ApplicationModul.SendApplication(context,1,1) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "test")
-        }
 
     }
 }
