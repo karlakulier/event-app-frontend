@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EventApp</string>
+    <string name="logo_desc">EventApp Logo</string>
 </resources>
