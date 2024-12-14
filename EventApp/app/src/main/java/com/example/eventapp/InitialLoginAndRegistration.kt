@@ -58,7 +58,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
         Text(text = "Already have account", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { /* TODO: Handle login */ },
+            onClick = { navController.navigate("loginPage") },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Login")
