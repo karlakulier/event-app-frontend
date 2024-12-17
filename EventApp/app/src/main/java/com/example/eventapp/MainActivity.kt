@@ -48,6 +48,9 @@ class MainActivity : ComponentActivity() {
                         composable ("loginPage"){
                             LoginPage(navController = navController)
                         }
+                        composable("eventInputScreen") {
+                            EventInputScreen(navController = navController)
+                        }
 
                     }
                 }
