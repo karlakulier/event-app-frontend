@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.ui.theme.EventAppTheme
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "loginAndRegistration"
+                        startDestination = "artistProfileScreen"
                     ) {
                        composable("loginAndRegistration") {
                             LoginAndRegistration(
@@ -50,6 +51,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("eventInputScreen") {
                             EventInputScreen(navController = navController)
+                        }
+                        composable("artistProfileScreen") {
+                            ArtistProfileScreen(navController = navController)
                         }
 
                     }
