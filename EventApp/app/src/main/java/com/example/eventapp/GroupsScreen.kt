@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun GroupsScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun GroupsScreen(navController: NavController) {
     val groups = listOf("Artist/Group 1", "Artist/Group 2", "Artist/Group 3") // Testni podaci
     var selectedGroup by remember { mutableStateOf<String?>(null) }
 
@@ -73,7 +73,7 @@ fun GroupsScreen(navController: NavController, modifier: Modifier = Modifier) {
                     GroupItem(
                         groupName = groupName,
                         onEvaluateClick = { selectedGroup = groupName }, // Otvara modal
-                        onDetailsClick = { /* TODO: Navigacija na detalje */ }
+                        onDetailsClick = { /* Navigacija na detalje */ }
                     )
                 }
             }
@@ -83,7 +83,7 @@ fun GroupsScreen(navController: NavController, modifier: Modifier = Modifier) {
                 EvaluateModal(
                     groupName = selectedGroup!!,
                     onDismiss = { selectedGroup = null },
-                    onSave = { /* TODO: Backend dio za spremanje ocjene */ }
+                    onSave = { /* Backend dio za spremanje ocjene */ }
                 )
             }
         }
