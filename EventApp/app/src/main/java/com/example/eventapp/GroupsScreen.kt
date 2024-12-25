@@ -133,40 +133,58 @@ fun Header() {
 
 @Composable
 fun SearchBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
+    var showFilterDialog by remember { mutableStateOf(false) }
+
+    Column {
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .height(48.dp)
-                .background(Color.LightGray, RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.CenterStart
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Search...", color = Color.Gray)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp)
+                    .background(Color.LightGray, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(text = "Search...", color = Color.Gray)
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                modifier = Modifier.size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Icon(
+                imageVector = Icons.Default.Build,
+                contentDescription = "Filter",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { showFilterDialog = true } // Dodajemo klik događaj
+            )
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = "Search",
-            modifier = Modifier.size(24.dp)
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Icon(
-            imageVector = Icons.Default.Build,
-            contentDescription = "Filter",
-            modifier = Modifier.size(24.dp)
-        )
+        // Prikaz popup prozora za filtriranje ako je stanje aktivno
+        if (showFilterDialog) {
+            FilterAndSortPopup(
+                onDismissRequest = { showFilterDialog = false },
+                onApplyFilters = {
+                    // Obradi primenu filtera ovde
+                    showFilterDialog = false
+                }
+            )
+        }
     }
 }
+
 
 @Composable
 fun Footer(navController: NavController) {
