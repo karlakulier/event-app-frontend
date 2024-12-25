@@ -47,7 +47,11 @@ import androidx.navigation.NavController
 
 @Composable
 fun GroupsScreen(navController: NavController) {
-    val groups = listOf("Artist/Group 1", "Artist/Group 2", "Artist/Group 3") // Testni podaci
+    val groups = listOf(
+        "Artist/Group 1" to 4.5f,
+        "Artist/Group 2" to 3.8f,
+        "Artist/Group 3" to 5.0f
+    ) // Testni podaci s prosječnim ocjenama
     var selectedGroup by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -55,7 +59,6 @@ fun GroupsScreen(navController: NavController) {
         Header()
 
         SearchBar()
-
 
         Box(modifier = Modifier.weight(1f)) {
             LazyColumn(modifier = Modifier.padding(16.dp)) {
@@ -69,10 +72,11 @@ fun GroupsScreen(navController: NavController) {
                 }
 
                 // Glavni popis
-                items(groups) { groupName ->
+                items(groups) { (groupName, averageRating) ->
                     GroupItem(
                         groupName = groupName,
-                        onEvaluateClick = { selectedGroup = groupName }, // Otvara modal
+                        averageRating = averageRating, // Prosljeđuje se prosječna ocjena
+                        onEvaluateClick = { selectedGroup = groupName },
                         onDetailsClick = { /* Navigacija na detalje */ }
                     )
                 }
@@ -90,6 +94,7 @@ fun GroupsScreen(navController: NavController) {
         Footer(navController)
     }
 }
+
 
 @Composable
 fun Header() {
@@ -214,7 +219,8 @@ fun Footer(navController: NavController) {
 fun GroupItem(
     groupName: String,
     onEvaluateClick: () -> Unit,
-    onDetailsClick: () -> Unit
+    onDetailsClick: () -> Unit,
+    averageRating: Float
 ) {
     Row(
         modifier = Modifier
@@ -239,6 +245,23 @@ fun GroupItem(
                 text = "Evaluate",
                 style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.clickable { onEvaluateClick() }
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // Zvjezdica s prosječnom ocjenom
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = "Average Rating",
+                tint = Color.Yellow, // Boja zvjezdice
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "%.1f".format(averageRating), // Prikaz prosječne ocjene s 1 decimalom
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
