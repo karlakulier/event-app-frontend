@@ -103,7 +103,12 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
+        Button(
+            onClick = { /* TODO: Handle login */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Google Login")
+        }
     }
 }
 
