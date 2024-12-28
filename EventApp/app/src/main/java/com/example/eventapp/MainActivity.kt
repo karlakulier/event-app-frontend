@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "loginAndRegistration"
+                        startDestination = "groupScreen"
                     ) {
                         composable("loginAndRegistration") {
                             LoginAndRegistration(
