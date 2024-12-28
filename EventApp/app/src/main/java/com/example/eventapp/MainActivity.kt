@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.ui.theme.EventAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,9 +23,9 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home"
+                        startDestination = "groupScreen"
                     ) {
-                       composable("loginAndRegistration") {
+                        composable("loginAndRegistration") {
                             LoginAndRegistration(
                                 modifier = Modifier.padding(innerPadding),
                                 navController = navController
@@ -41,10 +40,12 @@ class MainActivity : ComponentActivity() {
                         composable("controlNumber") {
                             ControlNumberScreen(navController = navController)
                         }
-                        composable("home") {
-                            HomeScreen(navController = navController)
+                        composable("eventInputScreen") {
+                            EventInputScreen(navController = navController)
                         }
-
+                        composable("groupScreen") {
+                            GroupsScreen(navController = navController)
+                        }
 
                     }
                 }

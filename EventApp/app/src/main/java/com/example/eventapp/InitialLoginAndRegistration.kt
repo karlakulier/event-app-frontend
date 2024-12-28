@@ -1,5 +1,7 @@
 package com.example.eventapp
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,10 +21,19 @@ import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.air.eventapplication.ApplicationModul
+import com.air.eventapplication.models.Application
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -40,6 +51,8 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
             contentDescription = "Logo",
             modifier = Modifier.size(120.dp)
         )*/
+
+        val context = LocalContext.current
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -91,7 +104,7 @@ fun LoginAndRegistration(modifier: Modifier = Modifier,navController: NavControl
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        //mjesto na kojem će se dodati gumb za google prijavu
-
     }
 }
+
+
