@@ -1,5 +1,6 @@
 package com.example.eventapp
 
+import PreviousEventsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.ui.theme.EventAppTheme
-
 
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +52,10 @@ class MainActivity : ComponentActivity() {
                         composable("previousEvents") {
                             PreviousEvents(navController = navController)
                         }
+                        composable("previousEventsScreen") {
+                            PreviousEventsScreen(navController = navController)
+                        }
+
                     }
                 }
             }

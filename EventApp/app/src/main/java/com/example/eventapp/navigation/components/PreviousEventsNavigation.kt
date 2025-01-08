@@ -76,7 +76,7 @@ fun PreviousEvents(navController: NavController) {
 
             // Previous events button
             Button(
-                onClick = { navController.navigate("previousEvents") },
+                onClick = { navController.navigate("previousEventsScreen") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
