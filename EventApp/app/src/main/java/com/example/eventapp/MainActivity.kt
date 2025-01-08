@@ -11,7 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.ui.theme.EventAppTheme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "groupScreen"
+                        startDestination = "loginAndRegistration"
                     ) {
                         composable("loginAndRegistration") {
                             LoginAndRegistration(
@@ -46,7 +49,9 @@ class MainActivity : ComponentActivity() {
                         composable("groupScreen") {
                             GroupsScreen(navController = navController)
                         }
-
+                        composable("previousEvents") {
+                            PreviousEvents(navController = navController)
+                        }
                     }
                 }
             }

@@ -42,16 +42,16 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
 
     // Gson
-    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation (libs.gson)
 
     // Kotlin Coroutines
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
 
     // OkHttp Logging (opcionalno za debugging)
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+    implementation (libs.logging.interceptor)
 }

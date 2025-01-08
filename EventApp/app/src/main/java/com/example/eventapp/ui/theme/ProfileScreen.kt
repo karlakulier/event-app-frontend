@@ -114,22 +114,25 @@ fun ProfileField(label: String, value: String, icon: ImageVector? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .background(Color(0xFFD9D9D9), RoundedCornerShape(4.dp)),
+            .padding(8.dp)
+            .background(Color(0xFFE6E6E6), shape = RoundedCornerShape(8.dp))
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp)
+        ) {
+            Text(text = label, style = MaterialTheme.typography.bodySmall)
+            Text(text = value, style = MaterialTheme.typography.bodyMedium)
+        }
         if (icon != null) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(start = 8.dp)
             )
-        }
-        Column(
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Text(text = label, style = MaterialTheme.typography.bodySmall)
-            Text(text = value, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
