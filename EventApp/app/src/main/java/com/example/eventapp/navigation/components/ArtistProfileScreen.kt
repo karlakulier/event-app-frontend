@@ -117,14 +117,14 @@ fun ArtistProfileScreen(navController: NavController) {
                 IconButton(onClick = { /* Add action */ }) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
-                IconButton(onClick = { /* Edit action */ }) {
+                IconButton(onClick = { navController.navigate("editProfileScreen") }) {
                     Icon(Icons.Default.Edit, contentDescription = "Edit")
                 }
                 IconButton(onClick = { /* View action */ }) {
                     Icon(Icons.Default.AddCircle, contentDescription = "View")
                 }
-                IconButton(onClick = { /* People action */ }) {
-                    Icon(Icons.Default.Edit, contentDescription = "People")
+                IconButton(onClick = { /* Share action */ }) {
+                    Icon(Icons.Default.Share, contentDescription = "Share")
                 }
             }
 
