@@ -55,7 +55,9 @@ class MainActivity : ComponentActivity() {
                         composable("previousEventsScreen") {
                             PreviousEventsScreen(navController = navController)
                         }
-
+                        composable("reviewInputScreen") {
+                            ReviewInputScreen(navController = navController)
+                        }
                     }
                 }
             }
