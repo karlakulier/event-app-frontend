@@ -28,6 +28,7 @@ fun ArtistProfileScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
+    var isDialogVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -145,7 +146,7 @@ fun ArtistProfileScreen(navController: NavController) {
                         contentDescription = "Add",
                         modifier = Modifier
                             .size(40.dp)
-                            .clickable { /* Add action */ }
+                            .clickable { isDialogVisible = true }
                     )
                     Image(
                         painter = painterResource(R.drawable.edit_musician_profile),
@@ -178,6 +179,16 @@ fun ArtistProfileScreen(navController: NavController) {
                 }
             }
 
+            if (isDialogVisible) {
+                AddNewAlbumEpSingleDialog(
+                    isVisible = remember { mutableStateOf(true) }, // Ili koristi isDialogVisible
+                    onOptionSelected = { selectedOption ->
+                        // Obrada odabrane opcije (Album, EP, Single)
+                        println("Odabrano: $selectedOption")
+                        isDialogVisible = false // Zatvara dijalog
+                    }
+                )
+            }
 
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
