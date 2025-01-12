@@ -51,14 +51,13 @@ fun ControlNumberScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { navController.navigate("eventInputScreen") },
+            onClick = {  navController.navigate("home") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-        )
-       {
+        ) {
             Text(
                 text = "Sign up",
                 style = MaterialTheme.typography.bodyMedium,
