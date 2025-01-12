@@ -49,7 +49,7 @@ fun <NavHostController : Any> HomeScreen(navController: NavHostController) {
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            SearchBar()
+            SearchBarHome()
             Spacer(modifier = Modifier.height(16.dp))
             ActiveEventsSection(navController)
         }
@@ -59,7 +59,7 @@ fun <NavHostController : Any> HomeScreen(navController: NavHostController) {
 
 
 @Composable
-fun SearchBar() {
+fun SearchBarHome() {
     Row(
         modifier = Modifier
             .fillMaxWidth()

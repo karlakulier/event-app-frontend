@@ -68,5 +68,6 @@ dependencies {
 
 
 
+
     implementation (project(":EventApplication"))
 }
