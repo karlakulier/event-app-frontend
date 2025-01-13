@@ -1,6 +1,8 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,16 +26,22 @@ import com.example.eventapp.R
 fun ArtistProfileScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
+    var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Logo",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.app_logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(200.dp)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Profile action */ }) {
@@ -46,17 +54,24 @@ fun ArtistProfileScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.LightGray
+                    containerColor = Color.White
                 )
             )
         },
         bottomBar = {
-            BottomAppBar(containerColor = Color.LightGray) {
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { /* Home action */ }) {
-                    Icon(Icons.Default.Home, contentDescription = "Home")
+            Column { // Dodavanje Column za Divider i BottomAppBar
+                HorizontalDivider(
+                    color = Color.Black, // Crna linija
+                    thickness = 1.dp, // Debljina linije
+                    modifier = Modifier.fillMaxWidth()
+                )
+                BottomAppBar(containerColor = Color.White) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { /* Home action */ }) {
+                        Icon(Icons.Default.Home, contentDescription = "Home")
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
                 }
-                Spacer(modifier = Modifier.weight(1f))
             }
         }
     ) { paddingValues ->
@@ -66,44 +81,50 @@ fun ArtistProfileScreen(navController: NavController) {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            // Search Bar
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Search") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
-
-            // Artist Info
+            // Gray Box with Border and Search Bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.LightGray)
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+                    .border(1.dp, Color.DarkGray) // Dodaj border (stroke)
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.calendar),
-                        contentDescription = "Artist Image",
-                        modifier = Modifier.size(100.dp)
+                    //Search bar
+                    CustomSearchBar(
+                        query = searchQuery,
+                        onQueryChanged = { searchQuery = it }
                     )
-                    Text(
-                        text = "ARTIST NAME",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    Text(
-                        text = "Genre",
-                        fontSize = 16.sp,
-                        color = Color.DarkGray
-                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Artist Info
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.profile_photo_musician),
+                            contentDescription = "Artist Image",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .align(Alignment.CenterHorizontally) // Ikona ostaje centrirana
+                        )
+                        Text(
+                            text = "ARTIST NAME",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                        )
+                        Text(
+                            text = "Genre",
+                            fontSize = 16.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                    }
                 }
             }
 
@@ -111,22 +132,51 @@ fun ArtistProfileScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { /* Add action */ }) {
-                    Icon(Icons.Default.Add, contentDescription = "Add")
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.add_musician_profile),
+                        contentDescription = "Add",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { /* Add action */ }
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.edit_musician_profile),
+                        contentDescription = "Edit",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { /* Edit action */ }
+                    )
                 }
-                IconButton(onClick = { navController.navigate("editProfileScreen") }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit")
-                }
-                IconButton(onClick = { /* View action */ }) {
-                    Icon(Icons.Default.AddCircle, contentDescription = "View")
-                }
-                IconButton(onClick = { /* Share action */ }) {
-                    Icon(Icons.Default.Share, contentDescription = "Share")
+
+                // Druga grupa ikona: Concerts i Profile
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.concert_musician_profile),
+                        contentDescription = "Concerts",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { /* Concerts action */ }
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.profile_info_musician),
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(45.dp)
+                            .clickable { /* Profile action */ }
+                    )
                 }
             }
+
 
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
@@ -139,26 +189,75 @@ fun ArtistProfileScreen(navController: NavController) {
                 }
             }
 
-            // Content based on selected tab
-            LazyColumn(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                items(listOf("Album 1", "Album 2", "Album 3")) { album ->
-                    Card(
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    ) {
-                        Row(
+            when (selectedTab) {
+                0 -> LazyColumn(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    items(listOf("Album 1", "Album 2", "Album 3")) { album ->
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .padding(vertical = 4.dp)
                         ) {
-                            Text(album, fontSize = 16.sp)
-                            Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(album, fontSize = 16.sp)
+                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                            }
+                        }
+                    }
+                }
+
+                1 -> LazyColumn(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    items(listOf("EP 1", "EP 2", "EP 3")) { ep ->
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(ep, fontSize = 16.sp)
+                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                            }
+                        }
+                    }
+                }
+
+                2 -> LazyColumn(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    items(listOf("Single 1", "Single 2", "Single 3")) { single ->
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(single, fontSize = 16.sp)
+                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                            }
                         }
                     }
                 }
