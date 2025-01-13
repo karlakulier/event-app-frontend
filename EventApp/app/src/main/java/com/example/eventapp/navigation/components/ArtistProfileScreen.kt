@@ -28,6 +28,10 @@ fun ArtistProfileScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
+    var isDialogVisible by remember { mutableStateOf(false) }
+    var isAlbumDialogVisible by remember { mutableStateOf(false) }
+    var isEpDialogVisible by remember { mutableStateOf(false) }
+    var isSongDialogVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -145,7 +149,7 @@ fun ArtistProfileScreen(navController: NavController) {
                         contentDescription = "Add",
                         modifier = Modifier
                             .size(40.dp)
-                            .clickable { /* Add action */ }
+                            .clickable { isDialogVisible = true }
                     )
                     Image(
                         painter = painterResource(R.drawable.edit_musician_profile),
@@ -177,6 +181,57 @@ fun ArtistProfileScreen(navController: NavController) {
                     )
                 }
             }
+
+            if (isDialogVisible) {
+                AddNewAlbumEpSingleDialog(
+                    isVisible = isDialogVisible,
+                    onDismiss = { isDialogVisible = false },
+                    onOptionSelected = { selectedOption ->
+                        when (selectedOption) {
+                            "Album" -> {
+                                isDialogVisible = false // Sakriva prvi dijalog
+                                isAlbumDialogVisible = true // Otvara dijalog za dodavanje albuma
+                            }
+                            "EP" -> {
+                                isDialogVisible = false
+                                isEpDialogVisible = true
+                            }
+                            "Single" -> {
+                                isDialogVisible = false
+                                isSongDialogVisible = true
+                            }
+                            else -> {
+                                println("Odabrano: $selectedOption")
+                                isDialogVisible = false // Zatvara dijalog za druge opcije
+                            }
+                        }
+                    }
+                )
+            }
+
+            AddNewAlbumDialog(
+                isVisible = isAlbumDialogVisible,
+                onDismiss = { isAlbumDialogVisible = false },
+                onAddAlbum = { albumName, releaseDate, songs ->
+                    // Handle album creation logic here
+                }
+            )
+
+            AddNewEPDialog(
+                isVisible = isEpDialogVisible,
+                onDismiss = {isEpDialogVisible = false },
+                onAddEp = {epName, releaseDate, songs ->
+                    // Handle EP creation logic here
+                }
+            )
+
+            AddNewSongDialog(
+                isVisible = isSongDialogVisible,
+                onDismiss = { isSongDialogVisible = false },
+                onAddSong = { songName, releaseDate, youtubeLink, spotifyLink ->
+                // Logika za dodavanje pjesme
+                }
+            )
 
 
             // Tabs

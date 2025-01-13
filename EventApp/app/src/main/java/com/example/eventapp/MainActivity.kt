@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "loginAndRegistration"
+                        startDestination = "ArtistProfileScreen"
                     ) {
                         composable("loginAndRegistration") {
                             LoginAndRegistration(
