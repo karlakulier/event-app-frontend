@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -172,7 +173,7 @@ fun ArtistProfileScreen(navController: NavController) {
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(45.dp)
-                            .clickable { /* Profile action */ }
+                            .clickable { navController.navigate("editProfileScreen") }
                     )
                 }
             }
