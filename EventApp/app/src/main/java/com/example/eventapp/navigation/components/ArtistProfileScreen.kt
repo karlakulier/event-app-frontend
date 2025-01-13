@@ -31,6 +31,7 @@ fun ArtistProfileScreen(navController: NavController) {
     var isDialogVisible by remember { mutableStateOf(false) }
     var isAlbumDialogVisible by remember { mutableStateOf(false) }
     var isEpDialogVisible by remember { mutableStateOf(false) }
+    var isSongDialogVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -195,6 +196,10 @@ fun ArtistProfileScreen(navController: NavController) {
                                 isDialogVisible = false
                                 isEpDialogVisible = true
                             }
+                            "Single" -> {
+                                isDialogVisible = false
+                                isSongDialogVisible = true
+                            }
                             else -> {
                                 println("Odabrano: $selectedOption")
                                 isDialogVisible = false // Zatvara dijalog za druge opcije
@@ -219,6 +224,15 @@ fun ArtistProfileScreen(navController: NavController) {
                     // Handle EP creation logic here
                 }
             )
+
+            AddNewSongDialog(
+                isVisible = isSongDialogVisible,
+                onDismiss = { isSongDialogVisible = false },
+                onAddSong = { songName, releaseDate, youtubeLink, spotifyLink ->
+                // Logika za dodavanje pjesme
+                }
+            )
+
 
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
