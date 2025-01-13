@@ -30,6 +30,7 @@ fun ArtistProfileScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var isDialogVisible by remember { mutableStateOf(false) }
     var isAlbumDialogVisible by remember { mutableStateOf(false) }
+    var isEpDialogVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -190,6 +191,10 @@ fun ArtistProfileScreen(navController: NavController) {
                                 isDialogVisible = false // Sakriva prvi dijalog
                                 isAlbumDialogVisible = true // Otvara dijalog za dodavanje albuma
                             }
+                            "EP" -> {
+                                isDialogVisible = false
+                                isEpDialogVisible = true
+                            }
                             else -> {
                                 println("Odabrano: $selectedOption")
                                 isDialogVisible = false // Zatvara dijalog za druge opcije
@@ -204,6 +209,14 @@ fun ArtistProfileScreen(navController: NavController) {
                 onDismiss = { isAlbumDialogVisible = false },
                 onAddAlbum = { albumName, releaseDate, songs ->
                     // Handle album creation logic here
+                }
+            )
+
+            AddNewEPDialog(
+                isVisible = isEpDialogVisible,
+                onDismiss = {isEpDialogVisible = false },
+                onAddEp = {epName, releaseDate, songs ->
+                    // Handle EP creation logic here
                 }
             )
 
