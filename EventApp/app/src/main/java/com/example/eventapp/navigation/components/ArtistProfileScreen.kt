@@ -181,11 +181,11 @@ fun ArtistProfileScreen(navController: NavController) {
 
             if (isDialogVisible) {
                 AddNewAlbumEpSingleDialog(
-                    isVisible = remember { mutableStateOf(true) }, // Ili koristi isDialogVisible
+                    isVisible = isDialogVisible,
+                    onDismiss = { isDialogVisible = false },
                     onOptionSelected = { selectedOption ->
-                        // Obrada odabrane opcije (Album, EP, Single)
                         println("Odabrano: $selectedOption")
-                        isDialogVisible = false // Zatvara dijalog
+                        isDialogVisible = false // Sakriva dijalog nakon odabira opcije
                     }
                 )
             }

@@ -2,6 +2,7 @@ package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,81 +21,84 @@ import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun AddNewAlbumEpSingleDialog(
-    isVisible: MutableState<Boolean>,
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
     onOptionSelected: (String) -> Unit
 ) {
-    if (isVisible.value) {
+    if (isVisible) {
         AlertDialog(
-            onDismissRequest = { isVisible.value = false }, // Zatvara dijalog
-            containerColor = Color.White,
-            shape = RoundedCornerShape(16.dp),
+            onDismissRequest = { onDismiss() },
+            confirmButton = {},
+            dismissButton = {},
+            title = {
+                Text(
+                    text = "ADD NEW",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            },
             text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    // Naslov
-                    Text(
-                        text = "ADD NEW",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                Column {
+                    // Opcija za Album
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { onOptionSelected("Album") }
+                            .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text("Album", fontSize = 16.sp)
+                        Icon(Icons.Default.ArrowForward, contentDescription = "Album")
+                    }
 
-                    // Opcije za dodavanje
-                    val options = listOf("Album", "EP", "Single")
-                    options.forEach { option ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clickable {
-                                    onOptionSelected(option)
-                                    isVisible.value = false // Zatvara dijalog nakon izbora
-                                },
-                            shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = BorderStroke(1.dp, Color.Black)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = option,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = "Next"
-                                )
-                            }
-                        }
+                    // Opcija za EP
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { onOptionSelected("EP") }
+                            .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
+                            .padding(vertical = 8.dp, horizontal = 5.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("EP", fontSize = 16.sp)
+                        Icon(Icons.Default.ArrowForward, contentDescription = "EP")
+                    }
+
+                    // Opcija za Single
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { onOptionSelected("Single") }
+                            .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
+                            .padding(vertical = 8.dp, horizontal = 5.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Single", fontSize = 16.sp)
+                        Icon(Icons.Default.ArrowForward, contentDescription = "Single")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Cancel Button
+                    Button(
+                        onClick = { onDismiss() },
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    ) {
+                        Text("Cancel", color = Color.White)
                     }
                 }
             },
-            confirmButton = {
-                Spacer(modifier = Modifier.height(8.dp)) // Prazan prostor za razmak
-            },
-            dismissButton = {
-                Button(
-                    onClick = { isVisible.value = false },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Cancel",
-                        color = Color.White,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
-            }
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
         )
     }
 }
+
