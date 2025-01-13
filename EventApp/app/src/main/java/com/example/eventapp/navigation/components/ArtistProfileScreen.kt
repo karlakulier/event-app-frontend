@@ -29,6 +29,7 @@ fun ArtistProfileScreen(navController: NavController) {
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
     var isDialogVisible by remember { mutableStateOf(false) }
+    var isAlbumDialogVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -184,11 +185,27 @@ fun ArtistProfileScreen(navController: NavController) {
                     isVisible = isDialogVisible,
                     onDismiss = { isDialogVisible = false },
                     onOptionSelected = { selectedOption ->
-                        println("Odabrano: $selectedOption")
-                        isDialogVisible = false // Sakriva dijalog nakon odabira opcije
+                        when (selectedOption) {
+                            "Album" -> {
+                                isDialogVisible = false // Sakriva prvi dijalog
+                                isAlbumDialogVisible = true // Otvara dijalog za dodavanje albuma
+                            }
+                            else -> {
+                                println("Odabrano: $selectedOption")
+                                isDialogVisible = false // Zatvara dijalog za druge opcije
+                            }
+                        }
                     }
                 )
             }
+
+            AddNewAlbumDialog(
+                isVisible = isAlbumDialogVisible,
+                onDismiss = { isAlbumDialogVisible = false },
+                onAddAlbum = { albumName, releaseDate, songs ->
+                    // Handle album creation logic here
+                }
+            )
 
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
