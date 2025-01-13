@@ -1,6 +1,7 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +32,8 @@ fun AddNewAlbumDialog(
     if (isVisible) {
         val albumName = remember { mutableStateOf("") }
         val releaseDate = remember { mutableStateOf("") }
-        val songs = remember { mutableStateListOf<Map<String, String>>() } // Lista pjesama
+        val songs = remember { mutableStateListOf<Map<String, String>>() }
+        var showDatePicker by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { onDismiss() },
@@ -62,11 +64,10 @@ fun AddNewAlbumDialog(
                 )
             },
             text = {
-                // Scrollable Column for Content
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()) // Omogućuje skrolanje
+                        .verticalScroll(rememberScrollState())
                         .padding(8.dp)
                 ) {
                     // Album name input
@@ -79,14 +80,19 @@ fun AddNewAlbumDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Release date input
+                    // Release date input with DatePicker
                     OutlinedTextField(
                         value = releaseDate.value,
-                        onValueChange = { releaseDate.value = it },
+                        onValueChange = {},
                         label = { Text("Release date") },
                         trailingIcon = {
-                            Icon(Icons.Default.CalendarToday, contentDescription = "Calendar Icon")
+                            Icon(
+                                Icons.Default.CalendarToday,
+                                contentDescription = "Select date",
+                                modifier = Modifier.clickable { showDatePicker = true }
+                            )
                         },
+                        readOnly = true, // Sprečava direktno uređivanje
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -159,6 +165,18 @@ fun AddNewAlbumDialog(
             containerColor = Color.White,
             shape = RoundedCornerShape(16.dp)
         )
+
+        // DatePicker Modal
+        if (showDatePicker) {
+            DatePickerModal(
+                onDateSelected = { millis ->
+                    releaseDate.value = millis?.let { convertMillisToDate(it) } ?: ""
+                    showDatePicker = false
+                },
+                onDismiss = { showDatePicker = false }
+            )
+        }
     }
 }
+
 
