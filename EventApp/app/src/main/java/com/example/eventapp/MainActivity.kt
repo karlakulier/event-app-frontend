@@ -8,15 +8,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
+import com.example.eventapp.navigation.components.ChangePasswordScreen
+import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.ui.theme.EventAppTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +32,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                val snackbarHostState = remember { SnackbarHostState() }
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+                    ) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "loginAndRegistration"
@@ -66,7 +76,26 @@ class MainActivity : ComponentActivity() {
                         composable("artistProfileScreen") {
                             ArtistProfileScreen(navController = navController)
                         }
-
+                        composable("editProfileScreen") {
+                            EditProfileScreen(
+                                navController = navController,
+                                onSaveChanges = {
+                                    lifecycleScope.launch {
+                                        snackbarHostState.showSnackbar("Changes saved successfully!")
+                                    }
+                                }
+                            )
+                        }
+                        composable("changePasswordScreen") {
+                            ChangePasswordScreen(
+                                navController = navController,
+                                onPasswordChangeSuccess = {
+                                    lifecycleScope.launch {
+                                        snackbarHostState.showSnackbar("Password saved successfully!")
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

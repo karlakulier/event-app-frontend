@@ -173,7 +173,7 @@ fun ArtistProfileScreen(navController: NavController) {
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(45.dp)
-                            .clickable { /* Profile action */ }
+                            .clickable { navController.navigate("editProfileScreen") }
                     )
                 }
             }
@@ -266,6 +266,4 @@ fun ArtistProfileScreen(navController: NavController) {
         }
     }
 }
-
-
 
