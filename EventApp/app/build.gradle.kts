@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.transition)
+    implementation(libs.androidx.animation.core.lint)
+    implementation(libs.play.services.base)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +76,10 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
     implementation (project(":EventApplication"))
+    implementation(libs.google.auth) // Google Sign-In
+    implementation("androidx.compose.material:material-icons-extended:<latest-version>")
+    implementation("com.facebook.android:facebook-login:latest.release")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 }
