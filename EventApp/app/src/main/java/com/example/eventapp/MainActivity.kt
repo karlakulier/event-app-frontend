@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
@@ -23,7 +24,9 @@ import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
+import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.StartScreen
@@ -59,25 +62,48 @@ class MainActivity : ComponentActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        val googleSignInLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    Log.d("GoogleSignIn", "Signed in as: ${account?.email}")
+                } catch (e: ApiException) {
+                    Log.e("GoogleSignIn", "Sign-In Failed: ${e.statusCode}")
+                }
+            }
+        }
+
+        val loginHandler = FacebookAndGoogleLoginHandler(
+            googleSignInLauncher = googleSignInLauncher,
+            googleSignInClient = googleSignInClient,
+            callbackManager = callbackManager
+        )
+
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-                    ) { innerPadding ->
+                ) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "loginAndRegistration"
                     ) {
                         composable("loginAndRegistration") {
-                            LoginAndRegistration(
+                            LoginAndRegistrationNavigator(
                                 modifier = Modifier.padding(innerPadding),
-                                navController = navController
+                                navController = navController,
+                                googleSignInLauncher = googleSignInLauncher,
+                                googleSignInClient = googleSignInClient,
+                                callbackManager = callbackManager
                             )
                         }
-                        composable("registration") {
-                            RegistrationScreen(navController = navController)
+                        composable("login") {
+                            LoginPage(navController = navController)
                         }
                         composable("signUp") {
                             SignUpScreen(navController = navController)
@@ -88,7 +114,7 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(navController = navController)
                         }
-                        composable ("loginPage"){
+                        composable("loginPage") {
                             LoginPage(navController = navController)
                         }
                         composable("eventInputScreen") {
@@ -130,87 +156,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        //
-        //
-                var currentScreen by remember { mutableStateOf("start") }
-                var selectedRole by remember { mutableStateOf("") }
-
-                Scaffold { innerPadding ->
-                    when (currentScreen) {
-                        "start" -> StartScreen(
-                            modifier = Modifier.padding(innerPadding),
-                            onSignUpClick = { currentScreen = "roleSelection" },
-                            onLoginClick = { Log.d("Navigation", "Navigating to Login screen") },
-                            onGoogleLoginClick = {
-                                val signInIntent = googleSignInClient.signInIntent
-                                startActivityForResult(signInIntent, RC_SIGN_IN)
-                            },
-                            onFacebookLoginClick = {
-                                LoginManager.getInstance().registerCallback(callbackManager,
-                                    object : FacebookCallback<LoginResult> {
-                                        override fun onSuccess(result: LoginResult) {
-                                            Log.d("FacebookLogin", "Success: ${result.accessToken.token}")
-                                        }
-
-                                        override fun onCancel() {
-                                            Log.d("FacebookLogin", "Cancelled")
-                                        }
-
-                                        override fun onError(error: FacebookException) {
-                                            Log.e("FacebookLogin", "Error: ${error.message}")
-                                        }
-                                    })
-                            }
-                        )
-                        "roleSelection" -> SignUp(
-                            onNextClick = { role ->
-                                selectedRole = role
-                                when (role) {
-                                    "Musician" -> currentScreen = "musicianRegistration"
-                                    "Organizer" -> currentScreen = "organizerRegistration"
-                                    else -> {
-                                        Log.d("RoleSelection", "Selected role: $role")
-                                        currentScreen = "start"
-                                    }
-                                }
-                            },
-                            onBackClick = { currentScreen = "start" }
-                        )
-                        "musicianRegistration" -> MusicianRegistrationScreen(
-                            onBackClick = { currentScreen = "roleSelection" },
-                            onRegisterClick = { registrationData ->
-                                Log.d("Registration", "Musician data: $registrationData")
-                                currentScreen = "start" // Navigacija na početni ekran nakon registracije
-                            }
-                        )
-                        "organizerRegistration" -> OrganizerRegistrationScreen(
-                            onBackClick = { currentScreen = "roleSelection" },
-                            onRegisterClick = { registrationData ->
-                                Log.d("Organizer Registration", "Organizer Data: $registrationData")
-                                currentScreen = "start" // Ili idite na drugi ekran
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        callbackManager = CallbackManager.Factory.create()
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                Log.d("GoogleSignIn", "Signed in as: ${account.email}")
-            } catch (e: ApiException) {
-                Log.e("GoogleSignIn", "Sign-In Failed: ${e.statusCode}")
-            }
-        }
-    }
-
-    companion object {
-        private const val RC_SIGN_IN = 9001
     }
 }
