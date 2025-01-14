@@ -19,10 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <NavHostController : Any> HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -30,8 +31,12 @@ fun <NavHostController : Any> HomeScreen(navController: NavHostController) {
                     Text("Logo", fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 },
                 navigationIcon = {
-                    Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp))
-                },
+                    IconButton(onClick = {
+                        navController.navigate("artistProfileScreen") // Navigacija na ArtistProfileScreen
+                    }) {
+                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp))
+                        }
+                    },
                 actions = {
                     Icon(Icons.Default.Menu, contentDescription = "Menu Icon", modifier = Modifier.padding(end = 16.dp))
                 },
