@@ -282,7 +282,26 @@ fun ArtistProfileScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(album, fontSize = 16.sp)
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                if (isEditing) {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.editing_pen),
+                                            contentDescription = "Edit $album",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za uređivanje albuma */ }
+                                        )
+                                        Icon(
+                                            painter = painterResource(R.drawable.delete_items),
+                                            contentDescription = "Delete $album",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za brisanje albuma */ }
+                                        )
+                                    }
+                                } else {
+                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                }
                             }
                         }
                     }
@@ -306,7 +325,26 @@ fun ArtistProfileScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(ep, fontSize = 16.sp)
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                if (isEditing) {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.editing_pen),
+                                            contentDescription = "Edit $ep",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za uređivanje albuma */ }
+                                        )
+                                        Icon(
+                                            painter = painterResource(R.drawable.delete_items),
+                                            contentDescription = "Delete $ep",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za brisanje albuma */ }
+                                        )
+                                    }
+                                } else {
+                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                }
                             }
                         }
                     }
@@ -330,7 +368,26 @@ fun ArtistProfileScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(single, fontSize = 16.sp)
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                if (isEditing) {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.editing_pen),
+                                            contentDescription = "Edit $single",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za uređivanje albuma */ }
+                                        )
+                                        Icon(
+                                            painter = painterResource(R.drawable.delete_items),
+                                            contentDescription = "Delete $single",
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clickable { /* Logika za brisanje albuma */ }
+                                        )
+                                    }
+                                } else {
+                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                }
                             }
                         }
                     }
