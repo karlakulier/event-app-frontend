@@ -32,6 +32,7 @@ fun ArtistProfileScreen(navController: NavController) {
     var isAlbumDialogVisible by remember { mutableStateOf(false) }
     var isEpDialogVisible by remember { mutableStateOf(false) }
     var isSongDialogVisible by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -144,20 +145,37 @@ fun ArtistProfileScreen(navController: NavController) {
                     modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.add_musician_profile),
-                        contentDescription = "Add",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable { isDialogVisible = true }
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.edit_musician_profile),
-                        contentDescription = "Edit",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable { /* Edit action */ }
-                    )
+                    if (isEditing) {
+                        Image(
+                            painter = painterResource(R.drawable.approve_edit), // Ikona za potvrdu promjena
+                            contentDescription = "Save Changes",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { isEditing = false } // Završava uređivanje
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.abandon_edit), // Ikona za odustajanje
+                            contentDescription = "Cancel Changes",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { isEditing = false } // Odbacuje promjene
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.add_musician_profile),
+                            contentDescription = "Add",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { isDialogVisible = true }
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.edit_musician_profile),
+                            contentDescription = "Edit",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { isEditing = true } // Aktivira uređivanje
+                        )
+                    }
                 }
 
                 // Druga grupa ikona: Concerts i Profile
