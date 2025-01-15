@@ -33,6 +33,9 @@ fun ArtistProfileScreen(navController: NavController) {
     var isEpDialogVisible by remember { mutableStateOf(false) }
     var isSongDialogVisible by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
+    var isEditModeEnabled by remember { mutableStateOf(false) }
+    var newArtistName by remember { mutableStateOf("ARTIST NAME") }
+    var originalArtistName by remember { mutableStateOf(newArtistName) }
 
     Scaffold(
         topBar = {
@@ -99,7 +102,7 @@ fun ArtistProfileScreen(navController: NavController) {
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    //Search bar
+                    // Search bar
                     CustomSearchBar(
                         query = searchQuery,
                         onQueryChanged = { searchQuery = it }
@@ -118,12 +121,48 @@ fun ArtistProfileScreen(navController: NavController) {
                                 .size(100.dp)
                                 .align(Alignment.CenterHorizontally) // Ikona ostaje centrirana
                         )
-                        Text(
-                            text = "ARTIST NAME",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp,
-                            modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isEditing) {
+                                if (isEditModeEnabled) { // Provjerava je li uređivanje omogućeno iz početne olovke
+                                    OutlinedTextField(
+                                        value = newArtistName,
+                                        onValueChange = { newArtistName = it },
+                                        label = { Text("Edit Name") },
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                } else{
+                                // Prikazuje tekst i ikonu za uređivanje kraj "Artist Name"
+                                Text(
+                                    text = newArtistName,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.editing_pen),
+                                    contentDescription = "Edit Artist Name",
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .clickable {
+                                            originalArtistName = newArtistName
+                                            isEditModeEnabled = true
+                                        }
+                                    )
+                                }
+                                // Prikazuje tekstualno polje za unos kada je korisnik već kliknuo na ikonu olovke kraj Artist Name
+                            }
+                            else {
+                                Text(
+                                    text = newArtistName,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
                         Text(
                             text = "Genre",
                             fontSize = 16.sp,
@@ -133,7 +172,6 @@ fun ArtistProfileScreen(navController: NavController) {
                     }
                 }
             }
-
             // Action Buttons
             Row(
                 modifier = Modifier
@@ -151,14 +189,18 @@ fun ArtistProfileScreen(navController: NavController) {
                             contentDescription = "Save Changes",
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { isEditing = false } // Završava uređivanje
+                                .clickable { isEditing = false; isEditModeEnabled = false } // Završava uređivanje
                         )
                         Image(
                             painter = painterResource(R.drawable.abandon_edit), // Ikona za odustajanje
                             contentDescription = "Cancel Changes",
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { isEditing = false } // Odbacuje promjene
+                                .clickable {
+                                    newArtistName = originalArtistName
+                                    isEditing = false
+                                    isEditModeEnabled = false
+                                } // Odbacuje promjene
                         )
                     } else {
                         Image(
