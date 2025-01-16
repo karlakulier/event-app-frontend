@@ -36,6 +36,12 @@ fun ArtistProfileScreen(navController: NavController) {
     var isEditModeEnabled by remember { mutableStateOf(false) }
     var newArtistName by remember { mutableStateOf("ARTIST NAME") }
     var originalArtistName by remember { mutableStateOf(newArtistName) }
+    var selectedGenre by remember { mutableStateOf("GENRE") }
+    var originalGenre by remember { mutableStateOf(selectedGenre) }
+    var isGenreDialogVisible by remember { mutableStateOf(false) }
+    var currentProfileImage by remember { mutableStateOf(R.drawable.profile_photo_musician) }
+    var newProfileImage by remember { mutableStateOf(currentProfileImage) }
+    var isEditingImage by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -114,8 +120,8 @@ fun ArtistProfileScreen(navController: NavController) {
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.profile_photo_musician),
+                        Image(
+                            painter = painterResource(id = currentProfileImage),
                             contentDescription = "Artist Image",
                             modifier = Modifier
                                 .size(100.dp)
@@ -131,7 +137,7 @@ fun ArtistProfileScreen(navController: NavController) {
                                         value = newArtistName,
                                         onValueChange = { newArtistName = it },
                                         label = { Text("Edit Name") },
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f).padding(4.dp)
                                     )
                                 } else{
                                 // Prikazuje tekst i ikonu za uređivanje kraj "Artist Name"
@@ -139,20 +145,19 @@ fun ArtistProfileScreen(navController: NavController) {
                                     text = newArtistName,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 24.sp,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.padding(end = 10.dp)
                                 )
                                 Icon(
                                     painter = painterResource(id = R.drawable.editing_pen),
                                     contentDescription = "Edit Artist Name",
                                     modifier = Modifier
-                                        .padding(start = 8.dp)
+                                        .size(25.dp)
                                         .clickable {
                                             originalArtistName = newArtistName
                                             isEditModeEnabled = true
                                         }
                                     )
                                 }
-                                // Prikazuje tekstualno polje za unos kada je korisnik već kliknuo na ikonu olovke kraj Artist Name
                             }
                             else {
                                 Text(
@@ -163,14 +168,83 @@ fun ArtistProfileScreen(navController: NavController) {
                                 )
                             }
                         }
-                        Text(
-                            text = "Genre",
-                            fontSize = 16.sp,
-                            color = Color.DarkGray,
-                            modifier = Modifier.align(Alignment.Start)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = selectedGenre,
+                                fontSize = 16.sp,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(end = 5.dp)
+                            )
+
+                            if (isEditing) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.editing_pen),
+                                    contentDescription = "Edit Genre",
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .size(20.dp)
+                                        .clickable {
+                                            originalGenre = selectedGenre
+                                            isGenreDialogVisible = true
+                                        }
+                                )
+                            }
+                        }
+
+                        if (isGenreDialogVisible) {
+                            GenreSelectionDialog(
+                                selectedGenre = selectedGenre,
+                                onGenreSelected = { genre ->
+                                    selectedGenre = genre
+                                },
+                                onDismiss = {
+                                    isGenreDialogVisible = false
+                                }
+                            )
+                        }
+
                     }
                 }
+                if (isEditing) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.editing_pen),
+                        contentDescription = "Edit Profile Image",
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(20.dp)
+                            .size(35.dp)
+                            .clickable { isEditingImage = true }
+                    )
+                }
+            }
+
+            if (isEditingImage) {
+                AlertDialog(
+                    onDismissRequest = { isEditingImage = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            currentProfileImage = newProfileImage
+                            isEditingImage = false
+                        }) {
+                            Text("Approve")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            newProfileImage = currentProfileImage
+                            isEditingImage = false
+                        }) {
+                            Text("Cancel")
+                        }
+                    },
+                    title = { Text("Upload New Profile Image") },
+                    text = {
+                        Text("Here you can implement functionality to upload a new profile image. This is a placeholder.")
+                    }
+                )
             }
             // Action Buttons
             Row(
@@ -189,7 +263,11 @@ fun ArtistProfileScreen(navController: NavController) {
                             contentDescription = "Save Changes",
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { isEditing = false; isEditModeEnabled = false } // Završava uređivanje
+                                .clickable {
+                                    isEditing = false
+                                    isEditModeEnabled = false
+                                    isGenreDialogVisible = false
+                                } // Završava uređivanje
                         )
                         Image(
                             painter = painterResource(R.drawable.abandon_edit), // Ikona za odustajanje
@@ -197,9 +275,11 @@ fun ArtistProfileScreen(navController: NavController) {
                             modifier = Modifier
                                 .size(40.dp)
                                 .clickable {
+                                    selectedGenre = originalGenre
                                     newArtistName = originalArtistName
                                     isEditing = false
                                     isEditModeEnabled = false
+                                    isGenreDialogVisible = false
                                 } // Odbacuje promjene
                         )
                     } else {
