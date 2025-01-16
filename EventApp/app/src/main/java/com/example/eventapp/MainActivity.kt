@@ -1,12 +1,16 @@
 package com.example.eventapp
 
+import android.content.Intent
 import PreviousEventsScreen
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -20,34 +24,86 @@ import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
+import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.ui.theme.EventAppTheme
+import com.example.eventapp.userInterface.StartScreen
+import com.example.eventapp.userInterface.SignUp
+import com.example.eventapp.userInterface.MusicianRegistrationScreen
+import com.example.eventapp.userInterface.OrganizerRegistrationScreen
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.login.LoginManager
+import com.facebook.CallbackManager
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.facebook.FacebookCallback
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var callbackManager: CallbackManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        FacebookSdk.sdkInitialize(applicationContext)
+        callbackManager = CallbackManager.Factory.create()
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        val googleSignInLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    Log.d("GoogleSignIn", "Signed in as: ${account?.email}")
+                } catch (e: ApiException) {
+                    Log.e("GoogleSignIn", "Sign-In Failed: ${e.statusCode}")
+                }
+            }
+        }
+
+        val loginHandler = FacebookAndGoogleLoginHandler(
+            googleSignInLauncher = googleSignInLauncher,
+            googleSignInClient = googleSignInClient,
+            callbackManager = callbackManager
+        )
+
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-                    ) { innerPadding ->
+                ) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = "loginAndRegistration"
                     ) {
                         composable("loginAndRegistration") {
-                            LoginAndRegistration(
+                            LoginAndRegistrationNavigator(
                                 modifier = Modifier.padding(innerPadding),
-                                navController = navController
+                                navController = navController,
+                                googleSignInLauncher = googleSignInLauncher,
+                                googleSignInClient = googleSignInClient,
+                                callbackManager = callbackManager
                             )
                         }
-                        composable("registration") {
-                            RegistrationScreen(navController = navController)
+                        composable("login") {
+                            LoginPage(navController = navController)
                         }
                         composable("signUp") {
                             SignUpScreen(navController = navController)
@@ -58,7 +114,7 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(navController = navController)
                         }
-                        composable ("loginPage"){
+                        composable("loginPage") {
                             LoginPage(navController = navController)
                         }
                         composable("eventInputScreen") {
