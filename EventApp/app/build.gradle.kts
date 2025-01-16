@@ -64,7 +64,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.extended)
-
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.fragment)
+    implementation(libs.coil.compose)
 
 
 

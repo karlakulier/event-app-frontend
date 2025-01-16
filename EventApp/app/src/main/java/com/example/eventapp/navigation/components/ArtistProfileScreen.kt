@@ -1,5 +1,8 @@
 package com.example.eventapp.navigation.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,11 +18,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,9 +46,20 @@ fun ArtistProfileScreen(navController: NavController) {
     var selectedGenre by remember { mutableStateOf("GENRE") }
     var originalGenre by remember { mutableStateOf(selectedGenre) }
     var isGenreDialogVisible by remember { mutableStateOf(false) }
-    var currentProfileImage by remember { mutableStateOf(R.drawable.profile_photo_musician) }
-    var newProfileImage by remember { mutableStateOf(currentProfileImage) }
+    var currentProfileImage by remember { mutableStateOf<Uri?>(null) }
+    var newProfileImage by remember { mutableStateOf<Uri?>(null) }
     var isEditingImage by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            // Pretvaranje URI-ja u sliku za prikaz
+            newProfileImage = uri
+        }
+    }
+
+
 
     Scaffold(
         topBar = {
@@ -101,46 +119,63 @@ fun ArtistProfileScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.LightGray)
-                    .border(1.dp, Color.DarkGray) // Dodaj border (stroke)
+                    .border(1.dp, Color.DarkGray)
+                    .height(300.dp)
             ) {
+                // Prikaz slike ako je postavljena
+                if (currentProfileImage != null) {
+                    AsyncImage(
+                        model = currentProfileImage,
+                        contentDescription = "Profile Image",
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop // Slika ispunjava prostor
+                    )
+                } else {
+                    // Prikaz ikone ako slika nije postavljena
+                    Icon(
+                        painter = painterResource(id = R.drawable.profile_photo_musician),
+                        contentDescription = "Default Profile Image",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+
+                // Search bar unutar sive pozadine na vrhu
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .align(Alignment.TopStart)
+                        .padding(16.dp) // Margina oko search bara
                 ) {
-                    // Search bar
                     CustomSearchBar(
                         query = searchQuery,
                         onQueryChanged = { searchQuery = it }
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Artist Info
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
+                // Tekst i elementi na dnu slike
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .align(Alignment.BottomStart) // Poravnanje na dno sive pozadine
+                ) {
+                    // Artist Name
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(id = currentProfileImage),
-                            contentDescription = "Artist Image",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .align(Alignment.CenterHorizontally) // Ikona ostaje centrirana
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (isEditing) {
-                                if (isEditModeEnabled) { // Provjerava je li uređivanje omogućeno iz početne olovke
-                                    OutlinedTextField(
-                                        value = newArtistName,
-                                        onValueChange = { newArtistName = it },
-                                        label = { Text("Edit Name") },
-                                        modifier = Modifier.weight(1f).padding(4.dp)
-                                    )
-                                } else{
-                                // Prikazuje tekst i ikonu za uređivanje kraj "Artist Name"
+                        if (isEditing) {
+                            if (isEditModeEnabled) {
+                                OutlinedTextField(
+                                    value = newArtistName,
+                                    onValueChange = { newArtistName = it },
+                                    label = { Text("Edit Name") },
+                                    modifier = Modifier.weight(1f).padding(4.dp)
+                                )
+                            } else {
                                 Text(
                                     text = newArtistName,
                                     fontWeight = FontWeight.Bold,
@@ -156,77 +191,81 @@ fun ArtistProfileScreen(navController: NavController) {
                                             originalArtistName = newArtistName
                                             isEditModeEnabled = true
                                         }
-                                    )
-                                }
-                            }
-                            else {
-                                Text(
-                                    text = newArtistName,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp,
-                                    modifier = Modifier.weight(1f)
                                 )
                             }
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        } else {
                             Text(
-                                text = selectedGenre,
-                                fontSize = 16.sp,
-                                color = Color.DarkGray,
-                                modifier = Modifier.padding(end = 5.dp)
+                                text = newArtistName,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp,
+                                modifier = Modifier.weight(1f)
                             )
+                        }
+                    }
 
-                            if (isEditing) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.editing_pen),
-                                    contentDescription = "Edit Genre",
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .size(20.dp)
-                                        .clickable {
-                                            originalGenre = selectedGenre
-                                            isGenreDialogVisible = true
-                                        }
-                                )
+                    // Genre
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedGenre,
+                            fontSize = 16.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
+
+                        if (isEditing) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.editing_pen),
+                                contentDescription = "Edit Genre",
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .size(20.dp)
+                                    .clickable {
+                                        originalGenre = selectedGenre
+                                        isGenreDialogVisible = true
+                                    }
+                            )
+                        }
+                    }
+
+                    if (isGenreDialogVisible) {
+                        GenreSelectionDialog(
+                            selectedGenre = selectedGenre,
+                            onGenreSelected = { genre ->
+                                selectedGenre = genre
+                            },
+                            onDismiss = {
+                                isGenreDialogVisible = false
                             }
-                        }
-
-                        if (isGenreDialogVisible) {
-                            GenreSelectionDialog(
-                                selectedGenre = selectedGenre,
-                                onGenreSelected = { genre ->
-                                    selectedGenre = genre
-                                },
-                                onDismiss = {
-                                    isGenreDialogVisible = false
-                                }
-                            )
-                        }
-
+                        )
                     }
                 }
+
+                // Dodavanje ikone za uređivanje slike u donji desni kut
                 if (isEditing) {
                     Icon(
                         painter = painterResource(id = R.drawable.editing_pen),
                         contentDescription = "Edit Profile Image",
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(20.dp)
-                            .size(35.dp)
+                            .padding(16.dp)
+                            .size(30.dp)
                             .clickable { isEditingImage = true }
                     )
                 }
             }
+
 
             if (isEditingImage) {
                 AlertDialog(
                     onDismissRequest = { isEditingImage = false },
                     confirmButton = {
                         TextButton(onClick = {
-                            currentProfileImage = newProfileImage
+                            if (newProfileImage != null) {
+                                currentProfileImage = newProfileImage
+                            }
                             isEditingImage = false
                         }) {
                             Text("Approve")
@@ -234,7 +273,7 @@ fun ArtistProfileScreen(navController: NavController) {
                     },
                     dismissButton = {
                         TextButton(onClick = {
-                            newProfileImage = currentProfileImage
+                            newProfileImage = null
                             isEditingImage = false
                         }) {
                             Text("Cancel")
@@ -242,7 +281,17 @@ fun ArtistProfileScreen(navController: NavController) {
                     },
                     title = { Text("Upload New Profile Image") },
                     text = {
-                        Text("Here you can implement functionality to upload a new profile image. This is a placeholder.")
+                        Column {
+                            Button(onClick = {
+                                launcher.launch("image/*") // Pokreće odabir slike
+                            }) {
+                                Text("Select Image")
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            newProfileImage?.let {
+                                Text("Selected Image: ${it.lastPathSegment}")
+                            }
+                        }
                     }
                 )
             }
@@ -267,6 +316,9 @@ fun ArtistProfileScreen(navController: NavController) {
                                     isEditing = false
                                     isEditModeEnabled = false
                                     isGenreDialogVisible = false
+                                    if (newProfileImage != null) {
+                                        currentProfileImage = newProfileImage
+                                    }
                                 } // Završava uređivanje
                         )
                         Image(
@@ -280,6 +332,8 @@ fun ArtistProfileScreen(navController: NavController) {
                                     isEditing = false
                                     isEditModeEnabled = false
                                     isGenreDialogVisible = false
+                                    newProfileImage = null
+                                    currentProfileImage = null
                                 } // Odbacuje promjene
                         )
                     } else {
