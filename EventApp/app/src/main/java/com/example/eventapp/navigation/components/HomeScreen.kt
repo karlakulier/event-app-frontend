@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -12,6 +13,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,8 +43,12 @@ fun HomeScreen(navController: NavController) {
                         }
                     },
                 actions = {
-                    Icon(Icons.Default.Menu, contentDescription = "Menu Icon", modifier = Modifier.padding(end = 16.dp))
-                },
+                        Icon(
+                            Icons.Default.Menu,
+                            contentDescription = "Menu Icon",
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
@@ -53,7 +62,23 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            //Spacer(modifier = Modifier.height(16.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 8.dp), // Adjust padding if necessary
+                contentAlignment = Alignment.CenterEnd // Aligns content to the right
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Sort by:",
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(end = 2.dp)
+                    )
+                    SortByDropdown()
+                }
+            }
             SearchBarHome()
             Spacer(modifier = Modifier.height(16.dp))
             ActiveEventsSection(navController)
@@ -119,6 +144,56 @@ fun BottomNavigationBar() {
     }
 }
 
+@Composable
+fun SortByDropdown() {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf("Relevance") }
 
+    Box(
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+    ) {
+        Button(
+            onClick = { expanded = true },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White.copy(alpha = 0.3f),
+                contentColor = Color.Black
+            ),
+            shape = MaterialTheme.shapes.small,
+            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier.wrapContentSize()
+        ) {
+            Text(selectedOption, fontSize = 14.sp)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown Arrow")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .wrapContentSize()
+        ) {
+            DropdownMenuItem(
+                text = { Text("Relevance") },
+                onClick = {
+                    selectedOption = "Relevance"
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Date from newest") },
+                onClick = {
+                    selectedOption = "Date from newest"
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Date from oldest") },
+                onClick = {
+                    selectedOption = "Date from oldest"
+                    expanded = false
+                }
+            )
+        }
+    }
+}
 
 
