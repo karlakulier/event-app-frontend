@@ -30,11 +30,15 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.mutableStateListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
+    var isFilterDialogVisible by remember { mutableStateOf(false) }
+    var hasActiveFilters by remember { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -101,15 +105,48 @@ fun HomeScreen(navController: NavController) {
                     .padding(end = 8.dp), // Adjust padding if necessary
                 contentAlignment = Alignment.CenterEnd // Aligns content to the right
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) { Row(
+                    horizontalArrangement = Arrangement.Start,
+                ){
                     Text(
-                        text = "Sort by:",
+                        text = "Filter",
                         fontSize = 14.sp,
                         color = Color.Black,
-                        modifier = Modifier.padding(end = 2.dp)
+                        modifier = Modifier
+                            .clickable { isFilterDialogVisible = true }
+                            .padding(end = 16.dp)
                     )
-                    SortByDropdown()
+                    if (hasActiveFilters) {
+                        Icon(
+                            painter = painterResource(R.drawable.abandon_edit), // Zamijeni s pravim resursom
+                            contentDescription = "Clear Filters",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    hasActiveFilters = false // Resetiranje filtera
+                                    // Dodajte logiku za uklanjanje primijenjenih filtera
+                                    println("Filters reset")
+                                }
+                        )
+                    }
                 }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Sort by:",
+                            fontSize = 14.sp,
+                            color = Color.Black,
+                            modifier = Modifier.padding(end = 2.dp)
+                        )
+                        SortByDropdown()
+                    }
+                }
+
             }
             CustomSearchBar(
                 query = searchQuery,
@@ -117,6 +154,17 @@ fun HomeScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             ActiveEventsSection(navController)
+        }
+        if (isFilterDialogVisible) {
+            FilterDialog(
+                isVisible = isFilterDialogVisible,
+                onDismiss = { isFilterDialogVisible = false },
+                onApplyFilter = { location, date, genres ->
+                    hasActiveFilters = true
+                    // Logika za primjenu filtera
+                    println("Filter applied: Location=$location, Date=$date, Genres=$genres")
+                }
+            )
         }
     }
 }
