@@ -1,6 +1,8 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -20,20 +22,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import com.example.eventapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+    var searchQuery by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Logo", fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.app_logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(200.dp)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -60,6 +75,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .border(1.dp, Color.LightGray)
                 .padding(horizontal = 16.dp)
         ) {
             //Spacer(modifier = Modifier.height(16.dp))
@@ -79,26 +95,13 @@ fun HomeScreen(navController: NavController) {
                     SortByDropdown()
                 }
             }
-            SearchBarHome()
+            CustomSearchBar(
+                query = searchQuery,
+                onQueryChanged = { searchQuery = it }
+            )
             Spacer(modifier = Modifier.height(16.dp))
             ActiveEventsSection(navController)
         }
-    }
-}
-
-
-
-@Composable
-fun SearchBarHome() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Gray.copy(alpha = 0.3f), shape = CircleShape)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(Icons.Default.Search, contentDescription = "Search Icon")
     }
 }
 
@@ -135,12 +138,31 @@ fun BottomNavigationBar() {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Default.Star, contentDescription = "Favorites")
-        Icon(Icons.Default.Home, contentDescription = "Home")
-        Icon(Icons.Default.Refresh, contentDescription = "History")
+        Icon(
+            painter = painterResource(id = R.drawable.favourites),
+            contentDescription = "Favorites",
+            modifier = Modifier
+                .size(35.dp)
+                .clickable{}
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.home),
+            contentDescription = "Home",
+            modifier = Modifier
+                .size(35.dp)
+                .clickable{}
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.chat_bubble),
+            contentDescription = "History",
+            modifier = Modifier
+                .size(35.dp)
+                .clickable{}
+        )
     }
 }
 
