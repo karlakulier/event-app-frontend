@@ -1,18 +1,15 @@
 package com.example.eventapp.navigation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,13 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,31 +121,102 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+data class Event(
+    val id: String,
+    val name: String,
+    val date: String,
+    val imageUrl: String
+)
+
 @Composable
-fun ActiveEventsSection(navController: Any) {
-    Text("ACTIVE EVENTS", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
-    repeat(3) {
-        EventCard("Name of event and Date")
-        Spacer(modifier = Modifier.height(16.dp))
+fun ActiveEventsSection(navController: NavController) {
+    val mockEvents = listOf(
+        Event("1", "Music Festival", "2023-06-01", "https://via.placeholder.com/300"),
+        Event("2", "Art Exhibition", "2023-07-15", "https://via.placeholder.com/300"),
+        Event("3", "Tech Conference", "2023-08-20", "https://via.placeholder.com/300")
+    )
+
+    Text(
+        text = "ACTIVE EVENTS",
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(mockEvents) { event ->
+            EventCard(event, navController)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
 @Composable
-fun EventCard(eventTitle: String) {
-    Column(
+fun EventCard(event: Event, navController: NavController) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Gray.copy(alpha = 0.2f))
-            .padding(16.dp)
+            .padding(vertical = 8.dp)
+            .clickable {
+                // Navigacija na detalje događaja
+            }
     ) {
-        Text(eventTitle, fontSize = 16.sp, fontWeight = FontWeight.Medium)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .background(Color.Gray.copy(alpha = 0.5f))
-        )
+                .height(200.dp)
+        ) {
+            // Prikaz slike eventa
+            Image(
+                painter = rememberAsyncImagePainter(event.imageUrl),
+                contentDescription = "Event Image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            // Gumb za prijavu
+            Button(
+                onClick = {
+                    // Logika za prijavu na event
+                    submitApplication(event.id)
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Text(text = "Submit application", fontSize = 12.sp, color = Color.Black)
+            }
+        }
+
+        // Naziv i datum eventa
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(8.dp)
+        ) {
+            Text(
+                text = event.name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+            Text(
+                text = event.date,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
     }
+}
+
+fun submitApplication(eventId: String) {
+    // Ovdje možete implementirati logiku za prijavu na event
 }
 
 @Composable
