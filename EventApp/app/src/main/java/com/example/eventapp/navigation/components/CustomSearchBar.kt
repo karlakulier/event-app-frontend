@@ -33,8 +33,8 @@ fun CustomSearchBar(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.9f) // Širina 90% roditeljskog prostora
-                .height(40.dp) // Visina
+                .fillMaxWidth(0.99f) // Širina 90% roditeljskog prostora
+                .height(35.dp) // Visina
                 .clip(RoundedCornerShape(20.dp)) // Zaobljeni rubovi
                 .border(1.dp, Color.Black, RoundedCornerShape(20.dp)) // Crni obrub na zaobljenim rubovima
                 .background(Color.White), // Bijela pozadina

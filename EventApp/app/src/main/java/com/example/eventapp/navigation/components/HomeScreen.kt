@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -75,7 +77,22 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .border(1.dp, Color.LightGray)
+                .drawBehind {
+                    // Gornji border
+                    drawLine(
+                        color = Color.Black,
+                        start = Offset(0f, 0f),
+                        end = Offset(size.width, 0f),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                    // Donji border
+                    drawLine(
+                        color = Color.Black,
+                        start = Offset(0f, size.height),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = 2.dp.toPx()
+                    )
+                }
                 .padding(horizontal = 16.dp)
         ) {
             //Spacer(modifier = Modifier.height(16.dp))
