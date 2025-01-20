@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
+import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginPage
@@ -95,6 +96,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+                        }
+                        //razvoj
+                        composable("ChatListScreen") {
+                            ChatListScreen()
                         }
                     }
                 }
