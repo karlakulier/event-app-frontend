@@ -26,6 +26,7 @@ transition = "1.5.0"
 activity-ktx = "1.10.0"
 fragment-ktx = "1.8.5"
 coil-compose = "2.2.2"
+media3CommonKtx = "1.5.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,7 @@ androidx-transition = { group = "androidx.transition", name = "transition", vers
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment-ktx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

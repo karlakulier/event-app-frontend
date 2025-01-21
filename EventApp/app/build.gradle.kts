@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.transition)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.play.services.base)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,6 +87,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     implementation ("io.coil-kt:coil-compose:2.2.2")
+
 
 
 
