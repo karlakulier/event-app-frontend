@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.models.Review
-import com.example.eventapp.navigation.components.StarRating
 
 @Composable
 fun EventDetailScreen(navController: NavController, eventId: String) {
@@ -52,8 +51,11 @@ fun EventDetailScreen(navController: NavController, eventId: String) {
         // Recenzije
         Text(text = "Reviews", style = MaterialTheme.typography.headlineSmall)
 
+        // LazyColumn s ograničenom visinom
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),  // Ovdje dodajemo .weight(1f) kako bi LazyColumn zauzeo raspoloživi prostor
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(reviews) { review ->
@@ -65,6 +67,22 @@ fun EventDetailScreen(navController: NavController, eventId: String) {
                     text = review.text
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp)) // Razmak prije gumba
+
+        // Gumb za dodavanje recenzije
+        Button(
+            onClick = {
+                navController.navigate("reviewInputScreen") // Navigacija na ekran za unos recenzije
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp) // Povećana visina gumba
+                .padding(bottom = 16.dp), // Dodajemo padding da ne bude preblizu donjoj granici
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+        ) {
+            Text(text = "Write a review", color = Color.White)
         }
     }
 }
@@ -120,8 +138,8 @@ fun StarRating(rating: Int) {
         for (i in 1..5) {
             Icon(
                 imageVector = if (i <= rating) Icons.Default.Star else Icons.Default.StarBorder,
-                contentDescription = "Star Rating",
-                tint = if (i <= rating) Color(0xFFFFD700) else Color.Gray,
+                contentDescription = "Star $i",
+                tint = if (rating >= i) Color.Yellow else Color.Gray,
                 modifier = Modifier.size(20.dp)
             )
         }
