@@ -43,8 +43,11 @@ fun LoginAndRegistrationNavigator(
                 onSignUpClick = { currentScreen = "roleSelection" },
                 onLoginClick = { navController.navigate("login")},
                 onGoogleLoginClick = {
-                    val signInIntent = googleSignInClient.signInIntent
-                    googleSignInLauncher.launch(signInIntent)
+                    // Prvo odjavi korisnika, pa pokreni login proces
+                    googleSignInClient.signOut().addOnCompleteListener {
+                        val signInIntent = googleSignInClient.signInIntent
+                        googleSignInLauncher.launch(signInIntent)
+                    }
                 },
                 onFacebookLoginClick = {
                     LoginManager.getInstance().registerCallback(callbackManager,

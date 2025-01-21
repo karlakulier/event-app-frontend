@@ -50,6 +50,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var callbackManager: CallbackManager
 
+    private val isLoggedIn = mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+
         val googleSignInLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -70,6 +73,7 @@ class MainActivity : ComponentActivity() {
                 try {
                     val account = task.getResult(ApiException::class.java)
                     Log.d("GoogleSignIn", "Signed in as: ${account?.email}")
+                    isLoggedIn.value = true
                 } catch (e: ApiException) {
                     Log.e("GoogleSignIn", "Sign-In Failed: ${e.statusCode}")
                 }
@@ -86,6 +90,14 @@ class MainActivity : ComponentActivity() {
             EventAppTheme {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
+
+                LaunchedEffect(key1 = isLoggedIn.value) {
+                    if (isLoggedIn.value) {
+                        navController.navigate("home") {
+                            popUpTo("loginAndRegistration") { inclusive = true }
+                        }
+                    }
+                }
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
                 ) { innerPadding ->

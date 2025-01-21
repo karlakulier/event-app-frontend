@@ -44,6 +44,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="com.googleusercontent.apps.324598534707-7d2frud0f4ajvit46u0jdv0u3gba6r79.apps.googleusercontent.com"
+                    android:host="oauth2redirect" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
