@@ -20,6 +20,10 @@ class ChatService : IChatService {
     }
 
     override suspend fun getChats(userId : Int): List<Chat> {
-        return api.getCars(userId)
+        return api.getChats(userId)
+    }
+
+    override suspend fun getMessages(chatId: Int): List<Message> {
+        return api.getMessages(chatId)
     }
 }

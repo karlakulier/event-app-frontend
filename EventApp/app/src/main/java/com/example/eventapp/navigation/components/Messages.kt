@@ -1,7 +1,6 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,27 +12,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import com.example.eventapp.Chat.ChatController
+import com.example.eventapp.Chat.ChatService
+import com.example.eventapp.Chat.Message
 import kotlinx.coroutines.delay
 
-//zamejna za dohvat sa servera
-suspend fun fetchMessagesForChat(chatId: Int): List<Message> {
-    delay(1000) // Simulacija kašnjenja mrežnog poziva
-    return listOf(
-        Message("Marko",  "Hello!"),
-        Message("Pero",  "Hi, how are you?"),
-        Message("Ivan",  "I'm fine, thanks!"),
-    )
-}
 
 @Composable
 fun MessageListScreen(chatId: Int) {
     var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    val chatService = ChatService()
+    val chatController = ChatController(chatService)
 
-    // Dohvaćanje poruka za određeni chat
-    LaunchedEffect(chatId) {
-        messages = fetchMessagesForChat(chatId)
+    // Simulacija mrežnog poziva
+    LaunchedEffect(Unit) {
+        messages = chatController.fetchMessages(1)
         isLoading = false
     }
 
