@@ -7,6 +7,6 @@ interface IChatApi {
     @GET("api/Chat/ByUser")
     suspend fun getChats(@Query("userId") userId: Int): List<Chat>
 
-    @GET("api/Messages/ByChat")
+    @GET("api/Message/ByChatId")
     suspend fun getMessages(@Query("chatId") chatId: Int): List<Message>
 }

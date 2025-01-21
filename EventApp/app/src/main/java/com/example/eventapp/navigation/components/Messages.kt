@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +28,7 @@ fun MessageListScreen(chatId: Int) {
 
     // Simulacija mrežnog poziva
     LaunchedEffect(Unit) {
-        messages = chatController.fetchMessages(1)
+        messages = chatController.fetchMessages(chatId)
         isLoading = false
     }
 
@@ -58,12 +59,12 @@ fun MessageListScreen(chatId: Int) {
                                 .background(Color.LightGray.copy(alpha = 0.2f))
                         ) {
                             Text(
-                                text = message.userName,
+                                text = message.nameOfSender,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = message.content, fontSize = 14.sp)
+                            Text(text = message.text, fontSize = 14.sp)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
