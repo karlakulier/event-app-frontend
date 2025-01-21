@@ -20,7 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.eventapp.R // Zamijenite s vašim pravim imenom paketa
+import com.example.eventapp.R
+import com.example.eventapp.navigation.components.Header
+import com.example.eventapp.navigation.components.ClassicFooter
+
 import java.util.Calendar
 
 @Composable
@@ -44,139 +47,127 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            // Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Profile", style = MaterialTheme.typography.bodyLarge)
-                Text("Logo", style = MaterialTheme.typography.bodyLarge)
-                Text("Menu", style = MaterialTheme.typography.bodyLarge)
-            }
+        // Header with Logo, Profile, and Menu
+        Header()
 
-            // Input Fields
-            TextField(
-                value = eventName,
-                onValueChange = { eventName = it },
-                label = { Text("Name of the event") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        // Input Fields
+        TextField(
+            value = eventName,
+            onValueChange = { eventName = it },
+            label = { Text("Name of the event") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = capacity,
-                onValueChange = { capacity = it },
-                label = { Text("Capacity") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
+        TextField(
+            value = capacity,
+            onValueChange = { capacity = it },
+            label = { Text("Capacity") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description and announcement of the event") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        TextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description and announcement of the event") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = location,
-                onValueChange = { location = it },
-                label = { Text("Location") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        TextField(
+            value = location,
+            onValueChange = { location = it },
+            label = { Text("Location") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Dropdown for Event Type
-            DropdownMenu(eventType, onEventTypeSelected = { eventType = it })
+        // Dropdown for Event Type
+        DropdownMenu(eventType, onEventTypeSelected = { eventType = it })
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Date Picker
-            TextField(
-                value = date,
-                onValueChange = { },
-                readOnly = true,
-                label = { Text("Date (MM/DD/YYYY)") },
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.calendar), // Koristi calendar.png
-                        contentDescription = "Pick a date",
-                        modifier = Modifier.clickable { isDatePickerOpen = true }
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            if (isDatePickerOpen) {
-                DatePickerDialog(onDateSelected = {
-                    date = it
-                    isDatePickerOpen = false
-                }, onDismissRequest = { isDatePickerOpen = false })
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Time Pickers
-            Row {
-                Text(
-                    text = if (startTime.isEmpty()) "Pick start time" else startTime,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { isStartTimePickerOpen = true }
-                        .padding(end = 8.dp)
+        // Date Picker
+        TextField(
+            value = date,
+            onValueChange = { },
+            readOnly = true,
+            label = { Text("Date (MM/DD/YYYY)") },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.calendar), // Koristi calendar.png
+                    contentDescription = "Pick a date",
+                    modifier = Modifier.clickable { isDatePickerOpen = true }
                 )
-                if (isStartTimePickerOpen) {
-                    TimePickerDialog(onTimeSelected = {
-                        startTime = it
-                        isStartTimePickerOpen = false
-                    }, onDismissRequest = { isStartTimePickerOpen = false })
-                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (isDatePickerOpen) {
+            DatePickerDialog(onDateSelected = {
+                date = it
+                isDatePickerOpen = false
+            }, onDismissRequest = { isDatePickerOpen = false })
+        }
 
-                Text(
-                    text = if (endTime.isEmpty()) "Pick end time" else endTime,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { isEndTimePickerOpen = true }
-                        .padding(start = 8.dp)
-                )
-                if (isEndTimePickerOpen) {
-                    TimePickerDialog(onTimeSelected = {
-                        endTime = it
-                        isEndTimePickerOpen = false
-                    }, onDismissRequest = { isEndTimePickerOpen = false })
-                }
-            }
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextField(
-                value = spaceDetails,
-                onValueChange = { spaceDetails = it },
-                label = { Text("Description of space and specifics") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // File Import Placeholder
-            Box(
+        // Time Pickers
+        Row {
+            Text(
+                text = if (startTime.isEmpty()) "Pick start time" else startTime,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Import your files\nDrag or click to upload", textAlign = TextAlign.Center, fontSize = 14.sp)
+                    .weight(1f)
+                    .clickable { isStartTimePickerOpen = true }
+                    .padding(end = 8.dp)
+            )
+            if (isStartTimePickerOpen) {
+                TimePickerDialog(onTimeSelected = {
+                    startTime = it
+                    isStartTimePickerOpen = false
+                }, onDismissRequest = { isStartTimePickerOpen = false })
             }
+
+            Text(
+                text = if (endTime.isEmpty()) "Pick end time" else endTime,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { isEndTimePickerOpen = true }
+                    .padding(start = 8.dp)
+            )
+            if (isEndTimePickerOpen) {
+                TimePickerDialog(onTimeSelected = {
+                    endTime = it
+                    isEndTimePickerOpen = false
+                }, onDismissRequest = { isEndTimePickerOpen = false })
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = spaceDetails,
+            onValueChange = { spaceDetails = it },
+            label = { Text("Description of space and specifics") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // File Import Placeholder
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .background(Color.Gray),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Import your files\nDrag or click to upload", textAlign = TextAlign.Center, fontSize = 14.sp)
         }
 
         // Buttons
@@ -191,6 +182,9 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                 Text("Save changes")
             }
         }
+
+        // Footer
+        ClassicFooter(navController)
     }
 }
 
@@ -208,7 +202,7 @@ fun DropdownMenu(selectedType: String, onEventTypeSelected: (String) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Menu, // Koristi zadanu Compose ikonu
+                    imageVector = Icons.Default.Menu,
                     contentDescription = "Dropdown Menu",
                     modifier = Modifier.clickable { expanded = true }
                 )
@@ -230,8 +224,6 @@ fun DropdownMenu(selectedType: String, onEventTypeSelected: (String) -> Unit) {
         }
     }
 }
-
-
 
 @Composable
 fun DatePickerDialog(onDateSelected: (String) -> Unit, onDismissRequest: () -> Unit) {
