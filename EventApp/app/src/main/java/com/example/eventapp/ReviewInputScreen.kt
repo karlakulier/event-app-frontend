@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.ClassicFooter
 import com.example.eventapp.navigation.components.Header
 import com.example.eventapp.navigation.components.OrganizerFooter
 import kotlinx.coroutines.launch
@@ -77,7 +78,7 @@ fun ReviewInputScreen(navController: NavController) {
             Text(text = "Submit Review")
         }
 
-        OrganizerFooter(navController)
+        ClassicFooter(navController)
     }
 }
 
