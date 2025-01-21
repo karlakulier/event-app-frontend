@@ -1,6 +1,7 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 
 // Simulacija učitavanja chatova sa backend-a
@@ -42,7 +44,7 @@ fun ChatCard(chat: Chat) {
 
 // Glavna funkcija za prikaz liste chatova
 @Composable
-fun ChatListScreen() {
+fun ChatListScreen(navController: NavController) {
     var chats by remember { mutableStateOf<List<Chat>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -74,7 +76,14 @@ fun ChatListScreen() {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(chats) { chat ->
-                        ChatCard(chat = chat)
+                        // Postavljanje clickable direktno na ChatCard
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate("messages/${chat.id}") // Pravilna destinacija
+                            }) {
+                            ChatCard(chat = chat)
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }

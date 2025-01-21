@@ -2,6 +2,7 @@ package com.example.eventapp
 
 import PreviousEventsScreen
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +24,7 @@ import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginPage
+import com.example.eventapp.navigation.components.MessageListScreen
 import com.example.eventapp.ui.theme.EventAppTheme
 import kotlinx.coroutines.launch
 
@@ -98,8 +100,17 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         //razvoj
-                        composable("ChatListScreen") {
-                            ChatListScreen()
+                        composable("chatListScreen") {
+                            ChatListScreen(navController = navController)
+                        }
+                        composable("messages/{chatId}") { backStackEntry ->
+                            val chatId = backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
+                            if (chatId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
+                                MessageListScreen(chatId = chatId)
+                            }
+
+
                         }
                     }
                 }

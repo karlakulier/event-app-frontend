@@ -92,7 +92,7 @@ fun LoginPage(navController: NavController) {
         // Login Button at Bottom
         Button(
             onClick = {
-                navController.navigate("ChatListScreen") // Navigacija na početnu stranicu
+                navController.navigate("home") // Navigacija na početnu stranicu
             },
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier
