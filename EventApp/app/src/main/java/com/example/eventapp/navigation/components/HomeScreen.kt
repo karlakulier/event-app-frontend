@@ -229,8 +229,8 @@ fun EventCard(event: Event, navController: NavController) {
             // Gumb za prijavu
             Button(
                 onClick = {
-                    // Logika za prijavu na event
-                    submitApplication(event.id)
+                    // Navigacija na EventInputScreen
+                    navController.navigate("eventInputScreen") // Ako ste postavili rutu za EventInputScreen
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
