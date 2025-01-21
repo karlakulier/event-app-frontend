@@ -14,18 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
+import com.example.eventapp.Chat.Chat
 
-// Simulacija učitavanja chatova sa backend-a
-suspend fun fetchChatsFromBackend(): List<Chat> {
-    delay(2000) // Simulacija kašnjenja mrežnog poziva
-    return listOf(
-        Chat(1, "Family Chat"),
-        Chat(2, "Work Group"),
-        Chat(3, "Friends"),
-        Chat(4, "John Doe")
-    )
-}
+import com.example.eventapp.Chat.ChatController
+import com.example.eventapp.Chat.ChatService
+import com.example.eventapp.Chat.IChatService
+import kotlinx.coroutines.delay
 
 // Composable za prikaz pojedinog chata
 @Composable
@@ -47,10 +41,12 @@ fun ChatCard(chat: Chat) {
 fun ChatListScreen(navController: NavController) {
     var chats by remember { mutableStateOf<List<Chat>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    val chatService = ChatService()
+    val chatController = ChatController(chatService)
 
     // Simulacija mrežnog poziva
     LaunchedEffect(Unit) {
-        chats = fetchChatsFromBackend()
+        chats = chatController.fetchChats(1)
         isLoading = false
     }
     Column(

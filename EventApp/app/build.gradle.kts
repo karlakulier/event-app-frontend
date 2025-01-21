@@ -69,4 +69,13 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
     implementation (project(":EventApplication"))
+    //api retrofit
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    //korutine
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+
+    // Gson
+    implementation (libs.gson)
 }

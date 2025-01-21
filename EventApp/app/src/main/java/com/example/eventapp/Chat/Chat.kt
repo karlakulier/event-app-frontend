@@ -1,4 +1,4 @@
-package com.example.eventapp.navigation.components
+package com.example.eventapp.Chat
 
 data class Chat(
     val id:Int,
