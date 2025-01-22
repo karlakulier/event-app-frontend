@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
@@ -25,9 +26,9 @@ import com.example.eventapp.Chat.ChatService
 import com.example.eventapp.Chat.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 @Composable
@@ -38,18 +39,23 @@ fun MessageListScreen(chatId: Int) {
     val chatController = ChatController(chatService)
     val context = LocalContext.current
 
+    val listState = rememberLazyListState()
+
     LaunchedEffect(Unit) {
         messages = chatController.fetchMessages(chatId)
         isLoading = false
     }
 
+    LaunchedEffect(messages) {
+        if (messages.isNotEmpty()) {
+            listState.scrollToItem(messages.size - 1)
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header section
         Header()
 
-        // Main content
-        Box(modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(
                     text = "Loading messages...",
@@ -65,7 +71,7 @@ fun MessageListScreen(chatId: Int) {
                     fontWeight = FontWeight.Medium
                 )
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
                     items(messages) { message ->
                         Column(
                             modifier = Modifier
@@ -87,7 +93,7 @@ fun MessageListScreen(chatId: Int) {
             }
         }
 
-        // Input field for new message
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,21 +117,24 @@ fun MessageListScreen(chatId: Int) {
             IconButton(
                 onClick = {
                     if (newMessageText.isNotBlank()) {
-                        var newMessage = Message("Vedran", newMessageText, chatId)
+                        val newMessage = Message("Vedran", newMessageText, chatId)
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 chatController.sendMessage(newMessage)
+                                val updatedMessages = chatController.fetchMessages(chatId)
+
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Poruka je uspešno poslana!", Toast.LENGTH_SHORT).show()
+                                    messages = updatedMessages
+                                    Toast.makeText(context, "Message successfully sent!", Toast.LENGTH_SHORT).show()
                                 }
-                                newMessageText = "" // Resetovanje inputa
+                                newMessageText = ""
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
-                                    // Prikazivanje detalja greške
-                                    Toast.makeText(context, "Greška: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
+
                     }
                 }
             ) {
@@ -138,3 +147,4 @@ fun MessageListScreen(chatId: Int) {
         }
     }
 }
+
