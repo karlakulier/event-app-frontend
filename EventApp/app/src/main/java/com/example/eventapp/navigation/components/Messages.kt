@@ -26,6 +26,7 @@ import com.example.eventapp.Chat.ChatService
 import com.example.eventapp.Chat.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -42,8 +43,12 @@ fun MessageListScreen(chatId: Int) {
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
-        messages = chatController.fetchMessages(chatId)
-        isLoading = false
+        while (true){
+            isLoading = true
+            messages = chatController.fetchMessages(chatId)
+            isLoading = false
+            delay(10000)
+        }
     }
 
     LaunchedEffect(messages) {
@@ -56,7 +61,7 @@ fun MessageListScreen(chatId: Int) {
         Header()
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-            if (isLoading) {
+            if (isLoading && messages.isEmpty() ) {
                 Text(
                     text = "Loading messages...",
                     modifier = Modifier.align(Alignment.Center),
