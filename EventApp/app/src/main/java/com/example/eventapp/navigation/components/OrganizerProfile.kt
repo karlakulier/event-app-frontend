@@ -83,16 +83,26 @@ fun OrganizerProfile() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.End
         ) {
-            Button(onClick = { /* Cancel action */ }) {
-                Text("Cancel")
+            TextButton(onClick = { /* Show previous events */ }) {
+                Text("Previous events")
             }
-            Button(onClick = { /* Save changes action */ }) {
-                Text("Save Changes")
+            // Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            )
+            {
+                Button(onClick = { /* Cancel action */ }) {
+                    Text("Cancel")
+                }
+                Button(onClick = { /* Save changes action */ }) {
+                    Text("Save Changes")
+                }
+
             }
         }
     }
