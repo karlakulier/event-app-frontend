@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface EventService {
-    @POST("events/CreateEvent")
+    @POST("/api/Events/CreateEvent")
     fun createEvent(@Body eventDto: EventDto): Call<EventDto>
 }

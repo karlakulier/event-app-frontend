@@ -2,13 +2,14 @@ package com.example.eventapp
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,10 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eventapp.R
-import com.example.eventapp.navigation.components.Header
+import com.example.eventapp.models.EventDto
 import com.example.eventapp.navigation.components.ClassicFooter
-
-import java.util.Calendar
+import com.example.eventapp.navigation.components.Header
+import com.example.eventapp.services.RetrofitInstance
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -32,14 +38,34 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     var capacity by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-    var eventType by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var startTime by remember { mutableStateOf("") }
     var endTime by remember { mutableStateOf("") }
-    var spaceDetails by remember { mutableStateOf("") }
     var isDatePickerOpen by remember { mutableStateOf(false) }
     var isStartTimePickerOpen by remember { mutableStateOf(false) }
     var isEndTimePickerOpen by remember { mutableStateOf(false) }
+
+    // Formatiranje dateTime za backend
+    val dateTime = if (date.isNotEmpty() && startTime.isNotEmpty()) {
+        val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+        val formattedDate = dateFormat.parse(date)
+        val formattedTime = timeFormat.parse(startTime)
+
+        val calendar = Calendar.getInstance()
+        calendar.time = formattedDate
+        calendar.set(Calendar.HOUR_OF_DAY, formattedTime.hours)
+        calendar.set(Calendar.MINUTE, formattedTime.minutes)
+
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).format(calendar.time)
+    } else {
+        ""
+    }
+
+    // Simulacija finished i organizerId
+    val finished = false
+    val organizerId = 1
 
     Column(
         modifier = modifier
@@ -47,7 +73,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Header with Logo, Profile, and Menu
         Header()
 
         // Input Fields
@@ -88,12 +113,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Dropdown for Event Type
-        DropdownMenu(eventType, onEventTypeSelected = { eventType = it })
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Date Picker
+        // Date Picker s ikonom
         TextField(
             value = date,
             onValueChange = { },
@@ -101,7 +121,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             label = { Text("Date (MM/DD/YYYY)") },
             trailingIcon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.calendar), // Koristi calendar.png
+                    painter = painterResource(id = R.drawable.calendar),
                     contentDescription = "Pick a date",
                     modifier = Modifier.clickable { isDatePickerOpen = true }
                 )
@@ -126,6 +146,11 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                     .clickable { isStartTimePickerOpen = true }
                     .padding(end = 8.dp)
             )
+            Icon(
+                painter = painterResource(id = R.drawable.time),
+                contentDescription = "Pick start time",
+                modifier = Modifier.clickable { isStartTimePickerOpen = true }
+            )
             if (isStartTimePickerOpen) {
                 TimePickerDialog(onTimeSelected = {
                     startTime = it
@@ -133,12 +158,19 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                 }, onDismissRequest = { isStartTimePickerOpen = false })
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 text = if (endTime.isEmpty()) "Pick end time" else endTime,
                 modifier = Modifier
                     .weight(1f)
                     .clickable { isEndTimePickerOpen = true }
                     .padding(start = 8.dp)
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.time),
+                contentDescription = "Pick end time",
+                modifier = Modifier.clickable { isEndTimePickerOpen = true }
             )
             if (isEndTimePickerOpen) {
                 TimePickerDialog(onTimeSelected = {
@@ -150,27 +182,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = spaceDetails,
-            onValueChange = { spaceDetails = it },
-            label = { Text("Description of space and specifics") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // File Import Placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .background(Color.Gray),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Import your files\nDrag or click to upload", textAlign = TextAlign.Center, fontSize = 14.sp)
-        }
-
-        // Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -178,50 +189,42 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             Button(onClick = { navController.popBackStack() }) {
                 Text("Cancel")
             }
-            Button(onClick = { /* Save logic */ }) {
+            Button(onClick = {
+                if (date.isEmpty() || startTime.isEmpty() || location.isEmpty()) {
+                    // Error handling
+                    return@Button
+                }
+
+                val eventDto = EventDto(
+                    dateTime = dateTime,
+                    location = location,
+                    description = description,
+                    finished = finished,
+                    organizerId = organizerId
+                )
+
+                RetrofitInstance.api.createEvent(eventDto).enqueue(object : Callback<EventDto> {
+                    override fun onResponse(call: Call<EventDto>, response: Response<EventDto>) {
+                        if (response.isSuccessful) {
+                            // Logiraj odgovor za debugiranje
+                            Log.d("EventCreate", "Događaj je uspješno kreiran: ${response.body()}")
+                        } else {
+                            Log.e("EventCreate", "Neuspješno kreiranje događaja. Status kod: ${response.code()} | Poruka: ${response.errorBody()?.string()}")
+
+                        }
+                    }
+
+                    override fun onFailure(call: Call<EventDto>, t: Throwable) {
+                        // Obrada pogreške
+                        Log.e("EventCreate", "Greška: ${t.localizedMessage}")
+                    }
+                })
+            }) {
                 Text("Save changes")
             }
         }
 
-        // Footer
         ClassicFooter(navController)
-    }
-}
-
-@Composable
-fun DropdownMenu(selectedType: String, onEventTypeSelected: (String) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    val eventTypes = listOf("Concert", "Workshop", "Meeting", "Exhibition")
-
-    Box {
-        TextField(
-            value = selectedType,
-            onValueChange = { },
-            readOnly = true,
-            label = { Text("Event Type") },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Dropdown Menu",
-                    modifier = Modifier.clickable { expanded = true }
-                )
-            }
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            eventTypes.forEach { type ->
-                DropdownMenuItem(
-                    text = { Text(type) },
-                    onClick = {
-                        onEventTypeSelected(type)
-                        expanded = false
-                    }
-                )
-            }
-        }
     }
 }
 
