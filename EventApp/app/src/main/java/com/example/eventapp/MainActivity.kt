@@ -23,11 +23,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
+import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
+import com.example.eventapp.navigation.components.MessageListScreen
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.StartScreen
 import com.example.eventapp.userInterface.SignUp
@@ -163,6 +165,17 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+                        }
+                        composable("chatListScreen") {
+                            ChatListScreen(navController = navController)
+                        }
+                        composable("messages/{chatId}") { backStackEntry ->
+                            val chatId =
+                                backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
+                            if (chatId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
+                                MessageListScreen(chatId = chatId)
+                            }
                         }
                     }
                 }

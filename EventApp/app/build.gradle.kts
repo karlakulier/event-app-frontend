@@ -71,10 +71,6 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.coil.compose)
 
-
-
-
-
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -88,6 +84,15 @@ dependencies {
 
     implementation ("io.coil-kt:coil-compose:2.2.2")
 
+    //api retrofit
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    //korutine
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+
+    // Gson
+    implementation (libs.gson)
 
 
 
