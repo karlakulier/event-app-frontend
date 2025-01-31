@@ -31,11 +31,14 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
+    var musicGenre by remember { mutableStateOf("") }
     var startTime by remember { mutableStateOf("") }
     var endTime by remember { mutableStateOf("") }
     var isDatePickerOpen by remember { mutableStateOf(false) }
     var isStartTimePickerOpen by remember { mutableStateOf(false) }
     var isEndTimePickerOpen by remember { mutableStateOf(false) }
+    var relevanceScore by remember { mutableStateOf(0) }
+
 
     // Formatiranje dateTime za backend
     val dateTime = if (date.isNotEmpty() && startTime.isNotEmpty()) {
@@ -100,6 +103,22 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             value = location,
             onValueChange = { location = it },
             label = { Text("Location") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        TextField(
+            value = musicGenre,
+            onValueChange = { musicGenre = it },
+            label = { Text("Music Genre") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        TextField(
+            value = relevanceScore.toString(),
+            onValueChange = {
+                relevanceScore = it.toIntOrNull() ?: 0
+            },
+            label = { Text("Relevance Score") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -193,8 +212,10 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                     location = location,
                     description = description,
                     finished = finished,
-                    organizerId = organizerId
-                )
+                    organizerId = organizerId,
+                    musicGenre = musicGenre,
+                    relevanceScore = relevanceScore
+     )
 
                 EventRetrofitInstance.apievent.createEvent(eventDto).enqueue(object : Callback<EventDto> {
                     override fun onResponse(call: Call<EventDto>, response: Response<EventDto>) {
