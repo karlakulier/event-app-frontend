@@ -72,9 +72,6 @@ dependencies {
     implementation(libs.coil.compose)
 
 
-
-
-
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -82,6 +79,8 @@ dependencies {
     implementation(libs.google.auth) // Google Sign-In
     implementation("androidx.compose.material:material-icons-extended:<latest-version>")
     implementation("com.facebook.android:facebook-login:latest.release")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
