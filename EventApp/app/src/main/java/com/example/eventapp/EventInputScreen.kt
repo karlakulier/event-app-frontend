@@ -41,7 +41,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
 
 
-    // Formatiranje dateTime za backend
     val dateTime = if (date.isNotEmpty() && startTime.isNotEmpty()) {
         val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -59,7 +58,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
         ""
     }
 
-    // Simulacija finished i organizerId
     val finished = false
     val organizerId = 1
 
@@ -71,7 +69,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     ) {
         Header()
 
-        // Input Fields
+
         TextField(
             value = eventName,
             onValueChange = { eventName = it },
@@ -125,7 +123,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Date Picker s ikonom
+
         TextField(
             value = date,
             onValueChange = { },
@@ -149,7 +147,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Time Pickers
+
         Row {
             Text(
                 text = if (startTime.isEmpty()) "Pick start time" else startTime,
@@ -203,7 +201,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             }
             Button(onClick = {
                 if (date.isEmpty() || startTime.isEmpty() || location.isEmpty()) {
-                    // Error handling
                     return@Button
                 }
 
@@ -228,9 +225,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
                         }
                     }
-
                     override fun onFailure(call: Call<EventDto>, t: Throwable) {
-                        // Obrada pogreške
                         Log.e("EventCreate", "Greška: ${t.localizedMessage}")
                     }
                 })
@@ -238,7 +233,6 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                 Text("Save changes")
             }
         }
-
         ClassicFooter(navController)
     }
 }
