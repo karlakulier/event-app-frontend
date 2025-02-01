@@ -40,6 +40,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     var relevanceScore by remember { mutableStateOf(0) }
 
 
+
     // Formatiranje dateTime za backend
     val dateTime = if (date.isNotEmpty() && startTime.isNotEmpty()) {
         val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
@@ -214,7 +215,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                     finished = finished,
                     organizerId = organizerId,
                     musicGenre = musicGenre,
-                    relevanceScore = relevanceScore
+                    relevanceScore = relevanceScore.toString()
      )
 
                 EventRetrofitInstance.apievent.createEvent(eventDto).enqueue(object : Callback<EventDto> {

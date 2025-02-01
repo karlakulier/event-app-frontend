@@ -7,5 +7,5 @@ data class EventDto(   val id: Int?,
                        val finished: Boolean,
                        val organizerId: Int,
                        val musicGenre: String,
-                       val relevanceScore: Int
+                       val relevanceScore: String
 )
