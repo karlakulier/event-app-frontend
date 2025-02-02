@@ -4,7 +4,7 @@ data class Review(
     val id: Int,
     val author: String,
     val date: String,
-    val rating: Int,  // Assume 1-5 stars
+    val rating: Int,
     val text: String,
     val likes: Int,
     val dislikes: Int
