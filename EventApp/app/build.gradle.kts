@@ -83,7 +83,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     implementation ("io.coil-kt:coil-compose:2.2.2")
-
     //api retrofit
     implementation (libs.retrofit)
     implementation (libs.converter.gson)

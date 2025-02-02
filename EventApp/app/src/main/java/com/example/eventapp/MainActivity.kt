@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
@@ -175,6 +176,14 @@ class MainActivity : ComponentActivity() {
                             if (chatId != null) {
                                 Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
                                 MessageListScreen(chatId = chatId)
+                            }
+                        }
+                        composable("applicationsForEvent/{eventId}") { backStackEntry ->
+                            val eventId =
+                                backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                            if (eventId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                ApplicationsForEvent(navController, eventId)
                             }
                         }
                     }
