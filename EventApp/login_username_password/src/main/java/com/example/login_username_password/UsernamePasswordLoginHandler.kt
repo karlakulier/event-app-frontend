@@ -1,6 +1,7 @@
 package com.example.login_username_password
 
 import android.util.Log
+import com.example.core.login.Auth
 import com.example.core.login.LoginHandler
 import com.example.core.login.LoginOutcomeListener
 import com.example.core.login.LoginToken
@@ -64,6 +65,7 @@ class UsernamePasswordLoginHandler : LoginHandler {
                             }
                         )
                     )
+
                 }
 
                 override fun onErrorResponse(response: ErrorResponseBody) {

@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.mutableStateListOf
+import com.example.core.login.Auth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +40,7 @@ fun HomeScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
-
+    val loggedUser = Auth.loggedInUserData
 
     Scaffold(
         topBar = {
