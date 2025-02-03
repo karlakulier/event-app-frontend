@@ -16,17 +16,17 @@ object RetrofitClient {
         .addInterceptor(logging)
         .build()
 
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://aireventapp.azurewebsites.net/")
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     val apiService: ApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
+        retrofit.create(ApiService::class.java)
+    }
+
+    val apiEvents: ApiEvents by lazy {
+        retrofit.create(ApiEvents::class.java)
     }
 }
