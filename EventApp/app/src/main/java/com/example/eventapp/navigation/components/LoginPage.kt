@@ -125,7 +125,7 @@ fun LoginPage(
                     loginToken,
                     onSuccessfulLogin = {
                         awaitingResponse = false
-                        navController.navigate("home") // Navigacija ako je login uspješan
+                        navController.navigate("chatListScreen") // Navigacija ako je login uspješan
                     },
                     onFailedLogin = {
                         awaitingResponse = false

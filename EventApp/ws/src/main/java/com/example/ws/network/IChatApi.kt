@@ -1,6 +1,7 @@
 package com.example.eventapp.Chat
 
-import com.air.eventapplication.models.Application
+import com.example.core.network.models.Chat
+import com.example.core.network.models.Message
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

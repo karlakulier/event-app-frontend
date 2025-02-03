@@ -1,6 +1,5 @@
 package com.example.eventapp.navigation.components
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,23 +20,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.eventapp.Chat.ChatController
-import com.example.eventapp.Chat.ChatService
-import com.example.eventapp.Chat.Message
+import com.example.core.network.models.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import com.example.core.chat.IChatService
+import com.example.ws.services.ChatService
 
 
 @Composable
 fun MessageListScreen(chatId: Int) {
     var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    val chatService = ChatService()
-    val chatController = ChatController(chatService)
+    val chatController:IChatService = ChatService()
     val context = LocalContext.current
 
     val listState = rememberLazyListState()
@@ -45,7 +42,7 @@ fun MessageListScreen(chatId: Int) {
     LaunchedEffect(Unit) {
         while (true){
             isLoading = true
-            messages = chatController.fetchMessages(chatId)
+            messages = chatController.getMessages(chatId)
             isLoading = false
             delay(10000)
         }
@@ -123,16 +120,17 @@ fun MessageListScreen(chatId: Int) {
                 onClick = {
                     if (newMessageText.isNotBlank()) {
                         val newMessage = Message("Vedran", newMessageText, chatId)
+                        newMessageText = ""
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 chatController.sendMessage(newMessage)
-                                val updatedMessages = chatController.fetchMessages(chatId)
+                                val updatedMessages = chatController.getMessages(chatId)
 
                                 withContext(Dispatchers.Main) {
                                     messages = updatedMessages
                                     Toast.makeText(context, "Message successfully sent!", Toast.LENGTH_SHORT).show()
                                 }
-                                newMessageText = ""
+
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()

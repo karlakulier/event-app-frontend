@@ -14,12 +14,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.eventapp.Chat.Chat
-
-import com.example.eventapp.Chat.ChatController
-import com.example.eventapp.Chat.ChatService
-import com.example.eventapp.Chat.IChatService
-import kotlinx.coroutines.delay
+import com.example.core.chat.IChatService
+import com.example.core.network.models.Chat
+import com.example.ws.services.ChatService
 
 // Composable za prikaz pojedinog chata
 @Composable
@@ -41,12 +38,11 @@ fun ChatCard(chat: Chat) {
 fun ChatListScreen(navController: NavController) {
     var chats by remember { mutableStateOf<List<Chat>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    val chatService = ChatService()
-    val chatController = ChatController(chatService)
+    val chatController: IChatService = ChatService()
 
     // Simulacija mrežnog poziva
     LaunchedEffect(Unit) {
-        chats = chatController.fetchChats(1)
+        chats = chatController.getChats(1)
         isLoading = false
     }
     Column(
