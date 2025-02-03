@@ -49,7 +49,7 @@ fun HomeScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
-    val loggedUser = Auth.loggedInUserData
+
 
     Scaffold(
         topBar = {
@@ -211,6 +211,7 @@ fun ActiveEventsSection(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventCard(event: GetEventData, navController: NavController) {
+    val loggedUser = Auth.loggedInUserData
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -235,16 +236,18 @@ fun EventCard(event: GetEventData, navController: NavController) {
             )
 
             // Gumb za prijavu
-            Button(
-                onClick = {
-                    navController.navigate("eventInputScreen")
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-            ) {
-                Text(text = "Submit application", fontSize = 12.sp, color = Color.Black)
+            if (loggedUser?.role == "Musician") {
+                Button(
+                    onClick = {
+                        navController.navigate("eventInputScreen")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                ) {
+                    Text(text = "Submit application", fontSize = 12.sp, color = Color.Black)
+                }
             }
         }
 
