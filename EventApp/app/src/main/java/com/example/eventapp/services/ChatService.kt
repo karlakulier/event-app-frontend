@@ -14,7 +14,7 @@ class ChatService : IChatService {
         val okHttpClient = OkHttpClient.Builder()
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.21.183:5205/") // Zamijeni stvarnim URL-om
+            .baseUrl("https://aireventapp.azurewebsites.net/") // Zamijeni stvarnim URL-om
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
