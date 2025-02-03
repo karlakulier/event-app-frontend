@@ -1,6 +1,5 @@
 package com.example.eventapp.navigation.components
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,13 +17,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun OrganizerProfile(
     organizerId: Int,
-    organizerService: OrganizerService
+    organizerService: OrganizerService,
+
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
+    var review by remember { mutableStateOf("") }  // Dodano review polje
     var isEditing by remember { mutableStateOf(true) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
@@ -38,6 +39,7 @@ fun OrganizerProfile(
             email = organizer.email
             contact = organizer.contact
             birthDate = organizer.birthDate
+            review = organizer.review ?: ""  // Dodajemo review
         }
     }
 
@@ -54,21 +56,28 @@ fun OrganizerProfile(
         ProfileEditField("Email", email) { email = it }
         ProfileEditField("Contact", contact) { contact = it }
         ProfileEditField("Birth Date", birthDate) { birthDate = it }
+        ProfileEditField("Review", review) { review = it }  // Dodajemo polje za unos review-a
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(onClick = {
                 // Spremi ažurirane podatke
-                val updatedProfile = OrganizerProfile(name, surname, email, contact, birthDate)
+                val updatedProfile = OrganizerProfile(
+                    id = organizerId, // Postavite ID koji je dohvaćen
+                    name = name,
+                    surname = surname,
+                    email = email,
+                    contact = contact,
+                    birthDate = birthDate,
+                    review = review,
+                    userId = organizerId // Ako koristite isti ID kao za organizatora, postavite ga
+                )
                 coroutineScope.launch {
+                    // Poziv za ažuriranje profila
                     val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
-                    dialogMessage = if (result) {
-                        "Profile updated successfully!"
-                    } else {
-                        "Failed to update profile!"
-                    }
-                    showDialog = true
+                    dialogMessage = "Profile updated successfully!"
+
                 }
             }) {
                 Text("Save", color = Color.White)
@@ -80,7 +89,7 @@ fun OrganizerProfile(
         }
     }
 
-    // Prikaz AlertDialoga nakon akcije
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
