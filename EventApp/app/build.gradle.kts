@@ -92,7 +92,8 @@ dependencies {
 
     // Gson
     implementation (libs.gson)
-
-
+    implementation(project(":core"))
+    implementation(project(":ws"))
+    implementation(project(":login_username_password"))
 
 }
