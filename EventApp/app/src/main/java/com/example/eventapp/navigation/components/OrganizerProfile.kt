@@ -7,28 +7,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.eventapp.models.OrganizerProfile
 import com.example.eventapp.services.OrganizerService
-import kotlinx.coroutines.Dispatchers
+import com.example.eventapp.models.OrganizerProfile
+import com.example.eventapp.services.OrganizerRetrofit
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun OrganizerProfile(
     organizerId: Int,
-    organizerService: OrganizerService,
-    onSaveChanges: (String, String, String, String, String) -> Unit
+    organizerService: OrganizerService
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
+    var isEditing by remember { mutableStateOf(true) }
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // Dohvat podataka sa servera
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -40,11 +41,50 @@ fun OrganizerProfile(
         }
     }
 
-    // Display dialog if needed
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Edit Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Prikaz editable form
+        ProfileEditField("Name", name) { name = it }
+        ProfileEditField("Surname", surname) { surname = it }
+        ProfileEditField("Email", email) { email = it }
+        ProfileEditField("Contact", contact) { contact = it }
+        ProfileEditField("Birth Date", birthDate) { birthDate = it }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Button(onClick = {
+                // Spremi ažurirane podatke
+                val updatedProfile = OrganizerProfile(name, surname, email, contact, birthDate)
+                coroutineScope.launch {
+                    val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
+                    dialogMessage = if (result) {
+                        "Profile updated successfully!"
+                    } else {
+                        "Failed to update profile!"
+                    }
+                    showDialog = true
+                }
+            }) {
+                Text("Save", color = Color.White)
+            }
+
+            Button(onClick = { isEditing = false }) {
+                Text("Cancel")
+            }
+        }
+    }
+
+    // Prikaz AlertDialoga nakon akcije
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Information") },
+            title = { Text("Profile Update") },
             text = { Text(dialogMessage) },
             confirmButton = {
                 Button(onClick = { showDialog = false }) {
@@ -53,91 +93,26 @@ fun OrganizerProfile(
             }
         )
     }
+}
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "NAME AND SURNAME", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "role", fontSize = 14.sp, color = Color.Gray)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Name field
+@Composable
+fun ProfileEditField(label: String, value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "$label:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
+            value = value,
+            onValueChange = { onValueChange(it) },
+            label = { Text(label) },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Surname field
-        TextField(
-            value = surname,
-            onValueChange = { surname = it },
-            label = { Text("Surname") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // E-mail field
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("E-mail address") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Contact field
-        TextField(
-            value = contact,
-            onValueChange = { contact = it },
-            label = { Text("Contact") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Birth date field
-        TextField(
-            value = birthDate,
-            onValueChange = { birthDate = it },
-            label = { Text("Date of birth") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = { /* Show previous events */ }) {
-                Text("Previous events")
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(onClick = { /* Cancel action */ }) {
-                    Text("Cancel")
-                }
-
-                Button(onClick = {
-                    onSaveChanges(name, surname, email, contact, birthDate)
-                    dialogMessage = "Profile updated successfully!"
-                    showDialog = true
-                }) {
-                    Text("Save Changes")
-                }
-            }
-        }
     }
+}
+
+@Preview
+@Composable
+fun PreviewOrganizerProfile() {
+    val organizerService = OrganizerService(OrganizerRetrofit.api)
+    val organizerId = 1
+    OrganizerProfile(organizerId = organizerId, organizerService = organizerService)
 }

@@ -10,11 +10,11 @@ import com.example.eventapp.models.OrganizerProfile
 interface OrganizerAPI {
 
 
-    @GET("api/organizer/{organizerId}")
+    @GET("api/Organizer/GetOrganizer/{organizerId}")
     fun getOrganizerById(@Path("organizerId") organizerId: Int): Call<OrganizerProfile>
 
 
-    @PUT("api/organizer/update/{organizerId}")
+    @PUT("api/Organizer/UpdateProfile/{organizerId}")
     fun updateOrganizerProfile(
         @Path("organizerId") organizerId: Int,
         @Body profile: OrganizerProfile

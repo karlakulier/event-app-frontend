@@ -92,7 +92,9 @@ fun LoginPage(navController: NavController) {
         // Login Button at Bottom
         Button(
             onClick = {
-                navController.navigate("home") // Navigacija na početnu stranicu
+               // navController.navigate("home") // Navigacija na početnu stranicu
+                val organizerId = 2 // Zamijenite stvarnim ID-jem
+                navController.navigate("organizerProfileViewOnly/$organizerId")
             },
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier

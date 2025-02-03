@@ -4,8 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object OrganizerRetrofit {
-    //nakon deployanja staviti azureportal
-    private const val BASE_URL = "http://10.0.0.2:5205/"
+    private const val BASE_URL = "https://aireventapp.azurewebsites.net/"
 
     val api: OrganizerAPI by lazy {
         Retrofit.Builder()

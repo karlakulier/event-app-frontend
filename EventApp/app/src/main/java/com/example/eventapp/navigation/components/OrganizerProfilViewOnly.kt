@@ -1,66 +1,91 @@
 package com.example.eventapp.navigation.components
 
+import java.text.SimpleDateFormat
+import java.util.*
+
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.eventapp.services.OrganizerRetrofit
+import com.example.eventapp.services.OrganizerService
 
 @Composable
-fun ViewOnlyProfile() {
-    val name = "Ana"
-    val surname = "Anić"
-    val email = "aanic31@gmail.com"
-    val contact = "+098577876578"
-    val birthDate = "23/09/1990"
+fun OrganizerProfileViewOnly(
+    organizerId: Int,
+    organizerService: OrganizerService,
+    onEditClick: () -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var contact by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Header
-        Text(text = "NAME AND SURNAME", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "role", fontSize = 14.sp, color = Color.Gray)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Name field (view only)
-        Text(text = "Name: $name", fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Surname field (view only)
-        Text(text = "Surname: $surname", fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // E-mail field (view only)
-        Text(text = "E-mail: $email", fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Contact field (view only)
-        Text(text = "Contact: $contact", fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Birth date field (view only)
-        Text(text = "Date of birth: $birthDate", fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Previous events (view only)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = { /* Show previous events */ }) {
-                Text("Previous events")
-            }
+    LaunchedEffect(organizerId) {
+        val organizer = organizerService.getOrganizerById(organizerId)
+        if (organizer != null) {
+            name = organizer.name
+            surname = organizer.surname
+            email = organizer.email
+            contact = organizer.contact
+            birthDate = organizer.birthDate?.let {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("d. MMMM yyyy", Locale.getDefault())
+                val date = inputFormat.parse(it)
+                outputFormat.format(date)
+            } ?: "Nedostupno"
+        } else {
+            // Logiranje ako podaci nisu dostupni
+            Log.d("OrganizerProfile", "No data found for organizerId: $organizerId")
         }
     }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Prikaz podataka koristeći onemogućene TextField-e
+        ProfileDetailField("Name", "$name $surname")
+        ProfileDetailField("Email", email)
+        ProfileDetailField("Contact", contact)
+        ProfileDetailField("Birth Date", birthDate)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { onEditClick() }) {
+            Text("Edit Profile")
+        }
+    }
+}
+
+@Composable
+fun ProfileDetailField(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "$label:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        TextField(
+            value = value,
+            onValueChange = {},
+            label = { Text(label) },
+            enabled = false, // Onemogućuje unos
+            readOnly = true, // Samo za prikaz
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Preview
+@Composable
+fun PreviewOrganizerProfileViewOnly() {
+    val organizerService = OrganizerService(OrganizerRetrofit.api)
+    val organizerId = 1
+    OrganizerProfileViewOnly(organizerId = organizerId, organizerService = organizerService, onEditClick = {})
 }
