@@ -2,11 +2,12 @@ package com.example.eventapp.models
 
 data class Review(
     val id: Int,
-    val author: String,
-    val date: String,
-    val rating: Int,
     val text: String,
-    val likes: Int,
-    val dislikes: Int
+    val musicianGrade: Int,
+    val organizerGrade: Int,
+    val eventId: Int,
+    val visitorId: Int,
+    val musicianId: Int,
+    val organizerId: Int
 )
 

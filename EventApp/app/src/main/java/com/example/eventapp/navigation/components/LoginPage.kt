@@ -93,6 +93,8 @@ fun LoginPage(navController: NavController) {
         Button(
             onClick = {
                 navController.navigate("home") // Navigacija na početnu stranicu
+               // val eventId = "6" // Ovo treba biti stvarni eventId
+                //navController.navigate("reviewInputScreen/$eventId")
             },
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier

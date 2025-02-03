@@ -2,6 +2,7 @@ package com.example.eventapp
 
 import android.content.Intent
 import PreviousEventsScreen
+import ReviewInputScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -30,6 +31,8 @@ import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.navigation.components.MessageListScreen
+import com.example.eventapp.services.ReviewClient
+import com.example.eventapp.services.ReviewService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.StartScreen
 import com.example.eventapp.userInterface.SignUp
@@ -145,6 +148,10 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("artistProfileScreen") {
                             ArtistProfileScreen(navController = navController)
+                        }
+                        composable("reviewInputScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+                            ReviewInputScreen(navController = navController, eventId = eventId, reviewService = ReviewService(reviewApi = ReviewClient.reviewApi))
                         }
                         composable("editProfileScreen") {
                             EditProfileScreen(
