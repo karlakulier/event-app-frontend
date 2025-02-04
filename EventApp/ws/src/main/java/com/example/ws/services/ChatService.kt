@@ -13,7 +13,6 @@ class ChatService : IChatService {
 
     val api: IChatApi = retrofit.create(IChatApi::class.java)
 
-
     override suspend fun getChats(userId : Int): List<Chat> {
         return api.getChats(userId)
     }

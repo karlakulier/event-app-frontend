@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.core.network.ResponseListener
+import com.example.core.network.models.ErrorResponseBody
 import com.example.ws.models.GetEventData
 import com.example.ws.network.RetrofitClient.apiEvents
 import com.example.ws.request_handlers.GetEventRequestHandler
@@ -11,7 +13,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GetEventViewModel : ViewModel(){
+class GetEventViewModel : ViewModel() {
     private val _events = MutableLiveData<List<GetEventData>>()
     val events: LiveData<List<GetEventData>> = _events
 
@@ -40,5 +42,21 @@ class GetEventViewModel : ViewModel(){
         })
     }
 
+    fun fetchPastEventsForMusician(musicianId: Int) {
+        eventRequestHandler.fetchPastEventsForMusician(musicianId, object : ResponseListener<List<GetEventData>> {
+            override fun onSuccessfulResponse(response: List<GetEventData>) {
+                _events.postValue(response)
+            }
 
+            override fun onErrorResponse(error: ErrorResponseBody) {
+                Log.e("GetEventViewModel", "Error: ${error.statusCode} - ${error.message}")
+                _events.postValue(emptyList())
+            }
+
+            override fun onNetworkFailure(t: Throwable) {
+                Log.e("GetEventViewModel", "Failed to fetch past events", t)
+                _events.postValue(emptyList())
+            }
+        })
+    }
 }
