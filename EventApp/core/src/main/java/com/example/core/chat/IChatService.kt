@@ -5,7 +5,7 @@ import retrofit2.Response
 
 
 interface IChatService {
-    suspend fun getChats(userID : Int): List<Chat>
+    suspend fun getChats(userID : Int,role : String): List<Chat>
     suspend fun getMessages( chatId: Int): List<Message>
     suspend fun sendMessage(message: Message): Response<Void>
 }
