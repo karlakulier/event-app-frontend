@@ -20,7 +20,7 @@ object ApplicationModul {
 
     fun SendApplication(context: Context, eventId: Int, musicianId: Int) {
 
-        val application = Application("active", eventId, musicianId)
+        val application = Application("waiting", eventId, musicianId)
         CoroutineScope(Dispatchers.Main).launch {
             val rezultat = withContext(Dispatchers.IO) {
                 applicationService.CereateApplication(application)

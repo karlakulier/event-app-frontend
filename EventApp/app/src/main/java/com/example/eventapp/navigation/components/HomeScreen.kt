@@ -35,10 +35,12 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import com.example.core.login.Auth
 import com.example.eventapp.viewmodels.GetEventViewModel
 import com.example.ws.models.GetEventData
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.air.eventapplication.ApplicationModul
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -224,6 +226,7 @@ fun ActiveEventsSection(
 @Composable
 fun EventCard(event: GetEventData, navController: NavController) {
     val loggedUser = Auth.loggedInUserData
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -251,7 +254,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             if (loggedUser?.role == "Musician" && event.finished==false) {
                 Button(
                     onClick = {
-                        navController.navigate("eventInputScreen")
+                        ApplicationModul.SendApplication(context,event.id,loggedUser.musician?.id!!)
                     },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
