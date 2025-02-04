@@ -9,7 +9,6 @@ import com.example.eventapp.models.OrganizerProfile
 
 interface OrganizerAPI {
 
-
     @GET("api/Organizer/GetOrganizer/{organizerId}")
     fun getOrganizerById(@Path("organizerId") organizerId: Int): Call<OrganizerProfile>
 

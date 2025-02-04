@@ -11,7 +11,10 @@ import retrofit2.Call
 class OrganizerService(private val apiService: OrganizerAPI) : IOrganizerService {
 
 
+
     override suspend fun getOrganizerById(organizerId: Int): OrganizerProfile? {
+        Log.d("OrganizerService", "Dohvaćam organizatora s ID-em: $organizerId") // Logirajte ID koji šaljete
+
         return withContext(Dispatchers.IO) {
             try {
                 val response: Response<OrganizerProfile> =
@@ -38,7 +41,6 @@ class OrganizerService(private val apiService: OrganizerAPI) : IOrganizerService
             try {
                 val response = apiService.updateOrganizerProfile(organizerId, profileData).execute()
 
-                // Detaljno logiranje odgovora
                 if (response.isSuccessful) {
                     Log.d("OrganizerService", "Profile update successful: ${response.body()}")
                     return@withContext UpdateProfileResult(true, "Profile updated successfully")

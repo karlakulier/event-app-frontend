@@ -23,11 +23,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
+import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
+import com.example.eventapp.navigation.components.MessageListScreen
+import com.example.eventapp.navigation.components.OrganizerProfile
+import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
+import com.example.eventapp.services.OrganizerRetrofit
+import com.example.eventapp.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.StartScreen
 import com.example.eventapp.userInterface.SignUp
@@ -152,7 +158,6 @@ class MainActivity : ComponentActivity() {
                                 organizerId = organizerId,
                                 organizerService = organizerService,
                                 onEditClick = {
-                                    // Navigacija na ekran za uređivanje
                                     navController.navigate("organizerProfile/$organizerId")
                                 }
                             )
@@ -161,11 +166,15 @@ class MainActivity : ComponentActivity() {
                         composable("organizerProfile/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(OrganizerRetrofit.api)
+
+                            // Prosljeđivanje navController u OrganizerProfile
                             OrganizerProfile(
                                 organizerId = organizerId,
-                                organizerService = organizerService
+                                organizerService = organizerService,
+                                navController = rememberNavController()
                             )
                         }
+
                         composable("editProfileScreen") {
                             EditProfileScreen(
                                 navController = navController,

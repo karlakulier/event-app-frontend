@@ -9,6 +9,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.eventapp.services.OrganizerService
 import com.example.eventapp.models.OrganizerProfile
 import com.example.eventapp.services.OrganizerRetrofit
@@ -18,19 +20,18 @@ import kotlinx.coroutines.launch
 fun OrganizerProfile(
     organizerId: Int,
     organizerService: OrganizerService,
-
+    navController: NavController
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
-    var review by remember { mutableStateOf("") }  // Dodano review polje
-    var isEditing by remember { mutableStateOf(true) }
+    var review by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
-    // Dohvat podataka sa servera
+
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -39,7 +40,7 @@ fun OrganizerProfile(
             email = organizer.email
             contact = organizer.contact
             birthDate = organizer.birthDate
-            review = organizer.review ?: ""  // Dodajemo review
+            review = organizer.review ?: ""
         }
     }
 
@@ -50,40 +51,44 @@ fun OrganizerProfile(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Prikaz editable form
         ProfileEditField("Name", name) { name = it }
         ProfileEditField("Surname", surname) { surname = it }
         ProfileEditField("Email", email) { email = it }
         ProfileEditField("Contact", contact) { contact = it }
         ProfileEditField("Birth Date", birthDate) { birthDate = it }
-        ProfileEditField("Review", review) { review = it }  // Dodajemo polje za unos review-a
+        ProfileEditField("Review", review) { review = it }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Button(onClick = {
-                // Spremi ažurirane podatke
+
                 val updatedProfile = OrganizerProfile(
-                    id = organizerId, // Postavite ID koji je dohvaćen
+                    id = organizerId,
                     name = name,
                     surname = surname,
                     email = email,
                     contact = contact,
                     birthDate = birthDate,
                     review = review,
-                    userId = organizerId // Ako koristite isti ID kao za organizatora, postavite ga
+                    userId = organizerId
                 )
                 coroutineScope.launch {
-                    // Poziv za ažuriranje profila
-                    val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
-                    dialogMessage = "Profile updated successfully!"
 
+                    val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
+                    dialogMessage = "Uspješno su ažurirani podaci"
+                    showDialog = true
                 }
+
+
+                navController.popBackStack("home", false) // Vrati na HomeScreen
             }) {
                 Text("Save", color = Color.White)
             }
 
-            Button(onClick = { isEditing = false }) {
+            Button(onClick = {
+                navController.popBackStack("home", false) // Povratak na HomeScreen
+            }) {
                 Text("Cancel")
             }
         }
@@ -92,11 +97,18 @@ fun OrganizerProfile(
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = {
+                showDialog = false
+
+                navController.popBackStack("home", false)
+            },
             title = { Text("Profile Update") },
             text = { Text(dialogMessage) },
             confirmButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(onClick = {
+                    showDialog = false
+                    navController.popBackStack("home", false)
+                }) {
                     Text("OK")
                 }
             }
@@ -123,5 +135,6 @@ fun ProfileEditField(label: String, value: String, onValueChange: (String) -> Un
 fun PreviewOrganizerProfile() {
     val organizerService = OrganizerService(OrganizerRetrofit.api)
     val organizerId = 1
-    OrganizerProfile(organizerId = organizerId, organizerService = organizerService)
+    val navController = rememberNavController()
+    OrganizerProfile(organizerId = organizerId, organizerService = organizerService, navController = navController)
 }

@@ -59,12 +59,18 @@ fun HomeScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate("artistProfileScreen") // Navigacija na ArtistProfileScreen
-                    }) {
-                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp))
+                        val userRole = Auth.loggedInUserData?.role
+                        Log.d("Navigation", "User role: $userRole")
+                        val destination = if (userRole == "Organizer") {
+                            "organizerProfileViewOnly/${Auth.loggedInUserData?.organizer?.id}"
+                        } else {
+                            "artistProfileScreen"
                         }
+                        navController.navigate(destination)
+                    }) {
+                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp)) }
                     },
-                actions = {
+                    actions = {
                         Icon(
                             Icons.Default.Menu,
                             contentDescription = "Menu Icon",

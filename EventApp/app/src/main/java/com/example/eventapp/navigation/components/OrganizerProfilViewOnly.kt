@@ -7,12 +7,14 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core.login.Auth
 import com.example.eventapp.services.OrganizerRetrofit
 import com.example.eventapp.services.OrganizerService
 
@@ -28,6 +30,7 @@ fun OrganizerProfileViewOnly(
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
 
+
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -42,17 +45,21 @@ fun OrganizerProfileViewOnly(
                 outputFormat.format(date)
             } ?: "Nedostupno"
         } else {
-            // Logiranje ako podaci nisu dostupni
             Log.d("OrganizerProfile", "No data found for organizerId: $organizerId")
         }
     }
+
+
+    val isLoggedInOrganizer = Auth.loggedInUserData?.organizer?.id == organizerId
+    Log.d("OrganizerProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Organizer ID: $organizerId")
+    Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Prikaz podataka koristeći onemogućene TextField-e
+
         ProfileDetailField("Name", "$name $surname")
         ProfileDetailField("Email", email)
         ProfileDetailField("Contact", contact)
@@ -60,8 +67,18 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { onEditClick() }) {
-            Text("Edit Profile")
+
+        if (isLoggedInOrganizer) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(onClick = { onEditClick() }) {
+                    Text("Edit Profile")
+                }
+            }
+        } else {
+            Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
         }
     }
 }
@@ -74,8 +91,8 @@ fun ProfileDetailField(label: String, value: String) {
             value = value,
             onValueChange = {},
             label = { Text(label) },
-            enabled = false, // Onemogućuje unos
-            readOnly = true, // Samo za prikaz
+            enabled = false,
+            readOnly = true,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
