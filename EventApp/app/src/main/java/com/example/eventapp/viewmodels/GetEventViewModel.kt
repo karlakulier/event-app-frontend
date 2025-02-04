@@ -4,12 +4,16 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import com.example.ws.network.RetrofitClient.apiEvents
 import com.example.ws.request_handlers.GetEventRequestHandler
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.awaitResponse
 
 class GetEventViewModel : ViewModel(){
     private val _events = MutableLiveData<List<GetEventData>>()
@@ -32,13 +36,32 @@ class GetEventViewModel : ViewModel(){
                     _events.postValue(emptyList())
                 }
             }
-
             override fun onFailure(call: Call<List<GetEventData>>, t: Throwable) {
                 Log.e("GetEventViewModel", "Failed to fetch events", t)
                 _events.postValue(emptyList())
             }
         })
     }
+    fun fetchFilteredEvents(location: String, date: String, genres: List<String>) {
+        viewModelScope.launch {
+            try {
+                val response = apiEvents.getActiveEvents().awaitResponse()
+                if (response.isSuccessful) {
+                    val filteredEvents = response.body()?.filter {
+                        (location.isEmpty() || it.location.contains(location, ignoreCase = true)) &&
+                                (date.isEmpty() || it.dateTime.startsWith(date)) &&
+                                (genres.isEmpty() || genres.contains(it.musicGenre))
+                    } ?: emptyList()
+                    _events.postValue(filteredEvents)
+                } else {
+                    _events.postValue(emptyList())
+                }
+            } catch (e: Exception) {
+                _events.postValue(emptyList())
+            }
+        }
+    }
+
 
 
 }
