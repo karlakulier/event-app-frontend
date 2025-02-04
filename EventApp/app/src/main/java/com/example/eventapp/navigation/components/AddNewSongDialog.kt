@@ -116,8 +116,9 @@ fun AddNewSongDialog(
         )
         if (showDatePicker) {
             DatePickerModal(
-                onDateSelected = { millis ->
-                    releaseDate.value = millis?.let { convertMillisToDate(it) } ?: ""
+                onDateSelected = { displayDate, apiDate ->  // Očekujemo dva parametra
+                    releaseDate.value = displayDate  // Prikaz korisniku
+                    // Ovdje možeš spremiti apiDate ako ga trebaš slati u API
                     showDatePicker = false
                 },
                 onDismiss = { showDatePicker = false }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
@@ -18,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,19 +27,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.eventapp.viewmodels.GetEventViewModel
 
 @Composable
 fun FilterDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    onApplyFilter: (String, String, List<String>) -> Unit
+    onApplyFilter: (String, String, List<String>) -> Unit,
+    viewModel: GetEventViewModel
 ) {
     if (isVisible) {
         var location by remember { mutableStateOf("") }
         var date by remember { mutableStateOf("") }
+        var apiFormattedDate by remember { mutableStateOf("") }
         val selectedGenres = remember { mutableStateListOf<String>() }
         val genres = listOf("Blues", "Jazz", "Pop", "Rock", "Opera", "Electronic", "Country", "Punk", "Rap", "Metal")
         var showDatePicker by remember { mutableStateOf(false) }
+
+        LaunchedEffect(isVisible) {
+            if (!isVisible) {
+                location = ""
+                date = ""
+                selectedGenres.clear()
+            }
+        }
 
         AlertDialog(
             onDismissRequest = { onDismiss() },
@@ -94,7 +105,7 @@ fun FilterDialog(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onApplyFilter(location, date, selectedGenres)
+                    onApplyFilter(location, apiFormattedDate, selectedGenres)
                     onDismiss()
                 }) {
                     Text("Filter")
@@ -106,12 +117,11 @@ fun FilterDialog(
                 }
             }
         )
-        // DatePicker Modal
         if (showDatePicker) {
             DatePickerModal(
-                onDateSelected = { millis ->
-                    date = millis?.let { convertMillisToDate(it) } ?: ""
-                    showDatePicker = false
+                onDateSelected = { displayDate, apiDate ->
+                    date = displayDate // Prikaz korisniku
+                    apiFormattedDate = apiDate // Format za API
                 },
                 onDismiss = { showDatePicker = false }
             )

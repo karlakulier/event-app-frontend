@@ -14,16 +14,21 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
+    onDateSelected: (String, String) -> Unit, // Prvi string: Prikaz korisniku, Drugi string: Slanje API-ju
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
 
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+                val millis = datePickerState.selectedDateMillis
+                if (millis != null) {
+                    val displayDate = convertMillisToDisplayDate(millis)
+                    val apiDate = convertMillisToApiDate(millis)
+                    onDateSelected(displayDate, apiDate)
+                }
                 onDismiss()
             }) {
                 Text("OK")
@@ -39,7 +44,12 @@ fun DatePickerModal(
     }
 }
 
-fun convertMillisToDate(millis: Long): String {
+fun convertMillisToDisplayDate(millis: Long): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
+}
+
+fun convertMillisToApiDate(millis: Long): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Format za API
     return formatter.format(Date(millis))
 }

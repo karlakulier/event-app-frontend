@@ -6,12 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.core.network.ResponseListener
 import com.example.core.network.models.ErrorResponseBody
+import androidx.lifecycle.viewModelScope
+import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import com.example.ws.network.RetrofitClient.apiEvents
 import com.example.ws.request_handlers.GetEventRequestHandler
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.awaitResponse
 
 class GetEventViewModel : ViewModel() {
     private val _events = MutableLiveData<List<GetEventData>>()
@@ -41,6 +45,26 @@ class GetEventViewModel : ViewModel() {
             }
         })
     }
+    fun fetchFilteredEvents(location: String, date: String, genres: List<String>) {
+        viewModelScope.launch {
+            try {
+                val response = apiEvents.getActiveEvents().awaitResponse()
+                if (response.isSuccessful) {
+                    val filteredEvents = response.body()?.filter {
+                        (location.isEmpty() || it.location.contains(location, ignoreCase = true)) &&
+                                (date.isEmpty() || it.dateTime.startsWith(date)) &&
+                                (genres.isEmpty() || genres.contains(it.musicGenre))
+                    } ?: emptyList()
+                    _events.postValue(filteredEvents)
+                } else {
+                    _events.postValue(emptyList())
+                }
+            } catch (e: Exception) {
+                _events.postValue(emptyList())
+            }
+        }
+    }
+
 
     fun fetchPastEventsForMusician(musicianId: Int) {
         eventRequestHandler.fetchPastEventsForMusician(musicianId, object : ResponseListener<List<GetEventData>> {
