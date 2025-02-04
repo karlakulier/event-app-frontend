@@ -45,7 +45,10 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: GetEventViewModel = viewModel()
+) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
@@ -146,9 +149,8 @@ fun HomeScreen(navController: NavController) {
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
-                                    hasActiveFilters = false // Resetiranje filtera
-                                    // Dodajte logiku za uklanjanje primijenjenih filtera
-                                    println("Filters reset")
+                                    hasActiveFilters = false
+                                    viewModel.fetchEvents()
                                 }
                         )
                     }
@@ -178,9 +180,9 @@ fun HomeScreen(navController: NavController) {
                 onDismiss = { isFilterDialogVisible = false },
                 onApplyFilter = { location, date, genres ->
                     hasActiveFilters = true
-                    // Logika za primjenu filtera
-                    println("Filter applied: Location=$location, Date=$date, Genres=$genres")
-                }
+                    viewModel.fetchFilteredEvents(location, date, genres)
+                },
+                viewModel = viewModel
             )
         }
     }
@@ -271,7 +273,19 @@ fun EventCard(event: GetEventData, navController: NavController) {
                 color = Color.Black
             )
             Text(
-                text = formatDateTime(event.dateTime),
+                text = "Location: " + event.location,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Music genre: " + event.musicGenre,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Date and time: " + formatDateTime(event.dateTime),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
