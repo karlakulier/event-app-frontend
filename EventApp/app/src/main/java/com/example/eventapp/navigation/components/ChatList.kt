@@ -55,7 +55,11 @@ fun ChatListScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize() // Ako treba dodatni razmak
     ) {
-        Header()
+        if(loggedInUserData?.role=="Musician"){
+            Header()
+        }else{
+            Header()
+        }
         Box(modifier = Modifier.fillMaxSize()) {
             if (isLoading) {
                 Text(
@@ -86,6 +90,11 @@ fun ChatListScreen(navController: NavController) {
                     }
                 }
             }
+        }
+        if (loggedInUserData?.role == "Musician") {
+            ClassicFooter(navController)
+        } else {
+            OrganizerFooter(navController)
         }
     }
 }

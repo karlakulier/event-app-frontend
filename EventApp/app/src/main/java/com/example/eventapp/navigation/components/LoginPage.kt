@@ -36,6 +36,7 @@ import com.example.eventapp.viewmodels.LoginViewModel
 import com.example.login_username_password.UsernamePasswordLoginHandler
 import com.example.login_username_password.UsernamePasswordLoginToken
 
+
 @Composable
 fun LoginPage(
     navController: NavController,
