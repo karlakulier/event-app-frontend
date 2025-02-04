@@ -66,7 +66,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Header()
+        
 
 
         TextField(

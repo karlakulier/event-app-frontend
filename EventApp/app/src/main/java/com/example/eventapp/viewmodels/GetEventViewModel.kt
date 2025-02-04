@@ -9,6 +9,7 @@ import com.example.core.network.models.ErrorResponseBody
 import androidx.lifecycle.viewModelScope
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
+import com.example.ws.network.RetrofitClient
 import com.example.ws.network.RetrofitClient.apiEvents
 import com.example.ws.request_handlers.GetEventRequestHandler
 import kotlinx.coroutines.launch
@@ -20,6 +21,9 @@ import retrofit2.awaitResponse
 class GetEventViewModel : ViewModel() {
     private val _events = MutableLiveData<List<GetEventData>>()
     val events: LiveData<List<GetEventData>> = _events
+    private val _eventDetails = MutableLiveData<GetEventData>()
+    val eventDetails: LiveData<GetEventData> = _eventDetails
+
 
     private val eventRequestHandler = GetEventRequestHandler()
 
@@ -80,6 +84,43 @@ class GetEventViewModel : ViewModel() {
             override fun onNetworkFailure(t: Throwable) {
                 Log.e("GetEventViewModel", "Failed to fetch past events", t)
                 _events.postValue(emptyList())
+            }
+        })
+    }
+    fun fetchPastEventsByOrganizer(organizerId: Int) {
+        val handler = GetEventRequestHandler()
+
+        handler.fetchPastEventsByOrganizer(organizerId, object : ResponseListener<List<GetEventData>> {
+            override fun onSuccessfulResponse(response: List<GetEventData>) {
+                _events.postValue(response)
+            }
+
+            override fun onErrorResponse(errorResponse: ErrorResponseBody) {
+                Log.e("GetEventViewModel", "Error fetching events: ${errorResponse.message}")
+            }
+
+            override fun onNetworkFailure(t: Throwable) {
+                Log.e("GetEventViewModel", "Network failure: ${t.message}")
+            }
+        })
+    }
+    fun fetchEventDetails(eventId: Int) {
+        val call = RetrofitClient.apiEvents.getEventDetails(eventId)
+
+        call.enqueue(object : Callback<GetEventData> {
+            override fun onResponse(
+                call: Call<GetEventData>,
+                response: Response<GetEventData>
+            ) {
+                if (response.isSuccessful) {
+                    _eventDetails.postValue(response.body()) // Post the single event to _eventDetails
+                } else {
+                    Log.e("GetEventViewModel", "Error: ${response.code()} - ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<GetEventData>, t: Throwable) {
+                Log.e("GetEventViewModel", "Failed to fetch event details", t)
             }
         })
     }

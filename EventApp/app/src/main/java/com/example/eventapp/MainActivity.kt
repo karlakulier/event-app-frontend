@@ -33,6 +33,7 @@ import com.example.eventapp.navigation.components.MessageListScreen
 import com.example.eventapp.navigation.components.PastEventsForMusician
 import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
+import com.example.eventapp.navigation.components.PastEvents
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
@@ -151,6 +152,10 @@ class MainActivity : ComponentActivity() {
                                 organizerService = organizerService,
                                 onEditClick = {
                                     navController.navigate("organizerProfile/$organizerId")
+                                },
+                                onPastEventsClick = {
+
+                                    navController.navigate("pastEventsScreen/$organizerId")
                                 }
                             )
                         }
@@ -208,6 +213,10 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("pastEventsForMusician") {
                             PastEventsForMusician(navController = navController)
+                        }
+                        composable("pastEventsScreen/{organizerId}") { backStackEntry ->
+                            val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
+                            PastEvents(navController = navController, organizerId = organizerId)
                         }
                     }
                 }
