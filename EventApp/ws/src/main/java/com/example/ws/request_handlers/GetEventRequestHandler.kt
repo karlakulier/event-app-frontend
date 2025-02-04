@@ -36,7 +36,7 @@ class GetEventRequestHandler {
         })
     }
     fun fetchPastEventsForMusician(musicianId: Int, responseListener: ResponseListener<List<GetEventData>>) {
-        val call = apiEvents.getPastEventsForMusician(musicianId)  // Prosljeđujemo ID glazbenika
+        val call = apiEvents.getPastEventsForMusician(musicianId)
 
         call.enqueue(object : Callback<List<GetEventData>> {
             override fun onResponse(
@@ -58,5 +58,27 @@ class GetEventRequestHandler {
             }
         })
     }
+
+    fun fetchPastEventsForOrganizer(organizerId: Int, responseListener: ResponseListener<List<GetEventData>>) {
+        val call = apiEvents.getPastEventsForOrganizer(organizerId)
+
+        call.enqueue(object : Callback<List<GetEventData>> {
+            override fun onResponse(call: Call<List<GetEventData>>, response: Response<List<GetEventData>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    responseListener.onSuccessfulResponse(response.body()!!)
+                } else {
+                    Log.e("GetEventRequestHandler", "Failed to fetch past events for organizer")
+                    responseListener.onErrorResponse(
+                        ErrorResponseBody(response.code(), response.message())
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetEventData>>, t: Throwable) {
+                responseListener.onNetworkFailure(t)
+            }
+        })
+    }
+
 
 }
