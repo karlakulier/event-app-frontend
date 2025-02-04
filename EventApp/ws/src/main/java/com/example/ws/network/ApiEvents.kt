@@ -15,6 +15,7 @@ interface ApiEvents {
 
     @POST("api/Events/filter")
     fun getFilteredEvents(@Body filter: EventFilterData): Call<List<GetEventData>>
+
     @GET("api/Events/PastEventByMusicanId/{musicianId}")
     fun getPastEventsForMusician(@Path("musicianId") musicianId: Int): Call<List<GetEventData>>
 }
