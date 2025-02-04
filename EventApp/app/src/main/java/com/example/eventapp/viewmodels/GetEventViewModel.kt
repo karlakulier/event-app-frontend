@@ -83,4 +83,21 @@ class GetEventViewModel : ViewModel() {
             }
         })
     }
+
+    fun fetchPastEventsForOrganizer(organizerId: Int) {
+        eventRequestHandler.fetchPastEventsForOrganizer(organizerId, object : ResponseListener<List<GetEventData>> {
+            override fun onSuccessfulResponse(response: List<GetEventData>) {
+                _events.value = response
+            }
+
+            override fun onErrorResponse(error: ErrorResponseBody) {
+                Log.e("GetEventViewModel", "Error fetching past events: ${error.message}")
+            }
+
+            override fun onNetworkFailure(t: Throwable) {
+                Log.e("GetEventViewModel", "Network failure: ${t.message}")
+            }
+        })
+    }
+
 }

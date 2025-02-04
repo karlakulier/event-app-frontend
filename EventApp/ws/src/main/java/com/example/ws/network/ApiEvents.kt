@@ -18,4 +18,8 @@ interface ApiEvents {
 
     @GET("api/Events/PastEventByMusicanId/{musicianId}")
     fun getPastEventsForMusician(@Path("musicianId") musicianId: Int): Call<List<GetEventData>>
+
+    @GET("api/Events/PastEventByOrganizerId/{organizerId}")
+    fun getPastEventsForOrganizer(@Path("organizerId") organizerId: Int): Call<List<GetEventData>>
+
 }
