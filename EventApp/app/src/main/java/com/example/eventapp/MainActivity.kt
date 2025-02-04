@@ -30,6 +30,7 @@ import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.navigation.components.MessageListScreen
+import com.example.eventapp.navigation.components.PastEventsForMusician
 import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.ws.network.OrganizerRetrofit
@@ -204,6 +205,9 @@ class MainActivity : ComponentActivity() {
                                 Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
                                 ApplicationsForEvent(navController, eventId)
                             }
+                        }
+                        composable("pastEventsForMusician") {
+                            PastEventsForMusician(navController = navController)
                         }
                     }
                 }
