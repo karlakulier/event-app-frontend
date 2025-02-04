@@ -28,6 +28,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.add_album_ep_single.AddMusicContentDialog
+import com.example.add_album_ep_single.MusicContentType
 import com.example.core.login.Auth
 import com.example.eventapp.R
 import com.example.eventapp.viewmodels.ArtistProfileViewModel
@@ -38,6 +40,7 @@ import com.example.ws.models.SongData
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel = viewModel()) {
+    var selectedContentType by remember { mutableStateOf(MusicContentType.ALBUM) }
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
@@ -390,7 +393,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 }
             }
 
-            if (isDialogVisible) {
+            /*if (isDialogVisible) {
                 AddNewAlbumEpSingleDialog(
                     isVisible = isDialogVisible,
                     onDismiss = { isDialogVisible = false },
@@ -439,7 +442,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 onAddSong = { songName, releaseDate, youtubeLink, spotifyLink ->
                 // Logika za dodavanje pjesme
                 }
-            )
+            )*/
 
 
             // Tabs
@@ -459,6 +462,20 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 2 -> SingleList(songs, isEditing)
             }
         }
+    }
+    if (isDialogVisible) {
+        AddMusicContentDialog(
+            isVisible = isDialogVisible,
+            contentType = selectedContentType,
+            onDismiss = { isDialogVisible = false },
+            onAddContent = { content ->
+                when (content) {
+                    is AlbumData -> viewModel.addAlbum(content)
+                    is EpData -> viewModel.addEP(content)
+                    is SongData -> viewModel.addSong(content)
+                }
+            }
+        )
     }
 }
 

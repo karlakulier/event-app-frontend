@@ -47,4 +47,25 @@ class ArtistProfileViewModel : ViewModel() {
             }
         }
     }
+
+    fun addAlbum(album: AlbumData) {
+        viewModelScope.launch {
+            apiArtistProfile.addAlbum(album)
+            fetchAlbums(album.musicianId)
+        }
+    }
+
+    fun addEP(ep: EpData) {
+        viewModelScope.launch {
+            apiArtistProfile.addEP(ep)
+            fetchEPs(ep.musicianId)
+        }
+    }
+
+    fun addSong(song: SongData) {
+        viewModelScope.launch {
+            apiArtistProfile.addSong(song)
+            fetchSongs(song.musicianId)
+        }
+    }
 }

@@ -94,5 +94,5 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":ws"))
     implementation(project(":login_username_password"))
-
+    implementation(project(":add_album_ep_single"))
 }

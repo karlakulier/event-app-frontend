@@ -46,7 +46,7 @@ fun LoginPage(
     val password by viewModel.password.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    var awaitingResponse by remember { mutableStateOf(false) } // Oznaka da čekamo API odgovor
+    var awaitingResponse by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -117,7 +117,7 @@ fun LoginPage(
         // Login Button
         Button(
             onClick = {
-                awaitingResponse = true // Označimo da čekamo API odgovor
+                awaitingResponse = true
                 val loginToken = UsernamePasswordLoginToken(username, password)
 
                 viewModel.login(
@@ -125,14 +125,14 @@ fun LoginPage(
                     loginToken,
                     onSuccessfulLogin = {
                         awaitingResponse = false
-                        navController.navigate("home") // Navigacija ako je login uspješan
+                        navController.navigate("home")
                     },
                     onFailedLogin = {
                         awaitingResponse = false
                     }
                 )
             },
-            enabled = !awaitingResponse, // Onemogućimo gumb dok čekamo odgovor
+            enabled = !awaitingResponse,
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
