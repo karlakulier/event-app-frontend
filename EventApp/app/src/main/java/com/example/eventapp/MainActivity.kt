@@ -36,6 +36,9 @@ import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
+import com.example.eventapp.userInterface.SignUp
+import com.example.ws.network.NetworkModule
+import com.example.ws.repository.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -78,6 +81,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val userRepository = UserRepository(NetworkModule.userApi)
+
         val loginHandler = FacebookAndGoogleLoginHandler(
             googleSignInLauncher = googleSignInLauncher,
             googleSignInClient = googleSignInClient,
@@ -109,14 +114,18 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 googleSignInLauncher = googleSignInLauncher,
                                 googleSignInClient = googleSignInClient,
-                                callbackManager = callbackManager
+                                callbackManager = callbackManager,
+                                userRepository = userRepository
                             )
                         }
                         composable("login") {
                             LoginPage(navController = navController)
                         }
                         composable("signUp") {
-                            SignUpScreen(navController = navController)
+                            SignUp(
+                                onNextClick = { role -> navController.navigate("registration/$role") },
+                                onBackClick = { navController.popBackStack() }
+                            )
                         }
                         composable("controlNumber") {
                             ControlNumberScreen(navController = navController)

@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.play.services.base)
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,6 +85,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
     implementation ("io.coil-kt:coil-compose:2.2.2")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2@aar")
+
     //api retrofit
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
