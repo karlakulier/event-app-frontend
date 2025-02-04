@@ -2,6 +2,8 @@ package com.air.eventapplication.Service
 
 import com.air.eventapplication.API.IApplicationApi
 import com.air.eventapplication.models.Application
+import com.air.eventapplication.models.ApplicationGet
+import com.air.eventapplication.models.ApplicationUpdateStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,22 +27,40 @@ class ApplicationService (private val api: IApplicationApi) : IApplicationServic
         applicationId: Int,
         newStatus: String
     ): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    /*
-    override suspend fun azurirajStatusPrijave(idPrijave: String, noviStatus: String): Result<Boolean> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = api.azurirajStatus(idPrijave, StatusRequest(noviStatus))
+                var newStatus = ApplicationUpdateStatus(applicationId,newStatus)
+                val response = api.UpdateApplicationStatus(newStatus)
                 if (response.isSuccessful) {
                     Result.success(true)
                 } else {
-                    Result.failure(Exception("Greška kod ažuriranja statusa: ${response.message()}"))
+                    Result.failure(Exception("Greška kod promjene statusa prijave: ${response.message()}"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
-    }*/
+    }
+
+    override suspend fun GetApplicationsByEvent(EventId: Int): Result<List<ApplicationGet>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = api.GetApplicationsByEvent(EventId)
+                if (response.isSuccessful) {
+                    val applications = response.body()
+                    if (applications != null) {
+                        Result.success(applications)
+                    } else {
+                        Result.failure(Exception("Prazan odgovor od servera."))
+                    }
+                } else {
+                    Result.failure(Exception("Greška kod dohvaćanja prijava: ${response.message()}"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+
 }

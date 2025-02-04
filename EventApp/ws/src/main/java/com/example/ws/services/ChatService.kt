@@ -1,26 +1,18 @@
-package com.example.eventapp.Chat
+package com.example.ws.services
+import com.example.core.chat.IChatService
+import com.example.core.network.models.Chat
+import com.example.core.network.models.Message
+import com.example.eventapp.Chat.IChatApi
 
-import android.util.Log
-import okhttp3.OkHttpClient
+import com.example.ws.network.RetrofitClient.retrofit
+
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
+
 
 class ChatService : IChatService {
-    private val api: IChatApi
 
-    init {
-        val okHttpClient = OkHttpClient.Builder()
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.21.183:5205/") // Zamijeni stvarnim URL-om
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    val api: IChatApi = retrofit.create(IChatApi::class.java)
 
-        api = retrofit.create(IChatApi::class.java)
-    }
 
     override suspend fun getChats(userId : Int): List<Chat> {
         return api.getChats(userId)
