@@ -236,7 +236,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             )
 
             // Gumb za prijavu
-            if (loggedUser?.role == "Musician") {
+            if (loggedUser?.role == "Musician" && event.finished==false) {
                 Button(
                     onClick = {
                         navController.navigate("eventInputScreen")
