@@ -52,7 +52,7 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
-
+    val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
 
     Scaffold(
         topBar = {
@@ -93,7 +93,11 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomNavigationBar()
+            if (isOrganizer) {
+                OrganizerFooter(navController = navController)
+            } else {
+                ClassicFooter(navController = navController)
+            }
         }
     ) { paddingValues ->
         Column(

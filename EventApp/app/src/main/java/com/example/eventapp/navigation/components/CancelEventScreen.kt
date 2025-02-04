@@ -8,8 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.eventapp.models.EventDto
-import com.example.eventapp.services.EventRetrofitInstance
+import com.example.core.network.models.EventDto
+import com.example.ws.network.EventRetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,7 +1,7 @@
-package com.example.eventapp.services
+package com.example.ws.services
 
 
-import com.example.eventapp.models.EventDto
+import com.example.core.network.models.EventDto
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body

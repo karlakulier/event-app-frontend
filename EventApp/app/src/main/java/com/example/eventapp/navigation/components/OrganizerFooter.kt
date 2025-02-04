@@ -1,6 +1,7 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,8 +54,13 @@ fun OrganizerFooter(navController: NavController) {
         Icon(
             imageVector = Icons.Default.AddCircle,
             contentDescription = "Add",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    navController.navigate("eventInputScreen")
+                }
         )
+
 
         Icon(
             imageVector = Icons.Default.ChatBubbleOutline,

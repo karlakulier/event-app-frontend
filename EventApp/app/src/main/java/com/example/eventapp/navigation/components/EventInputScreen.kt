@@ -1,4 +1,4 @@
-package com.example.eventapp
+package com.example.eventapp.navigation.components
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -14,10 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.eventapp.models.EventDto
-import com.example.eventapp.navigation.components.ClassicFooter
-import com.example.eventapp.navigation.components.Header
-import com.example.eventapp.services.EventRetrofitInstance
+import com.example.eventapp.R
+import com.example.core.network.models.EventDto
+import com.example.ws.network.EventRetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

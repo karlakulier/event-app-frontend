@@ -1,4 +1,4 @@
-package com.example.eventapp.models
+package com.example.core.network.models
 
 data class EventDto(   val id: Int?,
                         val dateTime: String,
