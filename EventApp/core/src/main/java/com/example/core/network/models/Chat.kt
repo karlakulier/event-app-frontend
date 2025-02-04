@@ -1,4 +1,4 @@
-package com.example.eventapp.Chat
+package com.example.core.network.models
 
 data class Chat(
     val id:Int,

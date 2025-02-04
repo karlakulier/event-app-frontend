@@ -1,11 +1,14 @@
 package com.example.eventapp.navigation.components
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -30,17 +33,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import com.example.core.login.Auth
+import com.example.eventapp.viewmodels.GetEventViewModel
+import com.example.ws.models.GetEventData
+import androidx.lifecycle.viewmodel.compose.viewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: GetEventViewModel = viewModel()
+) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
-    val loggedUser = Auth.loggedInUserData
+
 
     Scaffold(
         topBar = {
@@ -59,12 +71,18 @@ fun HomeScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate("artistProfileScreen") // Navigacija na ArtistProfileScreen
-                    }) {
-                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp))
+                        val userRole = Auth.loggedInUserData?.role
+                        Log.d("Navigation", "User role: $userRole")
+                        val destination = if (userRole == "Organizer") {
+                            "organizerProfileViewOnly/${Auth.loggedInUserData?.organizer?.id}"
+                        } else {
+                            "artistProfileScreen"
                         }
+                        navController.navigate(destination)
+                    }) {
+                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp)) }
                     },
-                actions = {
+                    actions = {
                         Icon(
                             Icons.Default.Menu,
                             contentDescription = "Menu Icon",
@@ -131,9 +149,8 @@ fun HomeScreen(navController: NavController) {
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
-                                    hasActiveFilters = false // Resetiranje filtera
-                                    // Dodajte logiku za uklanjanje primijenjenih filtera
-                                    println("Filters reset")
+                                    hasActiveFilters = false
+                                    viewModel.fetchEvents()
                                 }
                         )
                     }
@@ -163,9 +180,9 @@ fun HomeScreen(navController: NavController) {
                 onDismiss = { isFilterDialogVisible = false },
                 onApplyFilter = { location, date, genres ->
                     hasActiveFilters = true
-                    // Logika za primjenu filtera
-                    println("Filter applied: Location=$location, Date=$date, Genres=$genres")
-                }
+                    viewModel.fetchFilteredEvents(location, date, genres)
+                },
+                viewModel = viewModel
             )
         }
     }
@@ -178,33 +195,31 @@ data class Event(
     val imageUrl: String
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ActiveEventsSection(navController: NavController) {
-    val mockEvents = listOf(
-        Event("1", "Music Festival", "2023-06-01", "https://via.placeholder.com/300"),
-        Event("2", "Art Exhibition", "2023-07-15", "https://via.placeholder.com/300"),
-        Event("3", "Tech Conference", "2023-08-20", "https://via.placeholder.com/300")
-    )
+fun ActiveEventsSection(
+    navController: NavController,
+    viewModel: GetEventViewModel = viewModel()
+) {
+    val events by viewModel.events.observeAsState(emptyList())
 
-    Text(
-        text = "ACTIVE EVENTS",
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
+    LaunchedEffect(Unit) {
+        viewModel.fetchEvents()
+    }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(mockEvents) { event ->
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(events) { event ->
             EventCard(event, navController)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EventCard(event: Event, navController: NavController) {
+fun EventCard(event: GetEventData, navController: NavController) {
+    val loggedUser = Auth.loggedInUserData
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -222,24 +237,25 @@ fun EventCard(event: Event, navController: NavController) {
         ) {
             // Prikaz slike eventa
             Image(
-                painter = rememberAsyncImagePainter(event.imageUrl),
+                painter = rememberAsyncImagePainter("https://via.placeholder.com/300"),
                 contentDescription = "Event Image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
 
             // Gumb za prijavu
-            Button(
-                onClick = {
-                    // Navigacija na EventInputScreen
-                    navController.navigate("eventInputScreen") // Ako ste postavili rutu za EventInputScreen
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-            ) {
-                Text(text = "Submit application", fontSize = 12.sp, color = Color.Black)
+            if (loggedUser?.role == "Musician") {
+                Button(
+                    onClick = {
+                        navController.navigate("eventInputScreen")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                ) {
+                    Text(text = "Submit application", fontSize = 12.sp, color = Color.Black)
+                }
             }
         }
 
@@ -251,19 +267,32 @@ fun EventCard(event: Event, navController: NavController) {
                 .padding(8.dp)
         ) {
             Text(
-                text = event.name,
+                text = event.description,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = Color.Black
             )
             Text(
-                text = event.date,
+                text = "Location: " + event.location,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Music genre: " + event.musicGenre,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+            Text(
+                text = "Date and time: " + formatDateTime(event.dateTime),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
         }
     }
 }
+
 
 fun submitApplication(eventId: String) {
     // Ovdje možete implementirati logiku za prijavu na event
@@ -352,6 +381,19 @@ fun SortByDropdown() {
                 }
             )
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatDateTime(dateTimeString: String): String {
+    val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SS")
+    val formatterOutput = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+
+    return try {
+        val dateTime = LocalDateTime.parse(dateTimeString, formatterInput)
+        dateTime.format(formatterOutput)
+    } catch (e: Exception) {
+        "Invalid date"
     }
 }
 

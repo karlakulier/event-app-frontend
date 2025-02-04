@@ -1,7 +1,7 @@
-package com.example.eventapp.Chat
-
+package com.example.core.chat
+import com.example.core.network.models.Chat
+import com.example.core.network.models.Message
 import retrofit2.Response
-import retrofit2.http.Body
 
 
 interface IChatService {
