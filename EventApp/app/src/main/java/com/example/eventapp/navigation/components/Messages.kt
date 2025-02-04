@@ -20,6 +20,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.core.network.models.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,20 +31,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.core.chat.IChatService
+import com.example.core.login.Auth.loggedInUserData
 import com.example.ws.services.ChatService
-
 
 @Composable
 fun MessageListScreen(chatId: Int) {
     var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    val chatController:IChatService = ChatService()
+    val chatController: IChatService = ChatService()
     val context = LocalContext.current
-
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
-        while (true){
+        while (true) {
             isLoading = true
             messages = chatController.getMessages(chatId)
             isLoading = false
@@ -58,7 +61,7 @@ fun MessageListScreen(chatId: Int) {
         Header()
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-            if (isLoading && messages.isEmpty() ) {
+            if (isLoading && messages.isEmpty()) {
                 Text(
                     text = "Loading messages...",
                     modifier = Modifier.align(Alignment.Center),
@@ -78,23 +81,35 @@ fun MessageListScreen(chatId: Int) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .background(Color.LightGray.copy(alpha = 0.2f))
+                                .padding(8.dp)
                         ) {
                             Text(
                                 text = message.nameOfSender,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
+                                fontSize = 14.sp,
+                                color = Color.DarkGray
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = message.text, fontSize = 14.sp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Text(
+                                    text = message.text,
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color.LightGray.copy(alpha = 0.5f))
+                                        .padding(12.dp)
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
         }
-
 
         Row(
             modifier = Modifier
@@ -119,7 +134,12 @@ fun MessageListScreen(chatId: Int) {
             IconButton(
                 onClick = {
                     if (newMessageText.isNotBlank()) {
-                        val newMessage = Message("Vedran", newMessageText, chatId)
+                        val newMessage : Message
+                        if(loggedInUserData?.role=="Musician"){
+                            newMessage = Message(loggedInUserData?.musician?.name+ " " + loggedInUserData?.musician?.surname , newMessageText, chatId)
+                        }else{
+                            newMessage = Message(loggedInUserData?.organizer?.name +" "+ loggedInUserData?.organizer?.surname , newMessageText, chatId)
+                        }
                         newMessageText = ""
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
@@ -130,14 +150,12 @@ fun MessageListScreen(chatId: Int) {
                                     messages = updatedMessages
                                     Toast.makeText(context, "Message successfully sent!", Toast.LENGTH_SHORT).show()
                                 }
-
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
-
                     }
                 }
             ) {
@@ -150,4 +168,3 @@ fun MessageListScreen(chatId: Int) {
         }
     }
 }
-
