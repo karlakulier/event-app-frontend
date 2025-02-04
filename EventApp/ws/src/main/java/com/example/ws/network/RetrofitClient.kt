@@ -30,5 +30,8 @@ object RetrofitClient {
         retrofit.create(ApiEvents::class.java)
     }
 
+    val apiArtistProfile: ApiArtistProfile by lazy {
+        retrofit.create(ApiArtistProfile::class.java)
+    }
 
 }

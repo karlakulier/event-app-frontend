@@ -24,14 +24,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.login.Auth
 import com.example.eventapp.R
+import com.example.eventapp.viewmodels.ArtistProfileViewModel
+import com.example.ws.models.AlbumData
+import com.example.ws.models.EpData
+import com.example.ws.models.SongData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistProfileScreen(navController: NavController) {
+fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel = viewModel()) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
@@ -54,12 +60,20 @@ fun ArtistProfileScreen(navController: NavController) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            // Pretvaranje URI-ja u sliku za prikaz
             newProfileImage = uri
         }
     }
-
-
+    val viewModel: ArtistProfileViewModel = viewModel()
+    val albums by viewModel.albums.collectAsState()
+    val eps by viewModel.eps.collectAsState()
+    val songs by viewModel.songs.collectAsState()
+    Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+        LaunchedEffect(Unit) {
+            viewModel.fetchAlbums(musicianId)
+            viewModel.fetchEPs(musicianId)
+            viewModel.fetchSongs(musicianId)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -440,136 +454,79 @@ fun ArtistProfileScreen(navController: NavController) {
             }
 
             when (selectedTab) {
-                0 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("Album 1", "Album 2", "Album 3")) { album ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(album, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $album",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $album",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                1 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("EP 1", "EP 2", "EP 3")) { ep ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(ep, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $ep",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $ep",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                2 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("Single 1", "Single 2", "Single 3")) { single ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(single, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $single",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $single",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
+                0 -> AlbumList(albums, isEditing)
+                1 -> EPList(eps, isEditing)
+                2 -> SingleList(songs, isEditing)
             }
         }
     }
 }
+
+@Composable
+fun AlbumList(albums: List<AlbumData>, isEditing: Boolean) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(albums) { album ->
+            MusicCard(itemName = album.name, isEditing = isEditing)
+        }
+    }
+}
+
+@Composable
+fun EPList(eps: List<EpData>, isEditing: Boolean) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(eps) { ep ->
+            MusicCard(itemName = ep.name, isEditing = isEditing)
+        }
+    }
+}
+
+@Composable
+fun SingleList(singles: List<SongData>, isEditing: Boolean) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(singles) { single ->
+            MusicCard(itemName = single.name, isEditing = isEditing)
+        }
+    }
+}
+@Composable
+fun MusicCard(itemName: String, isEditing: Boolean) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(itemName, fontSize = 16.sp)
+            if (isEditing) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(
+                        painter = painterResource(R.drawable.editing_pen),
+                        contentDescription = "Edit $itemName",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { /* Logika za uređivanje */ }
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.delete_items),
+                        contentDescription = "Delete $itemName",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { /* Logika za brisanje */ }
+                    )
+                }
+            } else {
+                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+            }
+        }
+    }
+}
+
+
 
