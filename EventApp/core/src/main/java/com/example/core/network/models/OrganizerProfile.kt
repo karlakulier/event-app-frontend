@@ -1,4 +1,4 @@
-package com.example.eventapp.models
+package com.example.core.network.models
 
 data class OrganizerProfile(
     val id: Int,

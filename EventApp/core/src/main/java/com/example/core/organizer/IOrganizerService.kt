@@ -1,7 +1,8 @@
-package com.example.eventapp.services
+package com.example.core.organizer
 
-import com.example.eventapp.models.OrganizerProfile
-import com.example.eventapp.models.UpdateProfileResult
+import com.example.core.network.models.OrganizerProfile
+import com.example.core.network.models.UpdateProfileResult
+
 
 interface IOrganizerService {
 

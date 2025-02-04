@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.eventapp.services.OrganizerService
-import com.example.eventapp.models.OrganizerProfile
-import com.example.eventapp.services.OrganizerRetrofit
+import com.example.ws.services.OrganizerService
+import com.example.core.network.models.OrganizerProfile
+import com.example.ws.network.OrganizerRetrofit
 import kotlinx.coroutines.launch
 
 @Composable

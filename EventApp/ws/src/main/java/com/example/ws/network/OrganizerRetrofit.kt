@@ -1,4 +1,4 @@
-package com.example.eventapp.services
+package com.example.ws.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

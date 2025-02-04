@@ -1,11 +1,12 @@
-package com.example.eventapp.services
+package com.example.ws.network
 
+import com.example.core.network.models.OrganizerProfile
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
-import com.example.eventapp.models.OrganizerProfile
+
 
 interface OrganizerAPI {
 

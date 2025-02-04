@@ -1,12 +1,13 @@
-package com.example.eventapp.services
+package com.example.ws.services
 
 import android.util.Log
-import com.example.eventapp.models.OrganizerProfile
-import com.example.eventapp.models.UpdateProfileResult
+import com.example.core.network.models.OrganizerProfile
+import com.example.core.network.models.UpdateProfileResult
+import com.example.core.organizer.IOrganizerService
+import com.example.ws.network.OrganizerAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import retrofit2.Call
 
 class OrganizerService(private val apiService: OrganizerAPI) : IOrganizerService {
 

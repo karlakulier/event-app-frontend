@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.login.Auth
-import com.example.eventapp.services.OrganizerRetrofit
-import com.example.eventapp.services.OrganizerService
+import com.example.ws.network.OrganizerRetrofit
+import com.example.ws.services.OrganizerService
 
 @Composable
 fun OrganizerProfileViewOnly(
