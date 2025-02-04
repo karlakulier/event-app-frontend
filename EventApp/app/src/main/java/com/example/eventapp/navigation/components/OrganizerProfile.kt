@@ -81,13 +81,13 @@ fun OrganizerProfile(
                 }
 
 
-                navController.popBackStack("home", false) // Vrati na HomeScreen
+                navController.popBackStack("home", false)
             }) {
                 Text("Save", color = Color.White)
             }
 
             Button(onClick = {
-                navController.popBackStack("home", false) // Povratak na HomeScreen
+                navController.popBackStack("home", false)
             }) {
                 Text("Cancel")
             }
