@@ -15,6 +15,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,15 +28,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.core.login.LoginHandler
 import com.example.eventapp.R
-
-class LoginActivity: AppCompatActivity(){
-
-}
+import com.example.eventapp.viewmodels.LoginViewModel
+import com.example.login_username_password.UsernamePasswordLoginHandler
+import com.example.login_username_password.UsernamePasswordLoginToken
 
 @Composable
-fun LoginPage(navController: NavController) {
+fun LoginPage(
+    navController: NavController,
+    loginHandler: LoginHandler = UsernamePasswordLoginHandler()
+) {
+    val viewModel: LoginViewModel = viewModel()
+    val username by viewModel.username.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    var awaitingResponse by remember { mutableStateOf(false) } // Oznaka da čekamo API odgovor
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -59,15 +75,24 @@ fun LoginPage(navController: NavController) {
                 modifier = Modifier.padding(top = 130.dp)
             )
 
-            // Input Box for Email and Password
+            // Error Message Display
+            if (errorMessage.isNotBlank()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            // Input Fields
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 // Email Input
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = username,
+                    onValueChange = { viewModel.updateUsername(it) },
                     label = { Text("E-mail") },
                     singleLine = true,
                     modifier = Modifier
@@ -77,8 +102,8 @@ fun LoginPage(navController: NavController) {
 
                 // Password Input
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = password,
+                    onValueChange = { viewModel.updatePassword(it) },
                     label = { Text("Password") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
@@ -89,11 +114,25 @@ fun LoginPage(navController: NavController) {
             }
         }
 
-        // Login Button at Bottom
+        // Login Button
         Button(
             onClick = {
-                navController.navigate("home") // Navigacija na početnu stranicu
+                awaitingResponse = true // Označimo da čekamo API odgovor
+                val loginToken = UsernamePasswordLoginToken(username, password)
+
+                viewModel.login(
+                    loginHandler,
+                    loginToken,
+                    onSuccessfulLogin = {
+                        awaitingResponse = false
+                        navController.navigate("home") // Navigacija ako je login uspješan
+                    },
+                    onFailedLogin = {
+                        awaitingResponse = false
+                    }
+                )
             },
+            enabled = !awaitingResponse, // Onemogućimo gumb dok čekamo odgovor
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -101,7 +140,7 @@ fun LoginPage(navController: NavController) {
                 .height(60.dp)
                 .padding(bottom = 32.dp)
         ) {
-            Text("Login")
+            Text(if (awaitingResponse) "Logging in..." else "Login")
         }
     }
 }

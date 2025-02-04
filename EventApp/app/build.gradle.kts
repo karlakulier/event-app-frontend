@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.play.services.base)
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,7 +72,6 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.coil.compose)
 
-
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -81,14 +81,18 @@ dependencies {
     implementation("com.facebook.android:facebook-login:latest.release")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
-
     implementation ("io.coil-kt:coil-compose:2.2.2")
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    //api retrofit
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    //korutine
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    // Gson
+    implementation (libs.gson)
+    implementation(project(":core"))
+    implementation(project(":ws"))
+    implementation(project(":login_username_password"))
 
 }

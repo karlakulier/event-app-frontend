@@ -1,12 +1,10 @@
 package com.example.eventapp
 
-import android.content.Intent
 import PreviousEventsScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,30 +18,28 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
+import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
+import com.example.eventapp.navigation.components.MessageListScreen
+import com.example.eventapp.navigation.components.OrganizerProfile
+import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
+import com.example.ws.network.OrganizerRetrofit
+import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
-import com.example.eventapp.userInterface.StartScreen
-import com.example.eventapp.userInterface.SignUp
-import com.example.eventapp.userInterface.MusicianRegistrationScreen
-import com.example.eventapp.userInterface.OrganizerRegistrationScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.facebook.FacebookSdk
-import com.facebook.appevents.AppEventsLogger
-import com.facebook.login.LoginManager
 import com.facebook.CallbackManager
-import com.facebook.FacebookException
-import com.facebook.login.LoginResult
-import com.facebook.FacebookCallback
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -144,6 +140,31 @@ class MainActivity : ComponentActivity() {
                         composable("artistProfileScreen") {
                             ArtistProfileScreen(navController = navController)
                         }
+
+                        composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
+                            val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
+                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+                            OrganizerProfileViewOnly(
+                                organizerId = organizerId,
+                                organizerService = organizerService,
+                                onEditClick = {
+                                    navController.navigate("organizerProfile/$organizerId")
+                                }
+                            )
+                        }
+
+                        composable("organizerProfile/{organizerId}") { backStackEntry ->
+                            val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
+                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+
+                            // Prosljeđivanje navController u OrganizerProfile
+                            OrganizerProfile(
+                                organizerId = organizerId,
+                                organizerService = organizerService,
+                                navController = rememberNavController()
+                            )
+                        }
+
                         composable("editProfileScreen") {
                             EditProfileScreen(
                                 navController = navController,
@@ -163,6 +184,25 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+                        }
+                        composable("chatListScreen") {
+                            ChatListScreen(navController = navController)
+                        }
+                        composable("messages/{chatId}") { backStackEntry ->
+                            val chatId =
+                                backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
+                            if (chatId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
+                                MessageListScreen(chatId = chatId)
+                            }
+                        }
+                        composable("applicationsForEvent/{eventId}") { backStackEntry ->
+                            val eventId =
+                                backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                            if (eventId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                ApplicationsForEvent(navController, eventId)
+                            }
                         }
                     }
                 }
