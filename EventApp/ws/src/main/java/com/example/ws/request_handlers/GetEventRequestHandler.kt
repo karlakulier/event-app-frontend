@@ -36,7 +36,7 @@ class GetEventRequestHandler {
         })
     }
     fun fetchPastEventsForMusician(musicianId: Int, responseListener: ResponseListener<List<GetEventData>>) {
-        val call = apiEvents.getPastEventsForMusician(musicianId)
+        val call = apiEvents.getPastEventsForMusician(musicianId)  // Prosljeđujemo ID glazbenika
 
         call.enqueue(object : Callback<List<GetEventData>> {
             override fun onResponse(
@@ -58,12 +58,14 @@ class GetEventRequestHandler {
             }
         })
     }
-
-    fun fetchPastEventsForOrganizer(organizerId: Int, responseListener: ResponseListener<List<GetEventData>>) {
-        val call = apiEvents.getPastEventsForOrganizer(organizerId)
+    fun fetchPastEventsByOrganizer(organizerId: Int, responseListener: ResponseListener<List<GetEventData>>) {
+        val call = RetrofitClient.apiEvents.getPastEventsByOrganizer(organizerId, finished = true)
 
         call.enqueue(object : Callback<List<GetEventData>> {
-            override fun onResponse(call: Call<List<GetEventData>>, response: Response<List<GetEventData>>) {
+            override fun onResponse(
+                call: Call<List<GetEventData>>,
+                response: Response<List<GetEventData>>
+            ) {
                 if (response.isSuccessful && response.body() != null) {
                     responseListener.onSuccessfulResponse(response.body()!!)
                 } else {
@@ -79,6 +81,4 @@ class GetEventRequestHandler {
             }
         })
     }
-
-
 }

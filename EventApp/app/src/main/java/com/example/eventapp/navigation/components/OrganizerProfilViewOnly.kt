@@ -22,7 +22,8 @@ import com.example.ws.services.OrganizerService
 fun OrganizerProfileViewOnly(
     organizerId: Int,
     organizerService: OrganizerService,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onPastEventsClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
@@ -30,7 +31,7 @@ fun OrganizerProfileViewOnly(
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
 
-
+    // Dohvati podatke organizatora
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -49,7 +50,7 @@ fun OrganizerProfileViewOnly(
         }
     }
 
-
+    // Provjeri je li prijavljeni organizator isti kao onaj koji se prikazuje
     val isLoggedInOrganizer = Auth.loggedInUserData?.organizer?.id == organizerId
     Log.d("OrganizerProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Organizer ID: $organizerId")
     Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
@@ -59,7 +60,7 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Prikaz detalja organizatora
         ProfileDetailField("Name", "$name $surname")
         ProfileDetailField("Email", email)
         ProfileDetailField("Contact", contact)
@@ -67,7 +68,7 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Gumb za uređivanje profila (ako je prijavljeni organizator)
         if (isLoggedInOrganizer) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -79,6 +80,17 @@ fun OrganizerProfileViewOnly(
             }
         } else {
             Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
+        }
+
+        // Gumb za prethodne događaje
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(onClick = { onPastEventsClick() }) {
+                Text("Prethodni događaji")
+            }
         }
     }
 }
@@ -97,12 +109,4 @@ fun ProfileDetailField(label: String, value: String) {
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
-}
-
-@Preview
-@Composable
-fun PreviewOrganizerProfileViewOnly() {
-    val organizerService = OrganizerService(OrganizerRetrofit.api)
-    val organizerId = 1
-    OrganizerProfileViewOnly(organizerId = organizerId, organizerService = organizerService, onEditClick = {})
 }
