@@ -38,7 +38,6 @@ fun PastEventsForMusician(navController: NavController) {
     val viewModel: GetEventViewModel = viewModel()
     val events by viewModel.events.observeAsState(emptyList())
 
-    // Pokretanje dohvaćanja prošlih događaja s ID-jem glazbenika
     LaunchedEffect(Unit) {
         viewModel.fetchPastEventsForMusician(loggedInUserData?.musician?.id!!)
     }
@@ -62,7 +61,7 @@ fun PastEventsForMusician(navController: NavController) {
                             .clickable {
                                 //navController.navigate("eventDetails/${event.id}")
                             }) {
-                            EventCard(event = event,navController)  // Prikaz eventa
+                            EventCard(event = event,navController)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
