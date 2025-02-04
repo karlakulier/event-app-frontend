@@ -16,7 +16,7 @@ object RetrofitClient {
         .addInterceptor(logging)
         .build()
 
-    private val retrofit: Retrofit = Retrofit.Builder()
+    val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
@@ -29,4 +29,6 @@ object RetrofitClient {
     val apiEvents: ApiEvents by lazy {
         retrofit.create(ApiEvents::class.java)
     }
+
+
 }
