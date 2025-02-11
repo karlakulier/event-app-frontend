@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.interaction.MutableInteractionSource
-
+import androidx.compose.material.icons.filled.StarBorder
 
 
 @Composable
@@ -50,7 +50,6 @@ fun EvaluateModal(
                 .background(Color.White, RoundedCornerShape(8.dp))
                 .padding(16.dp)
         ) {
-            // Gornji dio s "X" gumbom
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -70,14 +69,13 @@ fun EvaluateModal(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Zvjezdice za ocjenjivanje
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 repeat(5) {
                     Icon(
-                        imageVector = Icons.Default.Star,
+                        imageVector = Icons.Default.StarBorder,
                         contentDescription = "Star",
                         modifier = Modifier.size(32.dp)
                     )
@@ -86,7 +84,6 @@ fun EvaluateModal(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Gumb za spremanje
             Button(
                 onClick = onSave,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
