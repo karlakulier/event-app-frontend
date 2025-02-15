@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object EventRetrofitInstance {
 
-    private const val BASE_URL = "https://aireventapp.azurewebsites.net/"
+    private const val BASE_URL = "https://aireventappapinew.azurewebsites.net/"
 
     val apievent: EventService by lazy {
         Retrofit.Builder()
