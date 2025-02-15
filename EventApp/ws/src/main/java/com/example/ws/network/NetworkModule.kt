@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
-    private const val BASE_URL = "http://aireventapp.azurewebsites.net/"
+    private const val BASE_URL = "https://aireventappapinew.azurewebsites.net/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
