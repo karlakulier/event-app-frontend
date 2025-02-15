@@ -39,6 +39,8 @@ import com.example.core.login.Auth
 import com.example.eventapp.viewmodels.GetEventViewModel
 import com.example.ws.models.GetEventData
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.eventapp.viewmodels.GetEventViewModelFactory
+import com.example.ws.repository.EventRepository
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -47,12 +49,16 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: GetEventViewModel = viewModel()
+    viewModel: GetEventViewModel = viewModel(factory = GetEventViewModelFactory(EventRepository()))
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
     val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSortedEvents("relevance")
+    }
 
     Scaffold(
         topBar = {
@@ -337,7 +343,7 @@ fun BottomNavigationBar() {
 }
 
 @Composable
-fun SortByDropdown() {
+fun SortByDropdown(viewModel: GetEventViewModel = viewModel()) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Relevance") }
 
@@ -368,6 +374,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Relevance"
                     expanded = false
+                    viewModel.fetchSortedEvents("relevance")
                 }
             )
             DropdownMenuItem(
@@ -375,6 +382,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Date from newest"
                     expanded = false
+                    viewModel.fetchSortedEvents("newest")
                 }
             )
             DropdownMenuItem(
@@ -382,6 +390,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Date from oldest"
                     expanded = false
+                    viewModel.fetchSortedEvents("oldest")
                 }
             )
         }

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import com.example.ws.network.RetrofitClient.apiEvents
+import com.example.ws.repository.EventRepository
 import com.example.ws.request_handlers.GetEventRequestHandler
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -17,7 +18,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.awaitResponse
 
-class GetEventViewModel : ViewModel() {
+class GetEventViewModel(private val eventRepository: EventRepository) : ViewModel() {
     private val _events = MutableLiveData<List<GetEventData>>()
     val events: LiveData<List<GetEventData>> = _events
 
@@ -98,6 +99,24 @@ class GetEventViewModel : ViewModel() {
                 Log.e("GetEventViewModel", "Network failure: ${t.message}")
             }
         })
+    }
+
+    fun fetchSortedEvents(sortBy: String) {
+        viewModelScope.launch {
+            try {
+                Log.d("GetEventViewModel", "Fetching sorted events with sortBy: $sortBy")
+                val response = eventRepository.getSortedEvents(sortBy)
+
+                if (response.isSuccessful) {
+                    Log.d("GetEventViewModel", "Fetched events: ${response.body()?.size ?: 0}")
+                    _events.postValue(response.body() ?: emptyList())
+                } else {
+                    Log.e("GetEventViewModel", "Error fetching sorted events: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("GetEventViewModel", "Exception fetching events", e)
+            }
+        }
     }
 
 }
