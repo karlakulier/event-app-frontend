@@ -20,11 +20,11 @@ interface ApiArtistProfile {
     suspend fun getSongs(@Path("musicianId") musicianId: Int): Response<List<SongData>>
 
     @POST("api/Music/CreateAlbum")
-    suspend fun addAlbum(@Body album: AlbumData)
+    suspend fun addAlbum(@Body album: AlbumData) : Response<Unit>
 
     @POST("api/Music/CreateEp")
-    suspend fun addEP(@Body ep: EpData)
+    suspend fun addEP(@Body ep: EpData) : Response<Unit>
 
     @POST("api/Music/CreateSong")
-    suspend fun addSong(@Body song: SongData)
+    suspend fun addSong(@Body song: SongData) : Response<Unit>
 }

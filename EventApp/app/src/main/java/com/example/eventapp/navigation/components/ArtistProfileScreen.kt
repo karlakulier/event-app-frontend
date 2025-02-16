@@ -27,24 +27,29 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import com.example.add_album_ep_single.AddMusicContentDialog
 import com.example.add_album_ep_single.MusicContentType
+import com.example.add_album_ep_single.MusicService
 import com.example.core.login.Auth
 import com.example.eventapp.R
 import com.example.eventapp.viewmodels.ArtistProfileViewModel
+import com.example.eventapp.viewmodels.ArtistProfileViewModelFactory
 import com.example.ws.models.AlbumData
 import com.example.ws.models.EpData
 import com.example.ws.models.SongData
+import com.example.ws.network.RetrofitClient.apiArtistProfile
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel = viewModel()) {
-    var selectedContentType by remember { mutableStateOf(MusicContentType.ALBUM) }
+fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
     var isDialogVisible by remember { mutableStateOf(false) }
+    var isAddDialogVisible by remember { mutableStateOf(false) }
+    var selectedContentType by remember { mutableStateOf<MusicContentType?>(null) }
     var isAlbumDialogVisible by remember { mutableStateOf(false) }
     var isEpDialogVisible by remember { mutableStateOf(false) }
     var isSongDialogVisible by remember { mutableStateOf(false) }
@@ -66,7 +71,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
             newProfileImage = uri
         }
     }
-    val viewModel: ArtistProfileViewModel = viewModel()
     val albums by viewModel.albums.collectAsState()
     val eps by viewModel.eps.collectAsState()
     val songs by viewModel.songs.collectAsState()
@@ -393,56 +397,89 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 }
             }
 
-            /*if (isDialogVisible) {
+            if (isDialogVisible) {
                 AddNewAlbumEpSingleDialog(
                     isVisible = isDialogVisible,
-                    onDismiss = { isDialogVisible = false },
-                    onOptionSelected = { selectedOption ->
-                        when (selectedOption) {
-                            "Album" -> {
-                                isDialogVisible = false // Sakriva prvi dijalog
-                                isAlbumDialogVisible = true // Otvara dijalog za dodavanje albuma
-                            }
-                            "EP" -> {
-                                isDialogVisible = false
-                                isEpDialogVisible = true
-                            }
-                            "Single" -> {
-                                isDialogVisible = false
-                                isSongDialogVisible = true
-                            }
-                            else -> {
-                                println("Odabrano: $selectedOption")
-                                isDialogVisible = false // Zatvara dijalog za druge opcije
-                            }
-                        }
-                    }
+                    onDismiss = {isDialogVisible = false},
+                    onContentSelected = {selectedContentType = it}
                 )
             }
 
-            AddNewAlbumDialog(
-                isVisible = isAlbumDialogVisible,
-                onDismiss = { isAlbumDialogVisible = false },
-                onAddAlbum = { albumName, releaseDate, songs ->
-                    // Handle album creation logic here
-                }
-            )
+            selectedContentType?.let { contentType ->
+                when (contentType) {
+                    MusicContentType.ALBUM -> AddNewAlbumDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddAlbum = { albumName, releaseDate, songs ->
+                            try {
+                                val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Format u kojem korisnik unosi datum
+                                val parsedDate: Date = inputFormat.parse(releaseDate) ?: Date() // Parsiraj datum u Date objekt
 
-            AddNewEPDialog(
-                isVisible = isEpDialogVisible,
-                onDismiss = {isEpDialogVisible = false },
-                onAddEp = {epName, releaseDate, songs ->
-                    // Handle EP creation logic here
-                }
-            )
 
-            AddNewSongDialog(
-                isVisible = isSongDialogVisible,
-                onDismiss = { isSongDialogVisible = false },
-                onAddSong = { songName, releaseDate, youtubeLink, spotifyLink ->
-                // Logika za dodavanje pjesme
+                                val songsList = songs.map { songMap ->
+                                    SongData(
+                                        name = songMap["name"] ?: "",
+                                        linkYT = songMap["youtubeLink"] ?: "",
+                                        linkSpotify = songMap["spotifyLink"] ?: "",
+                                        musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                    )
+                                }
+
+                                val albumData = AlbumData(
+                                    name = albumName,
+                                    releaseDate = parsedDate,
+                                    newSongs = songsList,
+                                    existingSongs = listOf(),
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                )
+                                println("Podaci albuma prije slanja: $albumData") // Debug ispis
+                                viewModel.addAlbum(albumData)
+                            }catch (e: Exception) {
+                                println("Greška pri parsiranju datuma: ${e.message}")
+                            }
+                        }
+                    )
+                    MusicContentType.EP -> AddNewEPDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddEp = { epName, releaseDate, songs ->
+                            val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(releaseDate) ?: Date()
+
+                            val songsList = songs.map { songMap ->
+                                SongData(
+                                    name = songMap["name"] ?: "",
+                                    linkYT = songMap["youtubeLink"] ?: "",
+                                    linkSpotify = songMap["spotifyLink"] ?: "",
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                )
+                            }
+
+                            val epData = EpData(
+                                name = epName,
+                                releaseDate = parsedDate,
+                                newSongs = songsList,
+                                existingSongs = listOf(),
+                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                            )
+                            viewModel.addEp(epData)
+                        }
+                    )
+                    MusicContentType.SINGLE -> AddNewSongDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddSong = { songName, youtubeLink, spotifyLink ->
+
+                            val songData = SongData(
+                                name = songName,
+                                linkYT = youtubeLink,
+                                linkSpotify = spotifyLink,
+                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                            )
+                            viewModel.addSingle(songData)
+                        }
+                    )
                 }
-            )*/
+            }
 
 
             // Tabs
@@ -462,20 +499,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 2 -> SingleList(songs, isEditing)
             }
         }
-    }
-    if (isDialogVisible) {
-        AddMusicContentDialog(
-            isVisible = isDialogVisible,
-            contentType = selectedContentType,
-            onDismiss = { isDialogVisible = false },
-            onAddContent = { content ->
-                when (content) {
-                    is AlbumData -> viewModel.addAlbum(content)
-                    is EpData -> viewModel.addEP(content)
-                    is SongData -> viewModel.addSong(content)
-                }
-            }
-        )
     }
 }
 

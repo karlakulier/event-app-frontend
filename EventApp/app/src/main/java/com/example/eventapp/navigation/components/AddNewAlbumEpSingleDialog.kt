@@ -18,12 +18,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import com.example.add_album_ep_single.MusicContentType
 
 @Composable
 fun AddNewAlbumEpSingleDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    onOptionSelected: (String) -> Unit
+    onContentSelected: (MusicContentType) -> Unit
 ) {
     if (isVisible) {
         AlertDialog(
@@ -44,7 +45,10 @@ fun AddNewAlbumEpSingleDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { onOptionSelected("Album") }
+                            .clickable {
+                                onContentSelected(MusicContentType.ALBUM)
+                                onDismiss()
+                            }
                             .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
                             .padding(vertical = 8.dp, horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -59,7 +63,10 @@ fun AddNewAlbumEpSingleDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { onOptionSelected("EP") }
+                            .clickable {
+                                onContentSelected(MusicContentType.EP)
+                                onDismiss()
+                            }
                             .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
                             .padding(vertical = 8.dp, horizontal = 5.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -74,7 +81,10 @@ fun AddNewAlbumEpSingleDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { onOptionSelected("Single") }
+                            .clickable {
+                                onContentSelected(MusicContentType.SINGLE)
+                                onDismiss()
+                            }
                             .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(8.dp))
                             .padding(vertical = 8.dp, horizontal = 5.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,

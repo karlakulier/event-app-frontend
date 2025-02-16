@@ -14,10 +14,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.add_album_ep_single.MusicService
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
@@ -36,6 +38,9 @@ import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
+import com.example.eventapp.viewmodels.ArtistProfileViewModel
+import com.example.eventapp.viewmodels.ArtistProfileViewModelFactory
+import com.example.ws.network.RetrofitClient.apiArtistProfile
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -48,10 +53,15 @@ class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var callbackManager: CallbackManager
 
+
     private val isLoggedIn = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val musicService = MusicService(apiArtistProfile) // Napravi instancu servisa
+        val viewModelFactory = ArtistProfileViewModelFactory(musicService) // Kreiraj Factory
+        val artistProfileViewModel = ViewModelProvider(this, viewModelFactory).get(ArtistProfileViewModel::class.java)
 
         FacebookSdk.sdkInitialize(applicationContext)
         callbackManager = CallbackManager.Factory.create()
@@ -140,7 +150,7 @@ class MainActivity : ComponentActivity() {
                             PreviousEventsScreen(navController = navController)
                         }
                         composable("artistProfileScreen") {
-                            ArtistProfileScreen(navController = navController)
+                            ArtistProfileScreen(navController = navController, artistProfileViewModel)
                         }
 
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->

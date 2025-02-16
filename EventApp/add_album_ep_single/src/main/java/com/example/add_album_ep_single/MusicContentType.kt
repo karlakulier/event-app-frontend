@@ -1,5 +1,5 @@
 package com.example.add_album_ep_single
 
 enum class MusicContentType {
-    ALBUM, EP, SONG
+    ALBUM, EP, SINGLE
 }
