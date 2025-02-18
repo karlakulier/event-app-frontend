@@ -68,29 +68,22 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Gumb za uređivanje profila (ako je prijavljeni organizator)
+        // Ako je prijavljeni organizator, prikaži gumbe jedan pored drugog
         if (isLoggedInOrganizer) {
-            Box(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
             ) {
                 Button(onClick = { onEditClick() }) {
                     Text("Edit Profile")
                 }
+
+                Button(onClick = { onPastEventsClick() }) {
+                    Text("Prethodni događaji")
+                }
             }
         } else {
             Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
-        }
-
-        // Gumb za prethodne događaje
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = { onPastEventsClick() }) {
-                Text("Prethodni događaji")
-            }
         }
     }
 }
@@ -110,3 +103,4 @@ fun ProfileDetailField(label: String, value: String) {
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
