@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiArtistProfile {
@@ -37,4 +38,13 @@ interface ApiArtistProfile {
 
     @DELETE("api/Music/DeleteEp/{id}")
     suspend fun deleteEp(@Path("id") epId: Int): Response<Unit>
+
+    @PUT("api/Music/UpdateSong/{id}")
+    suspend fun updateSong(@Path("id") songId: Int, @Body song: SongData): Response<Unit>
+
+    @PUT("api/Music/UpdateAlbum/{id}")
+    suspend fun updateAlbum(@Path("id") albumId: Int, @Body album: AlbumData): Response<Unit>
+
+    @PUT("api/Music/UpdateEp/{id}")
+    suspend fun updateEp(@Path("id") epId: Int, @Body ep: EpData): Response<Unit>
 }

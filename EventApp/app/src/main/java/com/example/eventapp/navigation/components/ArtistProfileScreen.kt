@@ -44,6 +44,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel) {
+    var selectedItemForEdit by remember { mutableStateOf<Any?>(null) }
+    var isEditDialogVisible by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
@@ -485,6 +487,29 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 }
             }
 
+            selectedItemForEdit?.let { item ->
+                when (item) {
+                    is AlbumData -> UpdateAlbumDialog(
+                        isVisible = isEditDialogVisible,
+                        album = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedAlbum -> viewModel.updateAlbum(updatedAlbum) }
+                    )
+                    is EpData -> UpdateEPDialog(
+                        isVisible = isEditDialogVisible,
+                        ep = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedEp -> viewModel.updateEp(updatedEp) }
+                    )
+                    is SongData -> UpdateSongDialog(
+                        isVisible = isEditDialogVisible,
+                        song = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedSong -> viewModel.updateSong(updatedSong) }
+                    )
+                }
+            }
+
 
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
@@ -498,53 +523,90 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
             }
 
             when (selectedTab) {
-                0 -> AlbumList(albums, isEditing, viewModel)
-                1 -> EPList(eps, isEditing, viewModel)
-                2 -> SingleList(songs, isEditing, viewModel)
+                0 -> AlbumList(
+                    albums = albums,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteAlbum(it.id) }
+                )
+                1 -> EPList(
+                    eps = eps,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteEp(it.id) }
+                )
+                2 -> SingleList(
+                    songs = songs,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteSong(it.id) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun AlbumList(albums: List<AlbumData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
+fun AlbumList(
+    albums: List<AlbumData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    onEdit: (AlbumData) -> Unit,
+    onDelete: (AlbumData) -> Unit
+) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(albums) { album ->
-            MusicCard(album, isEditing, viewModel)
+            MusicCard(album, isEditing, viewModel, onEdit, onDelete)
         }
     }
 }
 
 @Composable
-fun EPList(eps: List<EpData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
+fun EPList(
+    eps: List<EpData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    onEdit: (EpData) -> Unit,
+    onDelete: (EpData) -> Unit
+) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(eps) { ep ->
-            MusicCard(ep, isEditing, viewModel)
+            MusicCard(ep, isEditing, viewModel, onEdit, onDelete)
         }
     }
 }
 
 @Composable
-fun SingleList(singles: List<SongData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
+fun SingleList(
+    songs: List<SongData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    onEdit: (SongData) -> Unit,
+    onDelete: (SongData) -> Unit
+) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
-        items(singles) { single ->
-            MusicCard(single, isEditing, viewModel)
+        items(songs) { song ->
+            MusicCard(song, isEditing, viewModel, onEdit, onDelete)
         }
     }
 }
+
 @Composable
-fun MusicCard(item: Any, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
+fun <T> MusicCard(
+    item: T,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    onEdit: (T) -> Unit,
+    onDelete: (T) -> Unit
+) {
     val itemName = when (item) {
         is AlbumData -> item.name
         is EpData -> item.name
         is SongData -> item.name
         else -> "Unknown"
-    }
-    val itemId = when (item) {
-        is AlbumData -> item.id
-        is EpData -> item.id
-        is SongData -> item.id
-        else -> 0
     }
 
     Card(
@@ -561,27 +623,25 @@ fun MusicCard(item: Any, isEditing: Boolean, viewModel: ArtistProfileViewModel) 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(itemName, fontSize = 16.sp)
+
             if (isEditing) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Ikona za uređivanje
                     Icon(
                         painter = painterResource(R.drawable.editing_pen),
                         contentDescription = "Edit $itemName",
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable { /* Logika za uređivanje */ }
+                            .clickable { onEdit(item) }
                     )
+
+                    // Ikona za brisanje
                     Icon(
                         painter = painterResource(R.drawable.delete_items),
                         contentDescription = "Delete $itemName",
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable {
-                                when (item) {
-                                    is AlbumData -> viewModel.deleteAlbum(itemId)
-                                    is EpData -> viewModel.deleteEp(itemId)
-                                    is SongData -> viewModel.deleteSong(itemId)
-                                }
-                            }
+                            .clickable { onDelete(item) }
                     )
                 }
             } else {
@@ -590,6 +650,7 @@ fun MusicCard(item: Any, isEditing: Boolean, viewModel: ArtistProfileViewModel) 
         }
     }
 }
+
 
 
 

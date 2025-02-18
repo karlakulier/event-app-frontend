@@ -143,4 +143,39 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
         }
     }
 
+    fun updateAlbum(album: AlbumData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateAlbum(album.id, album)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchAlbums(it) }
+                Log.d("ArtistProfileViewModel", "Album updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating album: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun updateEp(ep: EpData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateEp(ep.id, ep)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchEPs(it) }
+                Log.d("ArtistProfileViewModel", "EP updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating EP: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun updateSong(song: SongData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateSong(song.id, song)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchSongs(it) }
+                Log.d("ArtistProfileViewModel", "Song updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating song: ${response.errorBody()?.string()}")
+            }
+        }
+    }
 }
