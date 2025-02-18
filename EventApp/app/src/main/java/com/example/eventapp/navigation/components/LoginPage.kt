@@ -39,7 +39,7 @@ import com.example.login_username_password.UsernamePasswordLoginToken
 @Composable
 fun LoginPage(
     navController: NavController,
-    loginHandler: LoginHandler = UsernamePasswordLoginHandler()
+    loginHandler: LoginHandler = UsernamePasswordLoginHandler(),
 ) {
     val viewModel: LoginViewModel = viewModel()
     val username by viewModel.username.collectAsState()
