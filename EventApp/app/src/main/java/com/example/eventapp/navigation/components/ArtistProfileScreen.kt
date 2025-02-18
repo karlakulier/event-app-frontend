@@ -412,10 +412,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         onDismiss = { selectedContentType = null },
                         onAddAlbum = { albumName, releaseDate, songs ->
                             try {
-                                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                                val parsedDate: Date = inputFormat.parse(releaseDate) ?: Date()
-
-
                                 val albumData = AlbumData(
                                     id = 0,
                                     name = albumName,
@@ -434,10 +430,9 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                                         )
                                     }
                                 )
-                                println("Podaci albuma prije slanja: $albumData") // Debug ispis
                                 viewModel.addAlbum(albumData)
                             }catch (e: Exception) {
-                                println("Greška pri parsiranju datuma: ${e.message}")
+                                println("Greška pri dodavanju albuma: ${e.message}")
                             }
                         }
                     )
@@ -445,28 +440,29 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         isVisible = true,
                         onDismiss = { selectedContentType = null },
                         onAddEp = { epName, releaseDate, songs ->
-                            val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(releaseDate) ?: Date()
-
-                            val songsList = songs.map { songMap ->
-                                SongData(
+                            try {
+                                val epData = EpData(
                                     id = 0,
-                                    name = songMap["name"] ?: "",
-                                    linkYT = songMap["youtubeLink"] ?: "",
-                                    linkSpotify = songMap["spotifyLink"] ?: "",
+                                    name = epName,
+                                    releaseDate = releaseDate,
                                     musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
-                                    epId = null,
-                                    albumId = null
+                                    existingSongs = listOf(),
+                                    newSongs = songs.map { song ->
+                                        SongData(
+                                            id = 0,
+                                            name = song["name"] ?: "",
+                                            linkYT = song["youtubeLink"] ?: "",
+                                            linkSpotify = song["spotifyLink"] ?: "",
+                                            musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                            albumId = 0,
+                                            epId = 0
+                                        )
+                                    }
                                 )
+                                viewModel.addEp(epData)
+                            }catch (e: Exception){
+                                println("Greška pri dodavanju ep-a: ${e.message}")
                             }
-
-                            val epData = EpData(
-                                name = epName,
-                                releaseDate = parsedDate,
-                                newSongs = songsList,
-                                existingSongs = listOf(),
-                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0
-                            )
-                            viewModel.addEp(epData)
                         }
                     )
                     MusicContentType.SINGLE -> AddNewSongDialog(
