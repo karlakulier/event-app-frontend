@@ -412,25 +412,27 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         onDismiss = { selectedContentType = null },
                         onAddAlbum = { albumName, releaseDate, songs ->
                             try {
-                                val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Format u kojem korisnik unosi datum
-                                val parsedDate: Date = inputFormat.parse(releaseDate) ?: Date() // Parsiraj datum u Date objekt
+                                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                                val parsedDate: Date = inputFormat.parse(releaseDate) ?: Date()
 
-
-                                val songsList = songs.map { songMap ->
-                                    SongData(
-                                        name = songMap["name"] ?: "",
-                                        linkYT = songMap["youtubeLink"] ?: "",
-                                        linkSpotify = songMap["spotifyLink"] ?: "",
-                                        musicianId = Auth.loggedInUserData?.musician?.id ?: 0
-                                    )
-                                }
 
                                 val albumData = AlbumData(
+                                    id = 0,
                                     name = albumName,
-                                    releaseDate = parsedDate,
-                                    newSongs = songsList,
+                                    releaseDate = releaseDate,
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
                                     existingSongs = listOf(),
-                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                    newSongs = songs.map { song ->
+                                        SongData(
+                                            id = 0,
+                                            name = song["name"] ?: "",
+                                            linkYT = song["youtubeLink"] ?: "",
+                                            linkSpotify = song["spotifyLink"] ?: "",
+                                            musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                            albumId = 0,
+                                            epId = 0
+                                        )
+                                    }
                                 )
                                 println("Podaci albuma prije slanja: $albumData") // Debug ispis
                                 viewModel.addAlbum(albumData)
@@ -447,10 +449,13 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
 
                             val songsList = songs.map { songMap ->
                                 SongData(
+                                    id = 0,
                                     name = songMap["name"] ?: "",
                                     linkYT = songMap["youtubeLink"] ?: "",
                                     linkSpotify = songMap["spotifyLink"] ?: "",
-                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                    epId = null,
+                                    albumId = null
                                 )
                             }
 
@@ -470,10 +475,13 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         onAddSong = { songName, youtubeLink, spotifyLink ->
 
                             val songData = SongData(
+                                id = 0,
                                 name = songName,
                                 linkYT = youtubeLink,
                                 linkSpotify = spotifyLink,
-                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0
+                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                albumId = null,
+                                epId = null
                             )
                             viewModel.addSingle(songData)
                         }

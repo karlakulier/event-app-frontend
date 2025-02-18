@@ -72,6 +72,11 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
         viewModelScope.launch {
             val result = musicService.addEp(ep)
             result.onSuccess {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                    fetchEPs(musicianId)
+                    fetchSongs(musicianId)
+                }
                 Log.d("ArtistProfileViewModel", "EP added successfully")
             }.onFailure { error ->
                 Log.e("ArtistProfileViewModel", "Error adding EP: ${error.message}")
@@ -83,6 +88,11 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
         viewModelScope.launch {
             val result = musicService.addSingle(single)
             result.onSuccess {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                    fetchEPs(musicianId)
+                    fetchSongs(musicianId)
+                }
                 Log.d("ArtistProfileViewModel", "Single added successfully")
             }.onFailure { error ->
                 Log.e("ArtistProfileViewModel", "Error adding single: ${error.message}")
