@@ -498,42 +498,55 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
             }
 
             when (selectedTab) {
-                0 -> AlbumList(albums, isEditing)
-                1 -> EPList(eps, isEditing)
-                2 -> SingleList(songs, isEditing)
+                0 -> AlbumList(albums, isEditing, viewModel)
+                1 -> EPList(eps, isEditing, viewModel)
+                2 -> SingleList(songs, isEditing, viewModel)
             }
         }
     }
 }
 
 @Composable
-fun AlbumList(albums: List<AlbumData>, isEditing: Boolean) {
+fun AlbumList(albums: List<AlbumData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(albums) { album ->
-            MusicCard(itemName = album.name, isEditing = isEditing)
+            MusicCard(album, isEditing, viewModel)
         }
     }
 }
 
 @Composable
-fun EPList(eps: List<EpData>, isEditing: Boolean) {
+fun EPList(eps: List<EpData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(eps) { ep ->
-            MusicCard(itemName = ep.name, isEditing = isEditing)
+            MusicCard(ep, isEditing, viewModel)
         }
     }
 }
 
 @Composable
-fun SingleList(singles: List<SongData>, isEditing: Boolean) {
+fun SingleList(singles: List<SongData>, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(singles) { single ->
-            MusicCard(itemName = single.name, isEditing = isEditing)
+            MusicCard(single, isEditing, viewModel)
         }
     }
 }
 @Composable
-fun MusicCard(itemName: String, isEditing: Boolean) {
+fun MusicCard(item: Any, isEditing: Boolean, viewModel: ArtistProfileViewModel) {
+    val itemName = when (item) {
+        is AlbumData -> item.name
+        is EpData -> item.name
+        is SongData -> item.name
+        else -> "Unknown"
+    }
+    val itemId = when (item) {
+        is AlbumData -> item.id
+        is EpData -> item.id
+        is SongData -> item.id
+        else -> 0
+    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -562,7 +575,13 @@ fun MusicCard(itemName: String, isEditing: Boolean) {
                         contentDescription = "Delete $itemName",
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable { /* Logika za brisanje */ }
+                            .clickable {
+                                when (item) {
+                                    is AlbumData -> viewModel.deleteAlbum(itemId)
+                                    is EpData -> viewModel.deleteEp(itemId)
+                                    is SongData -> viewModel.deleteSong(itemId)
+                                }
+                            }
                     )
                 }
             } else {

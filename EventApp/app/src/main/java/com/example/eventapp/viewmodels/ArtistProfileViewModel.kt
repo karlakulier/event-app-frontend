@@ -99,4 +99,48 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
             }
         }
     }
+
+    fun deleteAlbum(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteAlbum(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Album deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting album: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun deleteEp(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteEp(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchEPs(musicianId)
+                    _eps.value = _eps.value.filterNot { it.id == id }
+                }
+                Log.d("ArtistProfileViewModel", "EP deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting EP: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun deleteSong(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteSong(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchSongs(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Song deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting song: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
 }
