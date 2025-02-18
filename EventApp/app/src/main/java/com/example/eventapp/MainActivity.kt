@@ -175,13 +175,13 @@ class MainActivity : ComponentActivity() {
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(OrganizerRetrofit.api)
 
-                            // Prosljeđivanje navController u OrganizerProfile
                             OrganizerProfile(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
-                                navController = rememberNavController()
+                                navController = navController
                             )
                         }
+
 
                         composable("editProfileScreen") {
                             EditProfileScreen(

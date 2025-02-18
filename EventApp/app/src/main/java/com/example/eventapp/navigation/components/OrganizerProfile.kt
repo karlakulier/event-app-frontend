@@ -31,7 +31,9 @@ fun OrganizerProfile(
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
+    val coroutineScope = rememberCoroutineScope()
 
+    // Dohvati podatke o organizatoru
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -44,10 +46,13 @@ fun OrganizerProfile(
         }
     }
 
-    val coroutineScope = rememberCoroutineScope()
-
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Edit Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
+        Text(
+            text = "Edit Profile",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF6200EE)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -60,55 +65,66 @@ fun OrganizerProfile(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Button(onClick = {
-
-                val updatedProfile = OrganizerProfile(
-                    id = organizerId,
-                    name = name,
-                    surname = surname,
-                    email = email,
-                    contact = contact,
-                    birthDate = birthDate,
-                    review = review,
-                    userId = organizerId
-                )
-                coroutineScope.launch {
-
-                    val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
-                    dialogMessage = "Uspješno su ažurirani podaci"
-                    showDialog = true
-                }
-
-
-                navController.popBackStack("home", false)
-            }) {
-                Text("Save", color = Color.White)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = {
+                    navController.navigate("organizerProfileViewOnly/$organizerId") {
+                        popUpTo("organizerProfile/$organizerId") { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(Color.Red)
+            ) {
+                Text("Cancel")
             }
 
-            Button(onClick = {
-                navController.popBackStack("home", false)
-            }) {
-                Text("Cancel")
+            Button(
+                onClick = {
+                    val updatedProfile = OrganizerProfile(
+                        id = organizerId,
+                        name = name,
+                        surname = surname,
+                        email = email,
+                        contact = contact,
+                        birthDate = birthDate,
+                        review = review,
+                        userId = organizerId
+                    )
+                    coroutineScope.launch {
+                        val result = organizerService.updateOrganizerProfile(organizerId, updatedProfile)
+                        dialogMessage = "Podaci su uspješno ažurirani!"
+                        showDialog = true
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Save")
             }
         }
     }
 
-
+    // ✅ Ispravljen AlertDialog s navigacijom na organizerProfileViewOnly
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
                 showDialog = false
-
-                navController.popBackStack("home", false)
+                navController.navigate("organizerProfileViewOnly/$organizerId") {
+                    popUpTo("organizerProfile/$organizerId") { inclusive = true }
+                }
             },
-            title = { Text("Profile Update") },
+            title = { Text("Profile update") },
             text = { Text(dialogMessage) },
             confirmButton = {
-                Button(onClick = {
-                    showDialog = false
-                    navController.popBackStack("home", false)
-                }) {
+                Button(
+                    onClick = {
+                        showDialog = false
+                        navController.navigate("organizerProfileViewOnly/$organizerId") {
+                            popUpTo("organizerProfile/$organizerId") { inclusive = true }
+                        }
+                    }
+                ) {
                     Text("OK")
                 }
             }
