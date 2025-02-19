@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,73 +49,66 @@ fun LoginPage(
 
     var awaitingResponse by remember { mutableStateOf(false) }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Logo Image
-            Image(
-                painter = painterResource(id = R.drawable.app_logo),
-                contentDescription = stringResource(id = R.string.logo_desc),
-                modifier = Modifier
-                    .width(250.dp)
-                    .height(60.dp)
-                    .padding(top = 16.dp)
-            )
+        // Logo
+        Image(
+            painter = painterResource(id = R.drawable.app_logo),
+            contentDescription = stringResource(id = R.string.logo_desc),
+            modifier = Modifier
+                .width(250.dp)
+                .height(60.dp)
+                .padding(top = 16.dp)
+        )
 
-            // Login Header
+        // Naslov "Login"
+        Text(
+            text = "Login",
+            fontSize = 45.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(top = 130.dp)
+        )
+
+        // Prikaz poruke o grešci (ako postoji)
+        if (errorMessage.isNotBlank()) {
             Text(
-                text = "Login",
-                fontSize = 45.sp,
-                color = Color.Black,
-                modifier = Modifier.padding(top = 130.dp)
-            )
-
-            // Error Message Display
-            if (errorMessage.isNotBlank()) {
-                Text(
-                    text = errorMessage,
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // Input Fields
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                text = errorMessage,
+                color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)
-            ) {
-                // Email Input
-                TextField(
-                    value = username,
-                    onValueChange = { viewModel.updateUsername(it) },
-                    label = { Text("E-mail") },
-                    singleLine = true,
-                    modifier = Modifier
-                        .width(320.dp)
-                        .height(50.dp)
-                )
-
-                // Password Input
-                TextField(
-                    value = password,
-                    onValueChange = { viewModel.updatePassword(it) },
-                    label = { Text("Password") },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier
-                        .width(320.dp)
-                        .height(50.dp)
-                )
-            }
+            )
         }
 
-        // Login Button
+        // Polja za unos
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            TextField(
+                value = username,
+                onValueChange = { viewModel.updateUsername(it) },
+                label = { Text("E-mail") },
+                singleLine = true,
+                modifier = Modifier.width(320.dp)
+            )
+
+            TextField(
+                value = password,
+                onValueChange = { viewModel.updatePassword(it) },
+                label = { Text("Password") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.width(320.dp)
+            )
+        }
+
+        // Mali razmak između polja i gumba
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Gumb za login
         Button(
             onClick = {
                 awaitingResponse = true
@@ -135,10 +129,8 @@ fun LoginPage(
             enabled = !awaitingResponse,
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .width(270.dp)
-                .height(60.dp)
-                .padding(bottom = 32.dp)
+                .height(40.dp)
         ) {
             Text(if (awaitingResponse) "Logging in..." else "Login")
         }
