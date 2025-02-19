@@ -29,7 +29,7 @@ fun OrganizerProfileViewOnly(
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
 
-    // Dohvati podatke organizatora
+
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -48,7 +48,7 @@ fun OrganizerProfileViewOnly(
         }
     }
 
-    // Provjeri je li prijavljeni organizator isti kao onaj koji se prikazuje
+
     val isLoggedInOrganizer = Auth.loggedInUserData?.organizer?.id == organizerId
     Log.d("OrganizerProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Organizer ID: $organizerId")
     Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
@@ -58,7 +58,7 @@ fun OrganizerProfileViewOnly(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 56.dp) // Ostavlja prostor za footer
+                .padding(bottom = 56.dp)
         ) {
             Header()
 
@@ -104,7 +104,7 @@ fun OrganizerProfileViewOnly(
             }
         }
 
-        // Footer - provjera da li je organizator
+
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
