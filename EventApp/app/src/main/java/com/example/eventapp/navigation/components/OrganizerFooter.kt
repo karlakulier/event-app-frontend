@@ -48,7 +48,9 @@ fun OrganizerFooter(navController: NavController) {
         Icon(
             imageVector = Icons.Default.Home,
             contentDescription = "Home",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("home")
+            }
         )
 
         Icon(
@@ -65,7 +67,9 @@ fun OrganizerFooter(navController: NavController) {
         Icon(
             imageVector = Icons.Default.ChatBubbleOutline,
             contentDescription = "Menu",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("chatListScreen")
+            }
         )
     }
 }

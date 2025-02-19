@@ -1,6 +1,7 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,12 +38,17 @@ fun ClassicFooter(navController: NavController) {
         Icon(
             imageVector = Icons.Default.Home,
             contentDescription = "Home",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("home")
+            }
         )
         Icon(
             imageVector = Icons.Default.ChatBubbleOutline,
             contentDescription = "Message",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("chatListScreen")
+            }
+
         )
 }
 }
