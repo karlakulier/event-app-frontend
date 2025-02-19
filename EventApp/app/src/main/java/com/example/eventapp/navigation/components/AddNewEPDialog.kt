@@ -170,7 +170,7 @@ fun AddNewEPDialog(
         if (showDatePicker) {
             DatePickerModal(
                 onDateSelected = { displayDate, apiDate ->  // Očekujemo dva parametra
-                    releaseDate.value = displayDate  // Prikaz korisniku
+                    releaseDate.value = apiDate  // Prikaz korisniku
                     // Ovdje možeš spremiti apiDate ako ga trebaš slati u API
                     showDatePicker = false
                 },

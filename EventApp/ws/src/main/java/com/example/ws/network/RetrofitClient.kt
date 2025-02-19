@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://aireventappapinew.azurewebsites.net/"
+    private const val BASE_URL = "https://aireventappapinew.azurewebsites.net"
 
     val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -30,5 +30,8 @@ object RetrofitClient {
         retrofit.create(ApiEvents::class.java)
     }
 
+    val apiArtistProfile: ApiArtistProfile by lazy {
+        retrofit.create(ApiArtistProfile::class.java)
+    }
 
 }

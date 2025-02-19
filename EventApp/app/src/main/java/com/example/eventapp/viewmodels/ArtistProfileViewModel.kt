@@ -1,0 +1,181 @@
+package com.example.eventapp.viewmodels
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.core.login.Auth
+import com.example.core.musician_profile.IMusicService
+import com.example.ws.models.AlbumData
+import com.example.ws.models.EpData
+import com.example.ws.models.SongData
+import com.example.ws.network.RetrofitClient.apiArtistProfile
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class ArtistProfileViewModel(private val musicService: IMusicService) : ViewModel() {
+
+    private val _albums = MutableStateFlow<List<AlbumData>>(emptyList())
+    val albums: StateFlow<List<AlbumData>> = _albums
+
+    private val _eps = MutableStateFlow<List<EpData>>(emptyList())
+    val eps: StateFlow<List<EpData>> = _eps
+
+    private val _songs = MutableStateFlow<List<SongData>>(emptyList())
+    val songs: StateFlow<List<SongData>> = _songs
+
+    fun fetchAlbums(musicianId: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.getAlbums(musicianId)
+            if (response.isSuccessful) {
+                _albums.value = response.body() ?: emptyList()
+            }
+        }
+    }
+
+    fun fetchEPs(musicianId: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.getEPs(musicianId)
+            if (response.isSuccessful) {
+                _eps.value = response.body() ?: emptyList()
+            }
+        }
+    }
+
+    fun fetchSongs(musicianId: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.getSongs(musicianId)
+            if (response.isSuccessful) {
+                _songs.value = response.body() ?: emptyList()
+            }
+        }
+    }
+
+    fun addAlbum(album: AlbumData) {
+        viewModelScope.launch {
+            val result = musicService.addAlbum(album)
+            result.onSuccess {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                   fetchAlbums(musicianId)
+                    fetchEPs(musicianId)
+                    fetchSongs(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Album added successfully")
+            }.onFailure { error ->
+                // Došlo je do greške
+                Log.e("ArtistProfileViewModel", "Error adding album: ${error.message}")
+            }
+        }
+    }
+
+    fun addEp(ep: EpData) {
+        viewModelScope.launch {
+            val result = musicService.addEp(ep)
+            result.onSuccess {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                    fetchEPs(musicianId)
+                    fetchSongs(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "EP added successfully")
+            }.onFailure { error ->
+                Log.e("ArtistProfileViewModel", "Error adding EP: ${error.message}")
+            }
+        }
+    }
+
+    fun addSingle(single: SongData) {
+        viewModelScope.launch {
+            val result = musicService.addSingle(single)
+            result.onSuccess {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                    fetchEPs(musicianId)
+                    fetchSongs(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Single added successfully")
+            }.onFailure { error ->
+                Log.e("ArtistProfileViewModel", "Error adding single: ${error.message}")
+            }
+        }
+    }
+
+    fun deleteAlbum(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteAlbum(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchAlbums(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Album deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting album: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun deleteEp(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteEp(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchEPs(musicianId)
+                    _eps.value = _eps.value.filterNot { it.id == id }
+                }
+                Log.d("ArtistProfileViewModel", "EP deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting EP: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun deleteSong(id: Int) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.deleteSong(id)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+                    fetchSongs(musicianId)
+                }
+                Log.d("ArtistProfileViewModel", "Song deleted successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error deleting song: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun updateAlbum(album: AlbumData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateAlbum(album.id, album)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchAlbums(it) }
+                Log.d("ArtistProfileViewModel", "Album updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating album: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun updateEp(ep: EpData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateEp(ep.id, ep)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchEPs(it) }
+                Log.d("ArtistProfileViewModel", "EP updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating EP: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+
+    fun updateSong(song: SongData) {
+        viewModelScope.launch {
+            val response = apiArtistProfile.updateSong(song.id, song)
+            if (response.isSuccessful) {
+                Auth.loggedInUserData?.musician?.id?.let { fetchSongs(it) }
+                Log.d("ArtistProfileViewModel", "Song updated successfully")
+            } else {
+                Log.e("ArtistProfileViewModel", "Error updating song: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+}

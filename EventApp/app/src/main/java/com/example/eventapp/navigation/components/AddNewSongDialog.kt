@@ -21,21 +21,19 @@ import androidx.compose.ui.text.font.FontWeight
 fun AddNewSongDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    onAddSong: (String, String, String, String) -> Unit
+    onAddSong: (String, String, String) -> Unit
 ) {
     if (isVisible) {
         val songName = remember { mutableStateOf("") }
-        val releaseDate = remember { mutableStateOf("") }
         val youtubeLink = remember { mutableStateOf("") }
         val spotifyLink = remember { mutableStateOf("") }
-        var showDatePicker by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { onDismiss() },
             confirmButton = {
                 Button(
                     onClick = {
-                        onAddSong(songName.value, releaseDate.value, youtubeLink.value, spotifyLink.value)
+                        onAddSong(songName.value, youtubeLink.value, spotifyLink.value)
                         onDismiss()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
@@ -74,24 +72,6 @@ fun AddNewSongDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Release date input
-                    OutlinedTextField(
-                        value = releaseDate.value,
-                        onValueChange = {},
-                        label = { Text("Release date") },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.CalendarToday,
-                                contentDescription = "Select date",
-                                modifier = Modifier.clickable { showDatePicker = true }
-                            )
-                        },
-                        readOnly = true, // Sprečava direktno uređivanje
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
                     // YouTube link input
                     OutlinedTextField(
                         value = youtubeLink.value,
@@ -114,15 +94,5 @@ fun AddNewSongDialog(
             containerColor = Color.White,
             shape = RoundedCornerShape(16.dp)
         )
-        if (showDatePicker) {
-            DatePickerModal(
-                onDateSelected = { displayDate, apiDate ->  // Očekujemo dva parametra
-                    releaseDate.value = displayDate  // Prikaz korisniku
-                    // Ovdje možeš spremiti apiDate ako ga trebaš slati u API
-                    showDatePicker = false
-                },
-                onDismiss = { showDatePicker = false }
-            )
-        }
     }
 }

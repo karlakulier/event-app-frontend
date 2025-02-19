@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -25,19 +26,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.add_album_ep_single.MusicContentType
+import com.example.add_album_ep_single.MusicService
+import com.example.core.login.Auth
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.login.Auth
 import com.example.eventapp.R
+import com.example.eventapp.viewmodels.ArtistProfileViewModel
+import com.example.eventapp.viewmodels.ArtistProfileViewModelFactory
+import com.example.ws.models.AlbumData
+import com.example.ws.models.EpData
+import com.example.ws.models.SongData
+import com.example.ws.network.RetrofitClient.apiArtistProfile
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistProfileScreen(navController: NavController) {
+fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel) {
+    var selectedItemForEdit by remember { mutableStateOf<Any?>(null) }
+    var isEditDialogVisible by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Albums", "EPs", "Singles")
     var searchQuery by remember { mutableStateOf("") }
     var isDialogVisible by remember { mutableStateOf(false) }
+    var isAddDialogVisible by remember { mutableStateOf(false) }
+    var selectedContentType by remember { mutableStateOf<MusicContentType?>(null) }
     var isAlbumDialogVisible by remember { mutableStateOf(false) }
     var isEpDialogVisible by remember { mutableStateOf(false) }
     var isSongDialogVisible by remember { mutableStateOf(false) }
@@ -56,12 +74,19 @@ fun ArtistProfileScreen(navController: NavController) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            // Pretvaranje URI-ja u sliku za prikaz
             newProfileImage = uri
         }
     }
-
-
+    val albums by viewModel.albums.collectAsState()
+    val eps by viewModel.eps.collectAsState()
+    val songs by viewModel.songs.collectAsState()
+    Auth.loggedInUserData?.musician?.id?.let { musicianId ->
+        LaunchedEffect(Unit) {
+            viewModel.fetchAlbums(musicianId)
+            viewModel.fetchEPs(musicianId)
+            viewModel.fetchSongs(musicianId)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -94,10 +119,10 @@ fun ArtistProfileScreen(navController: NavController) {
             )
         },
         bottomBar = {
-            Column { // Dodavanje Column za Divider i BottomAppBar
+            Column {
                 HorizontalDivider(
-                    color = Color.Black, // Crna linija
-                    thickness = 1.dp, // Debljina linije
+                    color = Color.Black,
+                    thickness = 1.dp,
                     modifier = Modifier.fillMaxWidth()
                 )
                 BottomAppBar(containerColor = Color.White) {
@@ -116,7 +141,6 @@ fun ArtistProfileScreen(navController: NavController) {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            // Gray Box with Border and Search Bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,17 +148,15 @@ fun ArtistProfileScreen(navController: NavController) {
                     .border(1.dp, Color.DarkGray)
                     .height(300.dp)
             ) {
-                // Prikaz slike ako je postavljena
                 if (currentProfileImage != null) {
                     AsyncImage(
                         model = currentProfileImage,
                         contentDescription = "Profile Image",
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentScale = ContentScale.Crop // Slika ispunjava prostor
+                        contentScale = ContentScale.Crop
                     )
                 } else {
-                    // Prikaz ikone ako slika nije postavljena
                     Icon(
                         painter = painterResource(id = R.drawable.profile_photo_musician),
                         contentDescription = "Default Profile Image",
@@ -143,28 +165,23 @@ fun ArtistProfileScreen(navController: NavController) {
                             .align(Alignment.Center)
                     )
                 }
-
-                // Search bar unutar sive pozadine na vrhu
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.TopStart)
-                        .padding(16.dp) // Margina oko search bara
+                        .padding(16.dp)
                 ) {
                     CustomSearchBar(
                         query = searchQuery,
                         onQueryChanged = { searchQuery = it }
                     )
                 }
-
-                // Tekst i elementi na dnu slike
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
                         .align(Alignment.BottomStart) // Poravnanje na dno sive pozadine
                 ) {
-                    // Artist Name
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -204,8 +221,6 @@ fun ArtistProfileScreen(navController: NavController) {
                             )
                         }
                     }
-
-                    // Genre
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -216,7 +231,6 @@ fun ArtistProfileScreen(navController: NavController) {
                             color = Color.DarkGray,
                             modifier = Modifier.padding(end = 5.dp)
                         )
-
                         if (isEditing) {
                             Icon(
                                 painter = painterResource(id = R.drawable.editing_pen),
@@ -231,7 +245,6 @@ fun ArtistProfileScreen(navController: NavController) {
                             )
                         }
                     }
-
                     if (isGenreDialogVisible) {
                         GenreSelectionDialog(
                             selectedGenre = selectedGenre,
@@ -244,8 +257,6 @@ fun ArtistProfileScreen(navController: NavController) {
                         )
                     }
                 }
-
-                // Dodavanje ikone za uređivanje slike u donji desni kut
                 if (isEditing) {
                     Icon(
                         painter = painterResource(id = R.drawable.editing_pen),
@@ -258,8 +269,6 @@ fun ArtistProfileScreen(navController: NavController) {
                     )
                 }
             }
-
-
             if (isEditingImage) {
                 AlertDialog(
                     onDismissRequest = { isEditingImage = false },
@@ -285,7 +294,7 @@ fun ArtistProfileScreen(navController: NavController) {
                     text = {
                         Column {
                             Button(onClick = {
-                                launcher.launch("image/*") // Pokreće odabir slike
+                                launcher.launch("image/*")
                             }) {
                                 Text("Select Image")
                             }
@@ -297,7 +306,6 @@ fun ArtistProfileScreen(navController: NavController) {
                     }
                 )
             }
-            // Action Buttons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -306,11 +314,11 @@ fun ArtistProfileScreen(navController: NavController) {
             ) {
                 Row(
                     modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                    horizontalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     if (isEditing) {
                         Image(
-                            painter = painterResource(R.drawable.approve_edit), // Ikona za potvrdu promjena
+                            painter = painterResource(R.drawable.approve_edit),
                             contentDescription = "Save Changes",
                             modifier = Modifier
                                 .size(40.dp)
@@ -321,10 +329,10 @@ fun ArtistProfileScreen(navController: NavController) {
                                     if (newProfileImage != null) {
                                         currentProfileImage = newProfileImage
                                     }
-                                } // Završava uređivanje
+                                }
                         )
                         Image(
-                            painter = painterResource(R.drawable.abandon_edit), // Ikona za odustajanje
+                            painter = painterResource(R.drawable.abandon_edit),
                             contentDescription = "Cancel Changes",
                             modifier = Modifier
                                 .size(40.dp)
@@ -336,7 +344,7 @@ fun ArtistProfileScreen(navController: NavController) {
                                     isGenreDialogVisible = false
                                     newProfileImage = null
                                     currentProfileImage = null
-                                } // Odbacuje promjene
+                                }
                         )
                     } else {
                         Image(
@@ -351,15 +359,13 @@ fun ArtistProfileScreen(navController: NavController) {
                             contentDescription = "Edit",
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { isEditing = true } // Aktivira uređivanje
+                                .clickable { isEditing = true }
                         )
                     }
                 }
-
-                // Druga grupa ikona: Concerts i Profile
                 Row(
                     modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                    horizontalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.concert_musician_profile),
@@ -390,56 +396,113 @@ fun ArtistProfileScreen(navController: NavController) {
             if (isDialogVisible) {
                 AddNewAlbumEpSingleDialog(
                     isVisible = isDialogVisible,
-                    onDismiss = { isDialogVisible = false },
-                    onOptionSelected = { selectedOption ->
-                        when (selectedOption) {
-                            "Album" -> {
-                                isDialogVisible = false // Sakriva prvi dijalog
-                                isAlbumDialogVisible = true // Otvara dijalog za dodavanje albuma
-                            }
-                            "EP" -> {
-                                isDialogVisible = false
-                                isEpDialogVisible = true
-                            }
-                            "Single" -> {
-                                isDialogVisible = false
-                                isSongDialogVisible = true
-                            }
-                            else -> {
-                                println("Odabrano: $selectedOption")
-                                isDialogVisible = false // Zatvara dijalog za druge opcije
-                            }
-                        }
-                    }
+                    onDismiss = {isDialogVisible = false},
+                    onContentSelected = {selectedContentType = it}
                 )
             }
 
-            AddNewAlbumDialog(
-                isVisible = isAlbumDialogVisible,
-                onDismiss = { isAlbumDialogVisible = false },
-                onAddAlbum = { albumName, releaseDate, songs ->
-                    // Handle album creation logic here
+            selectedContentType?.let { contentType ->
+                when (contentType) {
+                    MusicContentType.ALBUM -> AddNewAlbumDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddAlbum = { albumName, releaseDate, songs ->
+                            try {
+                                val albumData = AlbumData(
+                                    id = 0,
+                                    name = albumName,
+                                    releaseDate = releaseDate,
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                    existingSongs = listOf(),
+                                    newSongs = songs.map { song ->
+                                        SongData(
+                                            id = 0,
+                                            name = song["name"] ?: "",
+                                            linkYT = song["youtubeLink"] ?: "",
+                                            linkSpotify = song["spotifyLink"] ?: "",
+                                            musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                            albumId = 0,
+                                            epId = 0
+                                        )
+                                    }
+                                )
+                                viewModel.addAlbum(albumData)
+                            }catch (e: Exception) {
+                                println("Greška pri dodavanju albuma: ${e.message}")
+                            }
+                        }
+                    )
+                    MusicContentType.EP -> AddNewEPDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddEp = { epName, releaseDate, songs ->
+                            try {
+                                val epData = EpData(
+                                    id = 0,
+                                    name = epName,
+                                    releaseDate = releaseDate,
+                                    musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                    existingSongs = listOf(),
+                                    newSongs = songs.map { song ->
+                                        SongData(
+                                            id = 0,
+                                            name = song["name"] ?: "",
+                                            linkYT = song["youtubeLink"] ?: "",
+                                            linkSpotify = song["spotifyLink"] ?: "",
+                                            musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                            albumId = 0,
+                                            epId = 0
+                                        )
+                                    }
+                                )
+                                viewModel.addEp(epData)
+                            }catch (e: Exception){
+                                println("Greška pri dodavanju ep-a: ${e.message}")
+                            }
+                        }
+                    )
+                    MusicContentType.SINGLE -> AddNewSongDialog(
+                        isVisible = true,
+                        onDismiss = { selectedContentType = null },
+                        onAddSong = { songName, youtubeLink, spotifyLink ->
+
+                            val songData = SongData(
+                                id = 0,
+                                name = songName,
+                                linkYT = youtubeLink,
+                                linkSpotify = spotifyLink,
+                                musicianId = Auth.loggedInUserData?.musician?.id ?: 0,
+                                albumId = null,
+                                epId = null
+                            )
+                            viewModel.addSingle(songData)
+                        }
+                    )
                 }
-            )
+            }
 
-            AddNewEPDialog(
-                isVisible = isEpDialogVisible,
-                onDismiss = {isEpDialogVisible = false },
-                onAddEp = {epName, releaseDate, songs ->
-                    // Handle EP creation logic here
+            selectedItemForEdit?.let { item ->
+                when (item) {
+                    is AlbumData -> UpdateAlbumDialog(
+                        isVisible = isEditDialogVisible,
+                        album = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedAlbum -> viewModel.updateAlbum(updatedAlbum) }
+                    )
+                    is EpData -> UpdateEPDialog(
+                        isVisible = isEditDialogVisible,
+                        ep = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedEp -> viewModel.updateEp(updatedEp) }
+                    )
+                    is SongData -> UpdateSongDialog(
+                        isVisible = isEditDialogVisible,
+                        song = item,
+                        onDismiss = { selectedItemForEdit = null; isEditDialogVisible = false },
+                        onUpdate = { updatedSong -> viewModel.updateSong(updatedSong) }
+                    )
                 }
-            )
-
-            AddNewSongDialog(
-                isVisible = isSongDialogVisible,
-                onDismiss = { isSongDialogVisible = false },
-                onAddSong = { songName, releaseDate, youtubeLink, spotifyLink ->
-                // Logika za dodavanje pjesme
-                }
-            )
-
-
-            // Tabs
+            }
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -449,138 +512,189 @@ fun ArtistProfileScreen(navController: NavController) {
                     )
                 }
             }
-
             when (selectedTab) {
-                0 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("Album 1", "Album 2", "Album 3")) { album ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(album, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $album",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $album",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                1 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("EP 1", "EP 2", "EP 3")) { ep ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(ep, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $ep",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $ep",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                2 -> LazyColumn(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    items(listOf("Single 1", "Single 2", "Single 3")) { single ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(single, fontSize = 16.sp)
-                                if (isEditing) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.editing_pen),
-                                            contentDescription = "Edit $single",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za uređivanje albuma */ }
-                                        )
-                                        Icon(
-                                            painter = painterResource(R.drawable.delete_items),
-                                            contentDescription = "Delete $single",
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clickable { /* Logika za brisanje albuma */ }
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-                                }
-                            }
-                        }
-                    }
-                }
+                0 -> AlbumList(
+                    albums = albums,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    navController = navController,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteAlbum(it.id) }
+                )
+                1 -> EPList(
+                    eps = eps,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    navController = navController,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteEp(it.id) }
+                )
+                2 -> SingleList(
+                    songs = songs,
+                    isEditing = isEditing,
+                    viewModel = viewModel,
+                    navController = navController,
+                    onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
+                    onDelete = { viewModel.deleteSong(it.id) }
+                )
             }
         }
     }
 }
 
+@Composable
+fun AlbumList(
+    albums: List<AlbumData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    navController: NavController,
+    onEdit: (AlbumData) -> Unit,
+    onDelete: (AlbumData) -> Unit
+) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(albums) { album ->
+            MusicCard(album, isEditing, viewModel, navController, onEdit, onDelete)
+        }
+    }
+}
+
+@Composable
+fun EPList(
+    eps: List<EpData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    navController: NavController,
+    onEdit: (EpData) -> Unit,
+    onDelete: (EpData) -> Unit
+) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(eps) { ep ->
+            MusicCard(ep, isEditing, viewModel, navController, onEdit, onDelete)
+        }
+    }
+}
+
+@Composable
+fun SingleList(
+    songs: List<SongData>,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    navController: NavController,
+    onEdit: (SongData) -> Unit,
+    onDelete: (SongData) -> Unit
+) {
+    LazyColumn(modifier = Modifier.padding(8.dp)) {
+        items(songs) { song ->
+            MusicCard(song, isEditing, viewModel, navController, onEdit, onDelete)
+        }
+    }
+}
+
+@Composable
+fun <T> MusicCard(
+    item: T,
+    isEditing: Boolean,
+    viewModel: ArtistProfileViewModel,
+    navController: NavController,
+    onEdit: (T) -> Unit,
+    onDelete: (T) -> Unit
+) {
+    val itemName = when (item) {
+        is AlbumData -> item.name
+        is EpData -> item.name
+        is SongData -> item.name
+        else -> "Unknown"
+    }
+
+    val context = LocalContext.current
+
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(itemName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (!isEditing) { // Prikazuj Spotify i YouTube samo ako nije editing mode
+                    if (item is SongData) {
+                        if (!item.linkSpotify.isNullOrEmpty()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.spotify_icon),
+                                contentDescription = "Open Spotify",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.linkSpotify))
+                                        context.startActivity(intent)
+                                    }
+                            )
+                        }
+
+                        if (!item.linkYT.isNullOrEmpty()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.youtube_icon),
+                                contentDescription = "Open YouTube",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.linkYT))
+                                        context.startActivity(intent)
+                                    }
+                            )
+                        }
+                    }
+                }
+                if (!isEditing) {
+                    if (item is AlbumData) {
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Open Album",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate("albumDetails/${item.id}")
+                                }
+                        )
+                    } else if (item is EpData) {
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Open EP",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate("epDetails/${item.id}")
+                                }
+                        )
+                    }
+                }
+                if (isEditing) {
+                    Icon(
+                        painter = painterResource(R.drawable.editing_pen),
+                        contentDescription = "Edit $itemName",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onEdit(item) }
+                    )
+
+                    Icon(
+                        painter = painterResource(R.drawable.delete_items),
+                        contentDescription = "Delete $itemName",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { onDelete(item) }
+                    )
+                }
+            }
+        }
+    }
+}

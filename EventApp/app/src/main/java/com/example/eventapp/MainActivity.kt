@@ -14,16 +14,20 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.add_album_ep_single.MusicService
+import com.example.eventapp.navigation.components.AlbumDetailsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EpDetailsScreen
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
@@ -38,6 +42,9 @@ import com.example.eventapp.navigation.components.PastEventsForOrganizer
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
+import com.example.eventapp.viewmodels.ArtistProfileViewModel
+import com.example.eventapp.viewmodels.ArtistProfileViewModelFactory
+import com.example.ws.network.RetrofitClient.apiArtistProfile
 import com.example.eventapp.userInterface.SignUp
 import com.example.ws.network.MusicianRetrofit
 import com.example.eventapp.navigation.components.MusicianProfile
@@ -53,7 +60,6 @@ import com.facebook.FacebookSdk
 import com.facebook.CallbackManager
 import kotlinx.coroutines.launch
 
-
 class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var callbackManager: CallbackManager
@@ -63,6 +69,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val musicService = MusicService(apiArtistProfile) // Napravi instancu servisa
+        val viewModelFactory = ArtistProfileViewModelFactory(musicService) // Kreiraj Factory
+        val artistProfileViewModel = ViewModelProvider(this, viewModelFactory).get(ArtistProfileViewModel::class.java)
 
         FacebookSdk.sdkInitialize(applicationContext)
         callbackManager = CallbackManager.Factory.create()
@@ -157,7 +166,7 @@ class MainActivity : ComponentActivity() {
                             PreviousEventsScreen(navController = navController)
                         }
                         composable("artistProfileScreen") {
-                            ArtistProfileScreen(navController = navController)
+                            ArtistProfileScreen(navController = navController, artistProfileViewModel)
                         }
 
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
@@ -256,6 +265,16 @@ class MainActivity : ComponentActivity() {
                         composable("pastEventsScreen/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
                             PastEventsForOrganizer(navController = navController, organizerId = organizerId)
+                        }
+
+                        composable("albumDetails/{albumId}") { backStackEntry ->
+                            val albumId = backStackEntry.arguments?.getString("albumId")?.toInt() ?: return@composable
+                            AlbumDetailsScreen(navController, albumId, artistProfileViewModel)
+                        }
+
+                        composable("epDetails/{epId}") { backStackEntry ->
+                            val epId = backStackEntry.arguments?.getString("epId")?.toInt() ?: return@composable
+                            EpDetailsScreen(navController, epId, artistProfileViewModel)
                         }
                     }
                 }
