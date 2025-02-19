@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
@@ -44,9 +45,11 @@ fun OrganizerFooter(navController: NavController) {
         )
 
         Icon(
-            imageVector = Icons.Default.Star,
+            imageVector = Icons.Default.FormatListNumbered,
             contentDescription = "Favorites",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("allActiveEventsForOrganizer")
+            }
         )
 
         Icon(
@@ -72,7 +75,7 @@ fun OrganizerFooter(navController: NavController) {
             imageVector = Icons.Default.ChatBubbleOutline,
             contentDescription = "Menu",
             modifier = Modifier.size(24.dp).clickable {
-                navController.navigate("allActiveEventsForOrganizer")
+                navController.navigate("chatListScreen")
             }
         )
     }
