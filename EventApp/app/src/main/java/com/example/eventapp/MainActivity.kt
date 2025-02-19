@@ -34,6 +34,7 @@ import com.example.eventapp.navigation.components.PastEventsForMusician
 import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.eventapp.navigation.components.PastEvents
+import com.example.eventapp.navigation.components.PastEventsForOrganizer
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
@@ -158,15 +159,13 @@ class MainActivity : ComponentActivity() {
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(OrganizerRetrofit.api)
+
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
+                                navController = navController, // Dodali smo navController
                                 onEditClick = {
                                     navController.navigate("organizerProfile/$organizerId")
-                                },
-                                onPastEventsClick = {
-
-                                    navController.navigate("pastEventsScreen/$organizerId")
                                 }
                             )
                         }
@@ -227,7 +226,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("pastEventsScreen/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
-                            PastEvents(navController = navController, organizerId = organizerId)
+                            PastEventsForOrganizer(navController = navController, organizerId = organizerId)
                         }
                     }
                 }

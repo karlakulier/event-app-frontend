@@ -29,38 +29,61 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.core.login.Auth.loggedInUserData
 import com.example.eventapp.viewmodels.GetEventViewModel
+import com.example.eventapp.viewmodels.GetEventViewModelFactory
 import com.example.ws.models.LoggedInUserData
+import com.example.ws.repository.EventRepository
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 @Composable
-fun PastEventsForOrganizer(navController: NavController) {
-    val viewModel: GetEventViewModel = viewModel()
+fun PastEventsForOrganizer(navController: NavController, organizerId: Int) {
+    val eventRepository = EventRepository()
+    val viewModel: GetEventViewModel = viewModel(factory = GetEventViewModelFactory(eventRepository))
     val events by viewModel.events.observeAsState(emptyList())
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchPastEventsForMusician(loggedInUserData?.organizer?.id!!)    }
+    LaunchedEffect(organizerId) {
+        viewModel.fetchPastEventsByOrganizer(organizerId)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
     ) {
+
         Header()
-        Box(modifier = Modifier.fillMaxSize()) {
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Past Events", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+
+        Box(modifier = Modifier.weight(1f)) { // Omogućava da footer bude na dnu
             when {
                 events.isEmpty() -> Text(
-                    text = "No past events available.",
+                    text = "Nema završenih događaja.",
                     modifier = Modifier.align(Alignment.Center),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
                 )
                 else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(events) { event ->
-                        Box(modifier = Modifier.fillMaxWidth().clickable {
-                            // Navigacija na detalje događaja
-                        }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navController.navigate("eventDetailsScreen/${event.id}")
+                                }
+                        ) {
                             EventCard(event = event, navController)
                         }
                     }
                 }
             }
         }
+
+        // FOOTER
+        OrganizerFooter(navController)
     }
 }
+
+
