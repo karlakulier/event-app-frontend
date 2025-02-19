@@ -55,7 +55,6 @@ fun LoginPage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
         Image(
             painter = painterResource(id = R.drawable.app_logo),
             contentDescription = stringResource(id = R.string.logo_desc),
@@ -64,16 +63,12 @@ fun LoginPage(
                 .height(60.dp)
                 .padding(top = 16.dp)
         )
-
-        // Naslov "Login"
         Text(
             text = "Login",
             fontSize = 45.sp,
             color = Color.Black,
             modifier = Modifier.padding(top = 130.dp)
         )
-
-        // Prikaz poruke o grešci (ako postoji)
         if (errorMessage.isNotBlank()) {
             Text(
                 text = errorMessage,
@@ -81,8 +76,6 @@ fun LoginPage(
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
-
-        // Polja za unos
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(top = 8.dp)
@@ -104,11 +97,7 @@ fun LoginPage(
                 modifier = Modifier.width(320.dp)
             )
         }
-
-        // Mali razmak između polja i gumba
         Spacer(modifier = Modifier.height(40.dp))
-
-        // Gumb za login
         Button(
             onClick = {
                 awaitingResponse = true
