@@ -97,7 +97,6 @@ fun UpdateAlbumDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Prikaz postojećih pjesama
                     existingSongs.forEachIndexed { index, song ->
                         Column(
                             modifier = Modifier
@@ -136,7 +135,6 @@ fun UpdateAlbumDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Prikaz novih pjesama
                     newSongs.forEachIndexed { index, song ->
                         Column(
                             modifier = Modifier
@@ -175,7 +173,6 @@ fun UpdateAlbumDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Dugme za dodavanje novih pjesama
                     Button(
                         onClick = {
                             newSongs.add(

@@ -20,12 +20,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.add_album_ep_single.MusicService
+import com.example.eventapp.navigation.components.AlbumDetailsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EpDetailsScreen
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
@@ -218,6 +220,16 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("pastEventsForMusician") {
                             PastEventsForMusician(navController = navController)
+                        }
+
+                        composable("albumDetails/{albumId}") { backStackEntry ->
+                            val albumId = backStackEntry.arguments?.getString("albumId")?.toInt() ?: return@composable
+                            AlbumDetailsScreen(navController, albumId, artistProfileViewModel)
+                        }
+
+                        composable("epDetails/{epId}") { backStackEntry ->
+                            val epId = backStackEntry.arguments?.getString("epId")?.toInt() ?: return@composable
+                            EpDetailsScreen(navController, epId, artistProfileViewModel)
                         }
                     }
                 }

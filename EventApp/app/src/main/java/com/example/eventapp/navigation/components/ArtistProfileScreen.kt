@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -115,10 +116,10 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
             )
         },
         bottomBar = {
-            Column { // Dodavanje Column za Divider i BottomAppBar
+            Column {
                 HorizontalDivider(
-                    color = Color.Black, // Crna linija
-                    thickness = 1.dp, // Debljina linije
+                    color = Color.Black,
+                    thickness = 1.dp,
                     modifier = Modifier.fillMaxWidth()
                 )
                 BottomAppBar(containerColor = Color.White) {
@@ -137,7 +138,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            // Gray Box with Border and Search Bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,17 +145,15 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     .border(1.dp, Color.DarkGray)
                     .height(300.dp)
             ) {
-                // Prikaz slike ako je postavljena
                 if (currentProfileImage != null) {
                     AsyncImage(
                         model = currentProfileImage,
                         contentDescription = "Profile Image",
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentScale = ContentScale.Crop // Slika ispunjava prostor
+                        contentScale = ContentScale.Crop
                     )
                 } else {
-                    // Prikaz ikone ako slika nije postavljena
                     Icon(
                         painter = painterResource(id = R.drawable.profile_photo_musician),
                         contentDescription = "Default Profile Image",
@@ -164,28 +162,23 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             .align(Alignment.Center)
                     )
                 }
-
-                // Search bar unutar sive pozadine na vrhu
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.TopStart)
-                        .padding(16.dp) // Margina oko search bara
+                        .padding(16.dp)
                 ) {
                     CustomSearchBar(
                         query = searchQuery,
                         onQueryChanged = { searchQuery = it }
                     )
                 }
-
-                // Tekst i elementi na dnu slike
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
                         .align(Alignment.BottomStart) // Poravnanje na dno sive pozadine
                 ) {
-                    // Artist Name
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -225,8 +218,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             )
                         }
                     }
-
-                    // Genre
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -237,7 +228,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             color = Color.DarkGray,
                             modifier = Modifier.padding(end = 5.dp)
                         )
-
                         if (isEditing) {
                             Icon(
                                 painter = painterResource(id = R.drawable.editing_pen),
@@ -252,7 +242,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             )
                         }
                     }
-
                     if (isGenreDialogVisible) {
                         GenreSelectionDialog(
                             selectedGenre = selectedGenre,
@@ -265,8 +254,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         )
                     }
                 }
-
-                // Dodavanje ikone za uređivanje slike u donji desni kut
                 if (isEditing) {
                     Icon(
                         painter = painterResource(id = R.drawable.editing_pen),
@@ -279,8 +266,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     )
                 }
             }
-
-
             if (isEditingImage) {
                 AlertDialog(
                     onDismissRequest = { isEditingImage = false },
@@ -306,7 +291,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     text = {
                         Column {
                             Button(onClick = {
-                                launcher.launch("image/*") // Pokreće odabir slike
+                                launcher.launch("image/*")
                             }) {
                                 Text("Select Image")
                             }
@@ -318,7 +303,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     }
                 )
             }
-            // Action Buttons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -327,11 +311,11 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
             ) {
                 Row(
                     modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                    horizontalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     if (isEditing) {
                         Image(
-                            painter = painterResource(R.drawable.approve_edit), // Ikona za potvrdu promjena
+                            painter = painterResource(R.drawable.approve_edit),
                             contentDescription = "Save Changes",
                             modifier = Modifier
                                 .size(40.dp)
@@ -342,10 +326,10 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                                     if (newProfileImage != null) {
                                         currentProfileImage = newProfileImage
                                     }
-                                } // Završava uređivanje
+                                }
                         )
                         Image(
-                            painter = painterResource(R.drawable.abandon_edit), // Ikona za odustajanje
+                            painter = painterResource(R.drawable.abandon_edit),
                             contentDescription = "Cancel Changes",
                             modifier = Modifier
                                 .size(40.dp)
@@ -357,7 +341,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                                     isGenreDialogVisible = false
                                     newProfileImage = null
                                     currentProfileImage = null
-                                } // Odbacuje promjene
+                                }
                         )
                     } else {
                         Image(
@@ -372,15 +356,13 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             contentDescription = "Edit",
                             modifier = Modifier
                                 .size(40.dp)
-                                .clickable { isEditing = true } // Aktivira uređivanje
+                                .clickable { isEditing = true }
                         )
                     }
                 }
-
-                // Druga grupa ikona: Concerts i Profile
                 Row(
                     modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(15.dp) // Razmak između ikona
+                    horizontalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.concert_musician_profile),
@@ -509,9 +491,6 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     )
                 }
             }
-
-
-            // Tabs
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -521,12 +500,12 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     )
                 }
             }
-
             when (selectedTab) {
                 0 -> AlbumList(
                     albums = albums,
                     isEditing = isEditing,
                     viewModel = viewModel,
+                    navController = navController,
                     onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
                     onDelete = { viewModel.deleteAlbum(it.id) }
                 )
@@ -534,6 +513,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     eps = eps,
                     isEditing = isEditing,
                     viewModel = viewModel,
+                    navController = navController,
                     onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
                     onDelete = { viewModel.deleteEp(it.id) }
                 )
@@ -541,6 +521,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     songs = songs,
                     isEditing = isEditing,
                     viewModel = viewModel,
+                    navController = navController,
                     onEdit = { selectedItemForEdit = it; isEditDialogVisible = true },
                     onDelete = { viewModel.deleteSong(it.id) }
                 )
@@ -554,12 +535,13 @@ fun AlbumList(
     albums: List<AlbumData>,
     isEditing: Boolean,
     viewModel: ArtistProfileViewModel,
+    navController: NavController,
     onEdit: (AlbumData) -> Unit,
     onDelete: (AlbumData) -> Unit
 ) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(albums) { album ->
-            MusicCard(album, isEditing, viewModel, onEdit, onDelete)
+            MusicCard(album, isEditing, viewModel, navController, onEdit, onDelete)
         }
     }
 }
@@ -569,12 +551,13 @@ fun EPList(
     eps: List<EpData>,
     isEditing: Boolean,
     viewModel: ArtistProfileViewModel,
+    navController: NavController,
     onEdit: (EpData) -> Unit,
     onDelete: (EpData) -> Unit
 ) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(eps) { ep ->
-            MusicCard(ep, isEditing, viewModel, onEdit, onDelete)
+            MusicCard(ep, isEditing, viewModel, navController, onEdit, onDelete)
         }
     }
 }
@@ -584,12 +567,13 @@ fun SingleList(
     songs: List<SongData>,
     isEditing: Boolean,
     viewModel: ArtistProfileViewModel,
+    navController: NavController,
     onEdit: (SongData) -> Unit,
     onDelete: (SongData) -> Unit
 ) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(songs) { song ->
-            MusicCard(song, isEditing, viewModel, onEdit, onDelete)
+            MusicCard(song, isEditing, viewModel, navController, onEdit, onDelete)
         }
     }
 }
@@ -599,6 +583,7 @@ fun <T> MusicCard(
     item: T,
     isEditing: Boolean,
     viewModel: ArtistProfileViewModel,
+    navController: NavController,
     onEdit: (T) -> Unit,
     onDelete: (T) -> Unit
 ) {
@@ -608,6 +593,8 @@ fun <T> MusicCard(
         is SongData -> item.name
         else -> "Unknown"
     }
+
+    val context = LocalContext.current
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -620,13 +607,65 @@ fun <T> MusicCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(itemName, fontSize = 16.sp)
+            Text(itemName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-            if (isEditing) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Ikona za uređivanje
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (!isEditing) { // Prikazuj Spotify i YouTube samo ako nije editing mode
+                    if (item is SongData) {
+                        if (!item.linkSpotify.isNullOrEmpty()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.spotify_icon),
+                                contentDescription = "Open Spotify",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.linkSpotify))
+                                        context.startActivity(intent)
+                                    }
+                            )
+                        }
+
+                        if (!item.linkYT.isNullOrEmpty()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.youtube_icon),
+                                contentDescription = "Open YouTube",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.linkYT))
+                                        context.startActivity(intent)
+                                    }
+                            )
+                        }
+                    }
+                }
+                if (!isEditing) {
+                    if (item is AlbumData) {
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Open Album",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate("albumDetails/${item.id}")
+                                }
+                        )
+                    } else if (item is EpData) {
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Open EP",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    navController.navigate("epDetails/${item.id}")
+                                }
+                        )
+                    }
+                }
+                if (isEditing) {
                     Icon(
                         painter = painterResource(R.drawable.editing_pen),
                         contentDescription = "Edit $itemName",
@@ -635,7 +674,6 @@ fun <T> MusicCard(
                             .clickable { onEdit(item) }
                     )
 
-                    // Ikona za brisanje
                     Icon(
                         painter = painterResource(R.drawable.delete_items),
                         contentDescription = "Delete $itemName",
@@ -644,12 +682,13 @@ fun <T> MusicCard(
                             .clickable { onDelete(item) }
                     )
                 }
-            } else {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
             }
         }
     }
 }
+
+
+
 
 
 
