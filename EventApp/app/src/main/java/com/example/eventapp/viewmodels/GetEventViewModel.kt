@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.core.network.ResponseListener
 import com.example.core.network.models.ErrorResponseBody
 import androidx.lifecycle.viewModelScope
+import com.example.core.network.models.OrganizerProfile
 import com.example.core.network.models.Review
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
@@ -27,6 +28,11 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
     val eventDetails: LiveData<GetEventData> = _eventDetails
     private val _reviews = MutableLiveData<List<Review>>()
     val reviews: LiveData<List<Review>> = _reviews
+    private val _organizer = MutableLiveData<OrganizerProfile?>()
+    val organizer: LiveData<OrganizerProfile?> = _organizer
+    private val _pastEvents = MutableLiveData<List<GetEventData>>()
+    val pastEvents: LiveData<List<GetEventData>> = _pastEvents
+
 
 
     private val eventRequestHandler = GetEventRequestHandler()

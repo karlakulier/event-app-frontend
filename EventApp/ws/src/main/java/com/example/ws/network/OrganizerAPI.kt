@@ -9,7 +9,6 @@ import retrofit2.http.Path
 
 
 interface OrganizerAPI {
-
     @GET("api/Organizer/GetOrganizer/{organizerId}")
     fun getOrganizerById(@Path("organizerId") organizerId: Int): Call<OrganizerProfile>
 
@@ -19,4 +18,5 @@ interface OrganizerAPI {
         @Path("organizerId") organizerId: Int,
         @Body profile: OrganizerProfile
     ): Call<String>
+
 }

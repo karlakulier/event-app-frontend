@@ -241,7 +241,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-                navController.navigate("eventDetailsScreen/${event.id}")
+             //
             }
     ) {
         Box(

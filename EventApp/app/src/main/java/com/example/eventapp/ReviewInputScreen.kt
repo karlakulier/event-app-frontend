@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.core.network.models.Review
+import com.example.eventapp.navigation.components.Header
 import kotlinx.coroutines.launch
 import com.example.ws.network.RetrofitClient
 import com.example.ws.services.ReviewService
@@ -32,7 +33,7 @@ fun ReviewInputScreen(navController: NavController, reviewService: ReviewService
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Header
+        Header()
         Text("Write your Review", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -64,13 +65,13 @@ fun ReviewInputScreen(navController: NavController, reviewService: ReviewService
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Submit Button
+
         Button(
             onClick = {
                 if (reviewText.isNotEmpty()) {
                     isLoading = true
                     val review = Review(
-                        id = 0, // ID će biti automatski generiran na backendu
+                        id = 0,
                         text = reviewText,
                         musicianGrade = organizationRating.toInt(),
                         organizerGrade = venueRating.toInt(),
@@ -82,7 +83,7 @@ fun ReviewInputScreen(navController: NavController, reviewService: ReviewService
 
                     coroutineScope.launch {
                         try {
-                            reviewService.createReview(review) // API za slanje recenzije
+                            reviewService.createReview(review)
                             Toast.makeText(navController.context, "Review submitted successfully!", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         } catch (e: Exception) {

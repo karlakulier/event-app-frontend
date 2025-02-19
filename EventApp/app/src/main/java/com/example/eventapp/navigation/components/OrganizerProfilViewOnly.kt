@@ -64,7 +64,7 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Prikaz detalja organizatora
+
         ProfileDetailField("Name", "$name $surname")
         ProfileDetailField("Email", email)
         ProfileDetailField("Contact", contact)
@@ -72,7 +72,7 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Ako je prijavljeni organizator, prikaži gumbe jedan pored drugog
+
         if (isLoggedInOrganizer) {
 
             Row(

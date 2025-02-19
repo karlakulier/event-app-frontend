@@ -36,4 +36,12 @@ object RetrofitClient {
             .build()
             .create(IReviewApi::class.java)
     }
+
+    val organizerApi: OrganizerAPI by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OrganizerAPI::class.java)
+    }
 }

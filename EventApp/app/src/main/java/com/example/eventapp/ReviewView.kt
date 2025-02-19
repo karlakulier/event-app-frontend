@@ -47,7 +47,7 @@ fun ReviewViewDetail(eventId: Int, viewModel: GetEventViewModel = viewModel()) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.5f), // Postavlja da recenzije zauzimaju pola ekrana
+                    .fillMaxHeight(0.5f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(reviews) { review ->
@@ -68,7 +68,7 @@ fun ReviewItem(review: Review) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Review by Visitor ID: ${review.visitorId}",
+                text = "Visitor: ${review.visitorId}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
             )

@@ -57,10 +57,10 @@ fun PastEventsForOrganizer(navController: NavController, organizerId: Int) {
 
         Text("Past Events", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
-        Box(modifier = Modifier.weight(1f)) { // Omogućava da footer bude na dnu
+        Box(modifier = Modifier.weight(1f)) {
             when {
                 events.isEmpty() -> Text(
-                    text = "Nema završenih događaja.",
+                    text = "No completed events",
                     modifier = Modifier.align(Alignment.Center),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium
@@ -74,14 +74,12 @@ fun PastEventsForOrganizer(navController: NavController, organizerId: Int) {
                                 .clickable { navController.navigate("eventDetailsScreen/${event.id}")
                                 }
                         ) {
-                            EventCard(event = event, navController)
+                            EventCardPast(event = event, navController)
                         }
                     }
                 }
             }
         }
-
-        // FOOTER
         OrganizerFooter(navController)
     }
 }

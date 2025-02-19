@@ -1,11 +1,14 @@
 package com.example.ws.repository
 
 import android.util.Log
+import com.example.core.network.models.OrganizerProfile
 import com.example.core.network.models.Review
 import com.example.ws.models.GetEventData
 import com.example.ws.network.ApiClient
+import com.example.ws.network.ApiEvents
+import com.example.ws.network.OrganizerAPI
 import com.example.ws.network.RetrofitClient
-import com.example.ws.network.UserApi
+import com.example.ws.network.RetrofitClient.apiService
 import retrofit2.Response
 
 class EventRepository {

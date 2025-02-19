@@ -27,4 +27,5 @@ interface ApiEvents {
 
     @GET("api/Events/details/{eventId}")
     fun getEventDetails(@Path("eventId") eventId: Int): Call<GetEventData>
+
 }
