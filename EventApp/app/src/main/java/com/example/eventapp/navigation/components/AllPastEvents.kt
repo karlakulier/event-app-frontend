@@ -39,7 +39,7 @@ fun AllPastEventsScreen(
                 .fillMaxSize()
                 .padding(bottom = 56.dp)
         ) {
-            Header()
+            Header(navController)
             Text("All Past Events", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.height(16.dp))

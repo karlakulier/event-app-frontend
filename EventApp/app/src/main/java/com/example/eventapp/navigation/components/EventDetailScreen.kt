@@ -55,7 +55,7 @@ fun EventDetailScreen(
                 .fillMaxSize()
                 .padding(bottom = 56.dp)
         ) {
-            Header()
+            Header(navController)
 
             event?.let { e ->
                 Spacer(modifier = Modifier.height(16.dp))

@@ -59,7 +59,7 @@ fun MessageListScreen(chatId: Int, navController:NavController) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Header()
+        Header(navController)
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading && messages.isEmpty()) {

@@ -308,10 +308,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
 }
 
 
-fun submitApplication(eventId: String) {
-    // Ovdje možete implementirati logiku za prijavu na event
-}
-
 @Composable
 fun BottomNavigationBar() {
     Row(

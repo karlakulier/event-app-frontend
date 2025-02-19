@@ -50,7 +50,7 @@ fun PastEventsForOrganizer(navController: NavController, organizerId: Int) {
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
     ) {
 
-        Header()
+        Header(navController)
 
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -14,6 +14,9 @@ interface ApiEvents {
     @GET("api/Events/ActiveEvents")
     fun getActiveEvents(): Call<List<GetEventData>>
 
+    @GET("api/Events/activeEvnetsByOrganizer")
+    suspend fun getActiveEventsByOrganizer(@Query("organizerId") organizerId: Int): List<GetEventData>
+
     @POST("api/Events/filter")
     fun getFilteredEvents(@Body filter: EventFilterData): Call<List<GetEventData>>
 
