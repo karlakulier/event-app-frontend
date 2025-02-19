@@ -26,24 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.add_album_ep_single.MusicContentType
-import com.example.add_album_ep_single.MusicService
-import com.example.core.login.Auth
-import coil.compose.rememberAsyncImagePainter
 import com.example.core.login.Auth
 import com.example.eventapp.R
 import com.example.eventapp.viewmodels.ArtistProfileViewModel
-import com.example.eventapp.viewmodels.ArtistProfileViewModelFactory
 import com.example.ws.models.AlbumData
 import com.example.ws.models.EpData
 import com.example.ws.models.SongData
-import com.example.ws.network.RetrofitClient.apiArtistProfile
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
