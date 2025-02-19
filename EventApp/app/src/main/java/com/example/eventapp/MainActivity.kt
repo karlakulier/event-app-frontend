@@ -255,7 +255,7 @@ class MainActivity : ComponentActivity() {
                                 backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
                             if (chatId != null) {
                                 Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
-                                MessageListScreen(chatId = chatId)
+                                MessageListScreen(chatId = chatId,navController)
                             }
                         }
                         composable("applicationsForEvent/{eventId}") { backStackEntry ->

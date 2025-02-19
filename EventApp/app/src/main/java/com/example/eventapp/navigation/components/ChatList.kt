@@ -46,7 +46,7 @@ fun ChatListScreen(navController: NavController) {
             chats = chatController.getChats(loggedInUserData?.musician?.id!!,"Musician")
             isLoading = false
         }else{
-            chats = chatController.getChats(loggedInUserData?.musician?.id!!,"Organizer")
+            chats = chatController.getChats(loggedInUserData?.organizer?.id!!,"Organizer")
             isLoading = false
         }
 
@@ -56,7 +56,7 @@ fun ChatListScreen(navController: NavController) {
             .fillMaxSize() // Ako treba dodatni razmak
     ) {
         Header()
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(
                     text = "Loading...",
@@ -86,6 +86,11 @@ fun ChatListScreen(navController: NavController) {
                     }
                 }
             }
+        }
+        if(loggedInUserData?.role=="Musician"){
+            ClassicFooter(navController)
+        }else if(loggedInUserData?.role=="Organizer"){
+            OrganizerFooter(navController)
         }
     }
 }

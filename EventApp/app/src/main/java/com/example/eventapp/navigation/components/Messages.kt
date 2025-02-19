@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.core.network.models.Message
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +36,7 @@ import com.example.core.login.Auth.loggedInUserData
 import com.example.ws.services.ChatService
 
 @Composable
-fun MessageListScreen(chatId: Int) {
+fun MessageListScreen(chatId: Int, navController:NavController) {
     var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     val chatController: IChatService = ChatService()
@@ -166,5 +167,11 @@ fun MessageListScreen(chatId: Int) {
                 )
             }
         }
+        if(loggedInUserData?.role=="Musician"){
+            ClassicFooter(navController)
+        }else if(loggedInUserData?.role=="Organizer"){
+            OrganizerFooter(navController)
+        }
     }
+
 }
