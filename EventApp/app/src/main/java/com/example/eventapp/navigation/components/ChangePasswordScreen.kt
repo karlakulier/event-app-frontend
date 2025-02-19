@@ -62,7 +62,6 @@ fun ChangePasswordScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
             Text("Change Password",
                 fontSize = 30.sp,
                 modifier = Modifier.padding(bottom = 24.dp),
