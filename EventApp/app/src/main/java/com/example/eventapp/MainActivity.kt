@@ -51,11 +51,14 @@ import com.example.eventapp.userInterface.SignUp
 import com.example.ws.network.MusicianRetrofit
 import com.example.eventapp.navigation.components.MusicianProfile
 import com.example.eventapp.navigation.components.MusicianProfileViewOnly
+import com.example.eventapp.navigation.components.PasswordProfile
 import com.example.ws.network.NetworkModule
+import com.example.ws.network.PasswordRetrofit
 import com.example.ws.network.RetrofitClient
 import com.example.ws.repository.EventRepository
 import com.example.ws.repository.UserRepository
 import com.example.ws.services.MusicianService
+import com.example.ws.services.PasswordService
 import com.example.ws.services.ReviewService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -227,6 +230,17 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        composable("passwordProfile/{userId}") { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId")?.toInt() ?: 1
+                            val passwordService = PasswordService(PasswordRetrofit.api)
+
+                            PasswordProfile(
+                                userId = userId,
+                                passwordService = passwordService,
+                                navController = navController
+                            )
+                        }
+
                         composable("editProfileScreen") {
                             EditProfileScreen(
                                 navController = navController,
@@ -237,14 +251,14 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("changePasswordScreen") {
+                        composable("changePasswordScreen/{userId}") { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId")?.toInt() ?: 1
+                            val passwordService = PasswordService(PasswordRetrofit.api)
+
                             ChangePasswordScreen(
+                                userId = userId,
                                 navController = navController,
-                                onPasswordChangeSuccess = {
-                                    lifecycleScope.launch {
-                                        snackbarHostState.showSnackbar("Password saved successfully!")
-                                    }
-                                }
+                                passwordService = passwordService
                             )
                         }
                         composable("chatListScreen") {

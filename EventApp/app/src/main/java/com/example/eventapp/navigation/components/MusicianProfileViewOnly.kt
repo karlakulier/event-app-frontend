@@ -31,7 +31,6 @@ fun MusicianProfileViewOnly(
     var email by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
 
-    // Dohvati podatke organizatora
     LaunchedEffect(musicianId) {
         val musician = musicianService.getMusicianById(musicianId)
         if (musician != null) {
@@ -44,7 +43,6 @@ fun MusicianProfileViewOnly(
         }
     }
 
-    // Provjeri je li prijavljeni organizator isti kao onaj koji se prikazuje
     val isLoggedInMusician = Auth.loggedInUserData?.musician?.id == musicianId
     Log.d("MusicianProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Musician ID: $musicianId")
     Log.d("MusicianProfile", "isLoggedInMusician: $isLoggedInMusician")
@@ -71,8 +69,14 @@ fun MusicianProfileViewOnly(
                     Text("Edit Profile")
                 }
 
-                Button(onClick = { navController.navigate("artistProfileScreen")}) {
-                    Text("Back")
+                Button(onClick = {
+                    val userId = Auth.loggedInUserData?.id
+                    Log.d("Navigation", "User ID: $userId")
+                    val destination =
+                        "changePasswordScreen/${Auth.loggedInUserData?.id}"
+                    navController.navigate(destination)
+                }) {
+                    Text("Edit Password")
                 }
 
             }

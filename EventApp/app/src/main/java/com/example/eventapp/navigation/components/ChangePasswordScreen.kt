@@ -1,130 +1,145 @@
 package com.example.eventapp.navigation.components
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.*
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ws.services.PasswordService
+import kotlinx.coroutines.launch
+import com.example.core.network.models.PasswordProfile
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordScreen(
+    userId: Int,
     navController: NavController,
-    onPasswordChangeSuccess: () -> Unit
+    passwordService: PasswordService
 ) {
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
     var errorMessage by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Change Password") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp)
         ) {
-            // Polje za trenutnu lozinku
-            OutlinedTextField(
-                value = currentPassword,
-                onValueChange = { currentPassword = it },
-                label = { Text("Current password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                        Icon(imageVector = icon, contentDescription = null)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Change Password",
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 24.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF000000)
             )
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Polje za novu lozinku
-            OutlinedTextField(
-                value = newPassword,
-                onValueChange = {
-                    newPassword = it
-                    errorMessage = ""
-                                },
-                label = { Text("New password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                        Icon(imageVector = icon, contentDescription = null)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            PasswordEditFields("Current Password", currentPassword) { currentPassword = it }
+            PasswordEditFields("New Password", newPassword) { newPassword = it }
+            PasswordEditFields("Confirm Password", confirmPassword) { confirmPassword = it }
 
-            // Polje za potvrdu lozinke
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = {
-                    confirmPassword = it
-                    errorMessage = ""
-                                },
-                label = { Text("Confirm new password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                        Icon(imageVector = icon, contentDescription = null)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (errorMessage.isNotEmpty()) {
-                Text(
-                    text = errorMessage,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-                )
+                Text(errorMessage, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
             }
 
-            // Gumb za spremanje promjene
             Button(
                 onClick = {
-                    if (newPassword == confirmPassword && isPasswordValid(newPassword)) {
-                        onPasswordChangeSuccess()
-                        navController.popBackStack()
-                    } else {
-                        errorMessage = "Passwords do not match or do not meet the minimum password criteria."
+                    if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                        errorMessage = "All fields are required!"
+                        return@Button
+                    }
+                    if (newPassword != confirmPassword) {
+                        errorMessage = "Passwords do not match!"
+                        return@Button
+                    }
+
+                    val updatedProfile = PasswordProfile(
+                        id = userId,
+                        currentPassword = currentPassword,
+                        newPassword = newPassword,
+                        confirmPassword = confirmPassword,
+                    )
+
+                    coroutineScope.launch {
+                        val result = passwordService.updatePasswordProfile(
+                            userId, updatedProfile
+                        )
+                        if (result.isSuccess) {
+                            snackbarHostState.showSnackbar("Password updated successfully!")
+                            navController.popBackStack()
+                        } else {
+                            errorMessage = result.message
+                        }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
             ) {
-                Text("Save changes")
+                Text("Save", color = Color.White)
             }
         }
     }
 }
 
-fun isPasswordValid(password: String): Boolean {
-    val regex = Regex("^(?=.*[A-Z])(?=.*\\d).{8,}$")
-    return regex.matches(password)
+@Composable
+fun PasswordEditFields(label: String, value: String, onValueChange: (String) -> Unit) {
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "$label:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        OutlinedTextField(
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                    val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    Icon(imageVector = icon, contentDescription = null)
+                }
+            },
+            value = value,
+            onValueChange = { onValueChange(it) },
+            label = { Text("") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
 }
+
