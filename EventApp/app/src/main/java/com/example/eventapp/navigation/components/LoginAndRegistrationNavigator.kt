@@ -16,6 +16,7 @@ import com.example.eventapp.userInterface.MusicianRegistrationScreen
 import com.example.eventapp.userInterface.OrganizerRegistrationScreen
 import com.example.eventapp.userInterface.SignUp
 import com.example.eventapp.userInterface.StartScreen
+import com.example.eventapp.viewmodels.GoogleSignInViewModel
 import com.example.ws.repository.UserRepository
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -32,7 +33,9 @@ fun LoginAndRegistrationNavigator(
     googleSignInLauncher: ActivityResultLauncher<android.content.Intent>,
     googleSignInClient: GoogleSignInClient,
     callbackManager: CallbackManager,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    googleSignInViewModel: GoogleSignInViewModel,
+    signInWithGoogle: () -> Unit
 ) {
     var currentScreen by remember { mutableStateOf("start") }
     var selectedRole by remember { mutableStateOf("") }
@@ -44,10 +47,7 @@ fun LoginAndRegistrationNavigator(
                 onSignUpClick = { currentScreen = "roleSelection" },
                 onLoginClick = { navController.navigate("login") },
                 onGoogleLoginClick = {
-                    googleSignInClient.signOut().addOnCompleteListener {
-                        val signInIntent = googleSignInClient.signInIntent
-                        googleSignInLauncher.launch(signInIntent)
-                    }
+                    signInWithGoogle()
                 },
                 onFacebookLoginClick = {
                     LoginManager.getInstance().registerCallback(callbackManager,

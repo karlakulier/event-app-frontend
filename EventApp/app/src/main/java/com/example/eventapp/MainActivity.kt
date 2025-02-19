@@ -1,11 +1,13 @@
 package com.example.eventapp
 
 import PreviousEventsScreen
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
@@ -15,6 +17,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -35,10 +38,12 @@ import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.eventapp.navigation.components.PastEvents
 import com.example.eventapp.navigation.components.PastEventsForOrganizer
+import com.example.eventapp.services.RetrofitInstance
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.SignUp
+import com.example.eventapp.viewmodels.GoogleSignInViewModel
 import com.example.ws.network.NetworkModule
 import com.example.ws.repository.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -50,11 +55,15 @@ import com.facebook.CallbackManager
 import kotlinx.coroutines.launch
 
 
+
 class MainActivity : ComponentActivity() {
+    private val googleSignInViewModel: GoogleSignInViewModel by viewModels()
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var callbackManager: CallbackManager
-
     private val isLoggedIn = mutableStateOf(false)
+    private lateinit var loginHandler: FacebookAndGoogleLoginHandler
+    private lateinit var navController: NavController
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,34 +73,37 @@ class MainActivity : ComponentActivity() {
         callbackManager = CallbackManager.Factory.create()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("324598534707-7d2frud0f4ajvit46u0jdv0u3gba6r79.apps.googleusercontent.com")
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-
         val googleSignInLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                try {
-                    val account = task.getResult(ApiException::class.java)
-                    Log.d("GoogleSignIn", "Signed in as: ${account?.email}")
-                    isLoggedIn.value = true
-                } catch (e: ApiException) {
-                    Log.e("GoogleSignIn", "Sign-In Failed: ${e.statusCode}")
-                }
+                googleSignInViewModel.handleSignInResult(
+                    GoogleSignIn.getSignedInAccountFromIntent(result.data),
+                    onTokenReceived = { token ->
+                        loginHandler.handleGoogleLoginResult(result.data!!,
+                            onSuccess = { response ->
+                                Log.d("GoogleSignIn", "Login successful: $response")
+                            },
+                            onError = { error ->
+                                Log.e("GoogleSignIn", "Login failed: ${error.message}")
+                            })
+                    },
+                    onError = { error ->
+                        Log.e("GoogleSignIn", "Error: $error")
+                    }
+                )
             }
         }
-
+        val apiService = RetrofitInstance.api
         val userRepository = UserRepository(NetworkModule.userApi)
 
-        val loginHandler = FacebookAndGoogleLoginHandler(
-            googleSignInLauncher = googleSignInLauncher,
-            googleSignInClient = googleSignInClient,
-            callbackManager = callbackManager
-        )
+
 
         setContent {
             EventAppTheme {
@@ -114,12 +126,14 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("loginAndRegistration") {
                             LoginAndRegistrationNavigator(
-                                modifier = Modifier.padding(innerPadding),
+                                googleSignInViewModel = googleSignInViewModel,
                                 navController = navController,
                                 googleSignInLauncher = googleSignInLauncher,
                                 googleSignInClient = googleSignInClient,
                                 callbackManager = callbackManager,
-                                userRepository = userRepository
+                                userRepository = userRepository,
+                                signInWithGoogle = {googleSignInViewModel.signInWithGoogle(googleSignInClient, googleSignInLauncher)
+                                }
                             )
                         }
                         composable("login") {
@@ -163,7 +177,7 @@ class MainActivity : ComponentActivity() {
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
-                                navController = navController, // Dodali smo navController
+                                navController = navController,
                                 onEditClick = {
                                     navController.navigate("organizerProfile/$organizerId")
                                 }
@@ -209,7 +223,7 @@ class MainActivity : ComponentActivity() {
                             val chatId =
                                 backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
                             if (chatId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $chatId")
                                 MessageListScreen(chatId = chatId)
                             }
                         }
@@ -217,7 +231,7 @@ class MainActivity : ComponentActivity() {
                             val eventId =
                                 backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
                             if (eventId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $eventId")
                                 ApplicationsForEvent(navController, eventId)
                             }
                         }

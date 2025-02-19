@@ -26,11 +26,15 @@ import com.google.android.gms.common.api.ApiException
 import java.util.*
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import com.example.eventapp.viewmodels.GoogleSignInViewModel
 
 
 class SignUpActivity : ComponentActivity() {
+    private val googleSignInViewModel: GoogleSignInViewModel by viewModels()
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var callbackManager: CallbackManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,10 +67,14 @@ class SignUpActivity : ComponentActivity() {
 
             LoginAndRegistrationNavigator(
                 navController = navController,
+                googleSignInViewModel = googleSignInViewModel,
                 googleSignInLauncher = googleSignInLauncher,
                 googleSignInClient = googleSignInClient,
                 callbackManager = callbackManager,
-                userRepository = userRepository
+                userRepository = userRepository,
+                signInWithGoogle = {
+                    googleSignInViewModel.signInWithGoogle(googleSignInClient, googleSignInLauncher)
+                }
             )
         }
     }
