@@ -93,6 +93,23 @@ fun OrganizerProfileViewOnly(
                         }) {
                             Text("Prethodni događaji")
                         }
+
+
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                    ) {
+                        Button(onClick = {
+                            val userId = Auth.loggedInUserData?.id
+                            Log.d("Navigation", "User ID: $userId")
+                            val destination =
+                                "changePasswordScreen/${Auth.loggedInUserData?.id}"
+                            navController.navigate(destination)
+                        }) {
+                            Text("Edit Password")
+                        }
                     }
                 } else {
                     Text(
@@ -123,10 +140,10 @@ fun OrganizerProfileViewOnly(
 fun ProfileDetailField(label: String, value: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = "$label:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        TextField(
+        OutlinedTextField(
             value = value,
             onValueChange = {},
-            label = { Text(label) },
+            label = { Text("") },
             enabled = false,
             readOnly = true,
             modifier = Modifier.fillMaxWidth()

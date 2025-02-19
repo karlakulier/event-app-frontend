@@ -33,7 +33,6 @@ fun OrganizerProfile(
 
     val coroutineScope = rememberCoroutineScope()
 
-    // Dohvati podatke o organizatoru
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -136,10 +135,10 @@ fun OrganizerProfile(
 fun ProfileEditField(label: String, value: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = "$label:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        TextField(
+        OutlinedTextField(
             value = value,
             onValueChange = { onValueChange(it) },
-            label = { Text(label) },
+            label = { Text("") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
