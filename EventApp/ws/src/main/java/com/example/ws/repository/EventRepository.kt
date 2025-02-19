@@ -55,4 +55,9 @@ class EventRepository {
             emptyList()
         }
     }
+
+    suspend fun getActiveEventsByOrganizer(organizerId : Int) : List<GetEventData> {
+            return  apievents.getActiveEventsByOrganizer(organizerId)
+    }
+
 }

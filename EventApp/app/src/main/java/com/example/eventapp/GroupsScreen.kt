@@ -42,7 +42,7 @@ fun GroupsScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Header()
+        Header(navController)
 
         SearchBar()
 

@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.add_album_ep_single.MusicService
+import com.example.eventapp.navigation.components.ActiveEventListScreen
 import com.example.eventapp.navigation.components.AlbumDetailsScreen
 import com.example.eventapp.navigation.components.AllPastEventsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
@@ -298,6 +299,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("allPastEventsScreen") {
                             AllPastEventsScreen(navController)
+                        }
+                        composable("allActiveEventsForOrganizer") {
+                            ActiveEventListScreen(navController)
                         }
 
 

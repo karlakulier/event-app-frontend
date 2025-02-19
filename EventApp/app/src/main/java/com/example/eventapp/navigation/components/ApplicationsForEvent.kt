@@ -136,7 +136,7 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Header()
+        Header(navController)
         Box(modifier = Modifier.fillMaxSize()) {
             if (isLoading) {
                 Text(

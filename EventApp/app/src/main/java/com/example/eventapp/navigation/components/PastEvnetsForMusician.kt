@@ -45,7 +45,7 @@ fun PastEventsForMusician(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
     ) {
-        Header()
+        Header(navController)
         Box(modifier = Modifier.fillMaxSize()) {
             when {
                 events.isEmpty() -> Text(

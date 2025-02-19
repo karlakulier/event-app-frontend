@@ -72,7 +72,7 @@ fun OrganizerFooter(navController: NavController) {
             imageVector = Icons.Default.ChatBubbleOutline,
             contentDescription = "Menu",
             modifier = Modifier.size(24.dp).clickable {
-                navController.navigate("chatListScreen")
+                navController.navigate("allActiveEventsForOrganizer")
             }
         )
     }

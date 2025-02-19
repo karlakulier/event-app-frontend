@@ -33,7 +33,7 @@ fun ReviewInputScreen(navController: NavController, reviewService: ReviewService
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Header()
+        Header(navController)
         Text("Write your Review", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))

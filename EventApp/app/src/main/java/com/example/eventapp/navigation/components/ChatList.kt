@@ -55,7 +55,7 @@ fun ChatListScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize() // Ako treba dodatni razmak
     ) {
-        Header()
+        Header(navController)
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(

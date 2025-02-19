@@ -60,7 +60,7 @@ fun OrganizerProfileViewOnly(
                 .fillMaxSize()
                 .padding(bottom = 56.dp)
         ) {
-            Header()
+            Header(navController)
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(

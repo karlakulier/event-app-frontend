@@ -35,7 +35,7 @@ import com.example.eventapp.ui.theme.ProfileField
 fun PreviousEvents(navController: NavController) {
     Scaffold(
         topBar = {
-          Header()
+          Header(navController)
         }
     ) { innerPadding ->
         Column(
