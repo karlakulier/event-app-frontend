@@ -403,11 +403,11 @@ fun SortByDropdown(viewModel: GetEventViewModel = viewModel()) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun formatDateTime(dateTimeString: String): String {
-    val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss") // BEZ milisekundi
+    val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     val formatterOutput = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
     return try {
-        val dateTime = LocalDateTime.parse(dateTimeString, formatterInput) // Koristi LocalDateTime jer nema vremenske zone
+        val dateTime = LocalDateTime.parse(dateTimeString, formatterInput)
         dateTime.format(formatterOutput)
     } catch (e: Exception) {
         Log.e("DateFormatter", "Error parsing date: ${e.message}")
