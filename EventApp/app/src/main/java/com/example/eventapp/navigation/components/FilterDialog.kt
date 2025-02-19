@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -29,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.eventapp.viewmodels.GetEventViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterDialog(
     isVisible: Boolean,
@@ -38,10 +43,12 @@ fun FilterDialog(
 ) {
     if (isVisible) {
         var location by remember { mutableStateOf("") }
+        var expanded by remember { mutableStateOf(false) }
         var date by remember { mutableStateOf("") }
         var apiFormattedDate by remember { mutableStateOf("") }
         val selectedGenres = remember { mutableStateListOf<String>() }
         val genres = listOf("Blues", "Jazz", "Pop", "Rock", "Opera", "Electronic", "Country", "Punk", "Rap", "Metal")
+        val cities = listOf("Zagreb", "Split", "Rijeka", "Osijek", "Zadar", "Pula", "Slavonski Brod", "Karlovac", "Varaždin", "Šibenik", "Dubrovnik")
         var showDatePicker by remember { mutableStateOf(false) }
 
         LaunchedEffect(isVisible) {
@@ -57,14 +64,43 @@ fun FilterDialog(
             title = { Text("FILTER BY", fontWeight = FontWeight.Bold) },
             text = {
                 Column {
-                    OutlinedTextField(
-                        value = location,
-                        onValueChange = { location = it },
-                        label = { Text("Location") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = location,
+                            onValueChange = { location = it },
+                            label = { Text("Location") },
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Dropdown",
+                                    modifier = Modifier.clickable { expanded = true }
+                                )
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            cities.forEach { city ->
+                                DropdownMenuItem(
+                                    text = { Text(city) },
+                                    onClick = {
+                                        location = city
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
-                    // Release date input with DatePicker
+
                     OutlinedTextField(
                         value = date,
                         onValueChange = {},
@@ -76,10 +112,11 @@ fun FilterDialog(
                                 modifier = Modifier.clickable { showDatePicker = true }
                             )
                         },
-                        readOnly = true, // Sprečava direktno uređivanje
+                        readOnly = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+
                     Text("Genre", fontWeight = FontWeight.Bold)
                     LazyColumn {
                         items(genres) { genre ->
@@ -120,8 +157,8 @@ fun FilterDialog(
         if (showDatePicker) {
             DatePickerModal(
                 onDateSelected = { displayDate, apiDate ->
-                    date = displayDate // Prikaz korisniku
-                    apiFormattedDate = apiDate // Format za API
+                    date = displayDate
+                    apiFormattedDate = apiDate
                 },
                 onDismiss = { showDatePicker = false }
             )
