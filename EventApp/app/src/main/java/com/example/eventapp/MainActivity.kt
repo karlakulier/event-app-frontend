@@ -24,16 +24,23 @@ import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
 import com.example.eventapp.navigation.components.LoginAndRegistrationNavigator
 import com.example.eventapp.navigation.components.LoginPage
 import com.example.eventapp.navigation.components.MessageListScreen
+import com.example.eventapp.navigation.components.PastEventsForMusician
 import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
+import com.example.eventapp.navigation.components.PastEvents
+import com.example.eventapp.navigation.components.PastEventsForOrganizer
 import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
+import com.example.eventapp.userInterface.SignUp
+import com.example.ws.network.NetworkModule
+import com.example.ws.repository.UserRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -41,6 +48,7 @@ import com.google.android.gms.common.api.ApiException
 import com.facebook.FacebookSdk
 import com.facebook.CallbackManager
 import kotlinx.coroutines.launch
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -50,6 +58,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         FacebookSdk.sdkInitialize(applicationContext)
         callbackManager = CallbackManager.Factory.create()
@@ -75,6 +84,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        val userRepository = UserRepository(NetworkModule.userApi)
 
         val loginHandler = FacebookAndGoogleLoginHandler(
             googleSignInLauncher = googleSignInLauncher,
@@ -107,14 +118,18 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 googleSignInLauncher = googleSignInLauncher,
                                 googleSignInClient = googleSignInClient,
-                                callbackManager = callbackManager
+                                callbackManager = callbackManager,
+                                userRepository = userRepository
                             )
                         }
                         composable("login") {
                             LoginPage(navController = navController)
                         }
                         composable("signUp") {
-                            SignUpScreen(navController = navController)
+                            SignUp(
+                                onNextClick = { role -> navController.navigate("registration/$role") },
+                                onBackClick = { navController.popBackStack() }
+                            )
                         }
                         composable("controlNumber") {
                             ControlNumberScreen(navController = navController)
@@ -144,9 +159,11 @@ class MainActivity : ComponentActivity() {
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(OrganizerRetrofit.api)
+
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
+                                navController = navController, // Dodali smo navController
                                 onEditClick = {
                                     navController.navigate("organizerProfile/$organizerId")
                                 }
@@ -157,13 +174,13 @@ class MainActivity : ComponentActivity() {
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(OrganizerRetrofit.api)
 
-                            // Prosljeđivanje navController u OrganizerProfile
                             OrganizerProfile(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
-                                navController = rememberNavController()
+                                navController = navController
                             )
                         }
+
 
                         composable("editProfileScreen") {
                             EditProfileScreen(
@@ -203,6 +220,13 @@ class MainActivity : ComponentActivity() {
                                 Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
                                 ApplicationsForEvent(navController, eventId)
                             }
+                        }
+                        composable("pastEventsForMusician") {
+                            PastEventsForMusician(navController = navController)
+                        }
+                        composable("pastEventsScreen/{organizerId}") { backStackEntry ->
+                            val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
+                            PastEventsForOrganizer(navController = navController, organizerId = organizerId)
                         }
                     }
                 }

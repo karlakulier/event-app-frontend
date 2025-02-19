@@ -2,7 +2,6 @@ package com.example.eventapp.navigation.components
 
 import java.text.SimpleDateFormat
 import java.util.*
-
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,17 +10,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.core.login.Auth
-import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 
 @Composable
 fun OrganizerProfileViewOnly(
     organizerId: Int,
     organizerService: OrganizerService,
+    navController: NavController, // Dodan NavController za navigaciju
     onEditClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
@@ -30,7 +29,7 @@ fun OrganizerProfileViewOnly(
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
 
-
+    // Dohvati podatke organizatora
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -49,17 +48,23 @@ fun OrganizerProfileViewOnly(
         }
     }
 
-
+    // Provjeri je li prijavljeni organizator isti kao onaj koji se prikazuje
     val isLoggedInOrganizer = Auth.loggedInUserData?.organizer?.id == organizerId
     Log.d("OrganizerProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Organizer ID: $organizerId")
     Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
+        Header()
+        Text(
+            text = "Profile",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF6200EE)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Prikaz detalja organizatora
         ProfileDetailField("Name", "$name $surname")
         ProfileDetailField("Email", email)
         ProfileDetailField("Contact", contact)
@@ -67,21 +72,36 @@ fun OrganizerProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Ako je prijavljeni organizator, prikaži gumbe jedan pored drugog
         if (isLoggedInOrganizer) {
-            Box(
+
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
             ) {
                 Button(onClick = { onEditClick() }) {
                     Text("Edit Profile")
                 }
+
+                Button(onClick = {
+                    navController.navigate("pastEventsScreen/$organizerId")
+                }) {
+                    Text("Prethodni događaji")
+                }
             }
+
         } else {
-            Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
+
+            Text(
+                "You do not have permission to edit this profile.",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
         }
     }
+
 }
+
 
 @Composable
 fun ProfileDetailField(label: String, value: String) {
@@ -97,12 +117,4 @@ fun ProfileDetailField(label: String, value: String) {
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
-}
-
-@Preview
-@Composable
-fun PreviewOrganizerProfileViewOnly() {
-    val organizerService = OrganizerService(OrganizerRetrofit.api)
-    val organizerId = 1
-    OrganizerProfileViewOnly(organizerId = organizerId, organizerService = organizerService, onEditClick = {})
 }

@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface IChatApi {
     @GET("api/Chat/ByUser")
-    suspend fun getChats(@Query("userId") userId: Int): List<Chat>
+    suspend fun getChats(@Query("userId") userId: Int, @Query("role") role: String): List<Chat>
 
     @GET("api/Message/ByChatId")
     suspend fun getMessages(@Query("chatId") chatId: Int): List<Message>

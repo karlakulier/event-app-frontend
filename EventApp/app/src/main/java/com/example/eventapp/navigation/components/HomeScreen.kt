@@ -35,11 +35,16 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import com.example.core.login.Auth
 import com.example.eventapp.viewmodels.GetEventViewModel
 import com.example.ws.models.GetEventData
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.air.eventapplication.ApplicationModul
+import com.example.eventapp.viewmodels.GetEventViewModelFactory
+import com.example.ws.repository.EventRepository
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -47,12 +52,16 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: GetEventViewModel = viewModel()
+    viewModel: GetEventViewModel = viewModel(factory = GetEventViewModelFactory(EventRepository()))
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
+    val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchSortedEvents("relevance")
+    }
 
     Scaffold(
         topBar = {
@@ -93,7 +102,11 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomNavigationBar()
+            if (isOrganizer) {
+                OrganizerFooter(navController = navController)
+            } else {
+                ClassicFooter(navController = navController)
+            }
         }
     ) { paddingValues ->
         Column(
@@ -220,6 +233,7 @@ fun ActiveEventsSection(
 @Composable
 fun EventCard(event: GetEventData, navController: NavController) {
     val loggedUser = Auth.loggedInUserData
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -244,10 +258,10 @@ fun EventCard(event: GetEventData, navController: NavController) {
             )
 
             // Gumb za prijavu
-            if (loggedUser?.role == "Musician") {
+            if (loggedUser?.role == "Musician" && event.finished==false) {
                 Button(
                     onClick = {
-                        navController.navigate("eventInputScreen")
+                        ApplicationModul.SendApplication(context,event.id,loggedUser.musician?.id!!)
                     },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -333,7 +347,7 @@ fun BottomNavigationBar() {
 }
 
 @Composable
-fun SortByDropdown() {
+fun SortByDropdown(viewModel: GetEventViewModel = viewModel()) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Relevance") }
 
@@ -364,6 +378,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Relevance"
                     expanded = false
+                    viewModel.fetchSortedEvents("relevance")
                 }
             )
             DropdownMenuItem(
@@ -371,6 +386,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Date from newest"
                     expanded = false
+                    viewModel.fetchSortedEvents("newest")
                 }
             )
             DropdownMenuItem(
@@ -378,6 +394,7 @@ fun SortByDropdown() {
                 onClick = {
                     selectedOption = "Date from oldest"
                     expanded = false
+                    viewModel.fetchSortedEvents("oldest")
                 }
             )
         }
@@ -386,13 +403,14 @@ fun SortByDropdown() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun formatDateTime(dateTimeString: String): String {
-    val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SS")
+    val formatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     val formatterOutput = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
     return try {
         val dateTime = LocalDateTime.parse(dateTimeString, formatterInput)
         dateTime.format(formatterOutput)
     } catch (e: Exception) {
+        Log.e("DateFormatter", "Error parsing date: ${e.message}")
         "Invalid date"
     }
 }

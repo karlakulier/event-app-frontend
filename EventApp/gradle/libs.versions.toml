@@ -28,6 +28,8 @@ fragment-ktx = "1.8.5"
 coil-compose = "2.2.2"
 media3CommonKtx = "1.5.1"
 runtimeLivedata = "1.7.7"
+lifecycleViewmodelKtx = "2.6.2"
+playServicesLocation = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -66,6 +68,8 @@ androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -35,4 +35,50 @@ class GetEventRequestHandler {
             }
         })
     }
+    fun fetchPastEventsForMusician(musicianId: Int, responseListener: ResponseListener<List<GetEventData>>) {
+        val call = apiEvents.getPastEventsForMusician(musicianId)  // Prosljeđujemo ID glazbenika
+
+        call.enqueue(object : Callback<List<GetEventData>> {
+            override fun onResponse(
+                call: Call<List<GetEventData>>,
+                response: Response<List<GetEventData>>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    responseListener.onSuccessfulResponse(response.body()!!)
+                } else {
+                    Log.e("GetEventRequestHandler", "Failed to fetch past events")
+                    responseListener.onErrorResponse(
+                        ErrorResponseBody(response.code(), response.message())
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetEventData>>, t: Throwable) {
+                responseListener.onNetworkFailure(t)
+            }
+        })
+    }
+    fun fetchPastEventsByOrganizer(organizerId: Int, responseListener: ResponseListener<List<GetEventData>>) {
+        val call = RetrofitClient.apiEvents.getPastEventsByOrganizer(organizerId, finished = true)
+
+        call.enqueue(object : Callback<List<GetEventData>> {
+            override fun onResponse(
+                call: Call<List<GetEventData>>,
+                response: Response<List<GetEventData>>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    responseListener.onSuccessfulResponse(response.body()!!)
+                } else {
+                    Log.e("GetEventRequestHandler", "Failed to fetch past events for organizer")
+                    responseListener.onErrorResponse(
+                        ErrorResponseBody(response.code(), response.message())
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetEventData>>, t: Throwable) {
+                responseListener.onNetworkFailure(t)
+            }
+        })
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.core.chat.IChatService
+import com.example.core.login.Auth.loggedInUserData
 import com.example.core.network.models.Chat
 import com.example.ws.services.ChatService
 
@@ -33,17 +34,22 @@ fun ChatCard(chat: Chat) {
     }
 }
 
-// Glavna funkcija za prikaz liste chatova
+
 @Composable
 fun ChatListScreen(navController: NavController) {
     var chats by remember { mutableStateOf<List<Chat>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     val chatController: IChatService = ChatService()
 
-    // Simulacija mrežnog poziva
     LaunchedEffect(Unit) {
-        chats = chatController.getChats(1)
-        isLoading = false
+        if(loggedInUserData?.role == "Musician"){
+            chats = chatController.getChats(loggedInUserData?.musician?.id!!,"Musician")
+            isLoading = false
+        }else{
+            chats = chatController.getChats(loggedInUserData?.musician?.id!!,"Organizer")
+            isLoading = false
+        }
+
     }
     Column(
         modifier = Modifier

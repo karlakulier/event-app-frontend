@@ -1,4 +1,4 @@
-package com.example.core.login
+    package com.example.core.login
 
 data class LoginUserData(
     val id: Int,
