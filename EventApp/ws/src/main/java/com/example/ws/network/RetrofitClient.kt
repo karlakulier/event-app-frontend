@@ -29,6 +29,11 @@ object RetrofitClient {
     val apiEvents: ApiEvents by lazy {
         retrofit.create(ApiEvents::class.java)
     }
-
-
+    val reviewApi: IReviewApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(IReviewApi::class.java)
+    }
 }

@@ -1,8 +1,10 @@
 package com.example.ws.repository
 
 import android.util.Log
+import com.example.core.network.models.Review
 import com.example.ws.models.GetEventData
 import com.example.ws.network.ApiClient
+import com.example.ws.network.RetrofitClient
 import com.example.ws.network.UserApi
 import retrofit2.Response
 
@@ -24,6 +26,13 @@ class EventRepository {
         } catch (e: Exception) {
             Log.e("EventRepository", "Exception in getSortedEvents()", e)
             Response.error(500, okhttp3.ResponseBody.create(null, "Internal error"))
+        }
+    }
+    suspend fun getEventReviews(eventId: Int): List<Review> {
+        return try {
+            RetrofitClient.reviewApi.getReviewsByEvent(eventId)
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 }

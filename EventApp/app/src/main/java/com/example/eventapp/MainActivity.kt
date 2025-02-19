@@ -1,6 +1,7 @@
 package com.example.eventapp
 
 import PreviousEventsScreen
+import ReviewInputScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -24,6 +25,7 @@ import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EventDetailScreen
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
@@ -40,7 +42,10 @@ import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.SignUp
 import com.example.ws.network.NetworkModule
+import com.example.ws.network.RetrofitClient
+import com.example.ws.repository.EventRepository
 import com.example.ws.repository.UserRepository
+import com.example.ws.services.ReviewService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -96,6 +101,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
+                val eventRepository = remember { EventRepository() }
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(key1 = isLoggedIn.value) {
@@ -110,6 +116,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
+
                         startDestination = "loginAndRegistration"
                     ) {
                         composable("loginAndRegistration") {
@@ -227,6 +234,15 @@ class MainActivity : ComponentActivity() {
                         composable("pastEventsScreen/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
                             PastEventsForOrganizer(navController = navController, organizerId = organizerId)
+                        }
+                        composable("eventDetailsScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            EventDetailScreen(navController, eventId, eventRepository = EventRepository())
+                        }
+                        composable("reviewInputScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) } // ✅ Kreiraj ReviewService
+                            ReviewInputScreen(navController, reviewService, eventId)
                         }
                     }
                 }

@@ -70,8 +70,8 @@ fun PastEventsForOrganizer(navController: NavController, organizerId: Int) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
-                                    navController.navigate("eventDetailsScreen/${event.id}")
+
+                                .clickable { navController.navigate("eventDetailsScreen/${event.id}")
                                 }
                         ) {
                             EventCard(event = event, navController)

@@ -241,7 +241,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-                // Navigacija na detalje događaja
+                navController.navigate("eventDetailsScreen/${event.id}")
             }
     ) {
         Box(
