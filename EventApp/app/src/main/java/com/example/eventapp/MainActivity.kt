@@ -38,8 +38,12 @@ import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.SignUp
+import com.example.ws.network.MusicianRetrofit
+import com.example.eventapp.navigation.components.MusicianProfile
+import com.example.eventapp.navigation.components.MusicianProfileViewOnly
 import com.example.ws.network.NetworkModule
 import com.example.ws.repository.UserRepository
+import com.example.ws.services.MusicianService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -180,6 +184,31 @@ class MainActivity : ComponentActivity() {
                                 organizerId = organizerId,
                                 organizerService = organizerService,
                                 navController = rememberNavController()
+                            )
+                        }
+
+                        composable("musicianProfileViewOnly/{musicianId}") { backStackEntry ->
+                            val musicianId = backStackEntry.arguments?.getString("musicianId")?.toInt() ?: 1
+                            val musicianService = MusicianService(MusicianRetrofit.api)
+
+                            MusicianProfileViewOnly(
+                                musicianId = musicianId,
+                                musicianService = musicianService,
+                                navController = navController,
+                                onEditClick = {
+                                    navController.navigate("musicianProfile/$musicianId")
+                                }
+                            )
+                        }
+
+                        composable("musicianProfile/{musicianId}") { backStackEntry ->
+                            val musicianId = backStackEntry.arguments?.getString("musicianId")?.toInt() ?: 1
+                            val musicianService = MusicianService(MusicianRetrofit.api)
+
+                            MusicianProfile(
+                                musicianId = musicianId,
+                                musicianService = musicianService,
+                                navController = navController
                             )
                         }
 

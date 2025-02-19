@@ -1,6 +1,7 @@
 package com.example.eventapp.navigation.components
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.login.Auth
 import com.example.eventapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -371,7 +373,16 @@ fun ArtistProfileScreen(navController: NavController) {
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(45.dp)
-                            .clickable { navController.navigate("editProfileScreen") }
+                            .clickable {
+                                val userRole = Auth.loggedInUserData?.role
+                                Log.d("Navigation", "User role: $userRole")
+                                val destination = if (userRole == "Musician") {
+                                    "musicianProfileViewOnly/${Auth.loggedInUserData?.musician?.id}"
+                                } else {
+                                    "artistProfileScreen"
+                                }
+                                navController.navigate(destination)
+                            }
                     )
                 }
             }
