@@ -30,7 +30,7 @@ fun ChatCard(chat: Chat) {
     ) {
         Text(chat.id.toString(), fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(chat.name, fontSize = 14.sp, color = Color.White)
+        Text(chat.name, fontSize = 14.sp)
     }
 }
 
