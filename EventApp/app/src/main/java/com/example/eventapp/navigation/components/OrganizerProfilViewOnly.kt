@@ -2,7 +2,6 @@ package com.example.eventapp.navigation.components
 
 import java.text.SimpleDateFormat
 import java.util.*
-
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,19 +10,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.core.login.Auth
-import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 
 @Composable
 fun OrganizerProfileViewOnly(
     organizerId: Int,
     organizerService: OrganizerService,
-    onEditClick: () -> Unit,
-    onPastEventsClick: () -> Unit
+    navController: NavController, // Dodan NavController za navigaciju
+    onEditClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
@@ -56,7 +54,13 @@ fun OrganizerProfileViewOnly(
     Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6200EE))
+        Header()
+        Text(
+            text = "Profile",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF6200EE)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -70,6 +74,7 @@ fun OrganizerProfileViewOnly(
 
         // Ako je prijavljeni organizator, prikaži gumbe jedan pored drugog
         if (isLoggedInOrganizer) {
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
@@ -78,15 +83,25 @@ fun OrganizerProfileViewOnly(
                     Text("Edit Profile")
                 }
 
-                Button(onClick = { onPastEventsClick() }) {
+                Button(onClick = {
+                    navController.navigate("pastEventsScreen/$organizerId")
+                }) {
                     Text("Prethodni događaji")
                 }
             }
+
         } else {
-            Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
+
+            Text(
+                "You do not have permission to edit this profile.",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
         }
     }
+
 }
+
 
 @Composable
 fun ProfileDetailField(label: String, value: String) {
@@ -103,4 +118,3 @@ fun ProfileDetailField(label: String, value: String) {
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
-
