@@ -38,7 +38,6 @@ import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.eventapp.navigation.components.PastEvents
 import com.example.eventapp.navigation.components.PastEventsForOrganizer
-import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.userInterface.SignUp
@@ -171,7 +170,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
-                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+                            val organizerService = OrganizerService(RetrofitClient.organizerApi)
 
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
@@ -185,7 +184,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("organizerProfile/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
-                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+                            val organizerService = OrganizerService(RetrofitClient.organizerApi)
 
                             OrganizerProfile(
                                 organizerId = organizerId,
