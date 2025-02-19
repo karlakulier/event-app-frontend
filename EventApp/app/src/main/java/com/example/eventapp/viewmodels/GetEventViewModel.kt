@@ -165,7 +165,6 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
     fun fetchEventReviews(eventId: Int) {
         viewModelScope.launch {
             try {
-                // getEventReviews sada vraća List<Review>
                 val reviewsList = eventRepository.getEventReviews(eventId)
                 _reviews.postValue(reviewsList)
             } catch (e: Exception) {
@@ -173,5 +172,10 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
             }
         }
     }
-
+    fun fetchAllPastEvents() {
+        viewModelScope.launch {
+            val events = eventRepository.getAllPastEvents()
+            _pastEvents.postValue(events)
+        }
+    }
 }

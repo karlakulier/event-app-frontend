@@ -20,7 +20,7 @@ import com.example.ws.services.OrganizerService
 fun OrganizerProfileViewOnly(
     organizerId: Int,
     organizerService: OrganizerService,
-    navController: NavController, // Dodan NavController za navigaciju
+    navController: NavController,
     onEditClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
@@ -53,55 +53,71 @@ fun OrganizerProfileViewOnly(
     Log.d("OrganizerProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Organizer ID: $organizerId")
     Log.d("OrganizerProfile", "isLoggedInOrganizer: $isLoggedInOrganizer")
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Header()
-        Text(
-            text = "Profile",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF6200EE)
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 56.dp) // Ostavlja prostor za footer
+        ) {
+            Header()
 
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Profile",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF6200EE)
+                )
 
-        ProfileDetailField("Name", "$name $surname")
-        ProfileDetailField("Email", email)
-        ProfileDetailField("Contact", contact)
-        ProfileDetailField("Birth Date", birthDate)
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                ProfileDetailField("Name", "$name $surname")
+                ProfileDetailField("Email", email)
+                ProfileDetailField("Contact", contact)
+                ProfileDetailField("Birth Date", birthDate)
 
+                Spacer(modifier = Modifier.height(16.dp))
 
-        if (isLoggedInOrganizer) {
+                if (isLoggedInOrganizer) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                    ) {
+                        Button(onClick = { onEditClick() }) {
+                            Text("Edit Profile")
+                        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
-            ) {
-                Button(onClick = { onEditClick() }) {
-                    Text("Edit Profile")
-                }
-
-                Button(onClick = {
-                    navController.navigate("pastEventsScreen/$organizerId")
-                }) {
-                    Text("Prethodni događaji")
+                        Button(onClick = {
+                            navController.navigate("pastEventsScreen/$organizerId")
+                        }) {
+                            Text("Prethodni događaji")
+                        }
+                    }
+                } else {
+                    Text(
+                        "You do not have permission to edit this profile.",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
             }
+        }
 
-        } else {
-
-            Text(
-                "You do not have permission to edit this profile.",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+        // Footer - provjera da li je organizator
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            if (isLoggedInOrganizer) {
+                OrganizerFooter(navController = navController)
+            } else {
+                ClassicFooter(navController = navController)
+            }
         }
     }
-
 }
-
 
 @Composable
 fun ProfileDetailField(label: String, value: String) {

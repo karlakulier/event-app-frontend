@@ -105,7 +105,7 @@ fun OrganizerProfile(
         }
     }
 
-    // ✅ Ispravljen AlertDialog s navigacijom na organizerProfileViewOnly
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {

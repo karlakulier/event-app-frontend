@@ -29,25 +29,36 @@ fun ReviewViewDetail(eventId: Int, viewModel: GetEventViewModel = viewModel()) {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Reviews", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            text = "Reviews",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (reviews.isEmpty()) {
-            Text(
-                text = "No reviews available.",
-                fontSize = 16.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No reviews available.",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            }
         } else {
+
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.5f),
+                    .fillMaxSize()
+                    .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(reviews) { review ->

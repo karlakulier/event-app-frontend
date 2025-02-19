@@ -47,68 +47,112 @@ fun EventDetailScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        event?.let { e ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Header()
-                Text(text = "Event Details", style = MaterialTheme.typography.headlineMedium)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 56.dp)
+        ) {
+            Header()
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(text = "Description: ${e.description}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Location: ${e.location}", style = MaterialTheme.typography.bodySmall)
-                Text(text = "Date: ${e.dateTime}", style = MaterialTheme.typography.bodySmall)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Organizator sekcija s imenom i navigacijom
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+            event?.let { e ->
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            e.organizerId?.let { id ->
-                                navController.navigate("organizerProfileViewOnly/$id")
-                            }
-                        }
+                        .padding(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Organizer Profile",
-                        tint = Color.Blue,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+
                     Text(
-                        text = "Organizer: ${organizerName ?: "Loading..."}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Blue
+                        text = e.description,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                if (loggedInUserRole == "Visitor") {
-                    Button(
-                        onClick = { navController.navigate("reviewInputScreen/$eventId") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                e.organizerId?.let { id ->
+                                    navController.navigate("organizerProfileViewOnly/$id")
+                                }
+                            }
+                            .padding(8.dp)
                     ) {
-                        Text(text = "Write a Review", color = Color.White)
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Organizer Profile",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = organizerName ?: "Loading...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    Text(
+                        text = "📍 Location: ${e.location}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
+                    )
+
+                    Text(
+                        text = "📅 Date: ${e.dateTime}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    if (loggedInUserRole == "Visitor") {
+                        Button(
+                            onClick = { navController.navigate("reviewInputScreen/$eventId") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                        ) {
+                            Text(text = "Write a Review", color = Color.White)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    ReviewViewDetail(eventId, viewModel)
+                }
+            } ?: run {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
             }
+        }
 
-            Box(modifier = Modifier.fillMaxHeight()) {
-                ReviewViewDetail(eventId, viewModel)
-            }
-        } ?: run {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            if (loggedInUserRole == "Organizer") {
+                OrganizerFooter(navController = navController)
+            } else {
+                ClassicFooter(navController = navController)
             }
         }
     }

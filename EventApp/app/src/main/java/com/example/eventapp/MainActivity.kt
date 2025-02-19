@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.AllPastEventsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
@@ -244,6 +245,10 @@ class MainActivity : ComponentActivity() {
                             val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) } // ✅ Kreiraj ReviewService
                             ReviewInputScreen(navController, reviewService, eventId)
                         }
+                        composable("allPastEventsScreen") {
+                            AllPastEventsScreen(navController)
+                        }
+
                     }
                 }
             }

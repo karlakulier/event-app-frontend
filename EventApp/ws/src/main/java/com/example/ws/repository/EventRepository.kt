@@ -13,6 +13,7 @@ import retrofit2.Response
 
 class EventRepository {
     private val api = ApiClient.api
+    private val apievents = RetrofitClient.apiEvents
 
     suspend fun getSortedEvents(sortBy: String): Response<List<GetEventData>> {
         return try {
@@ -35,6 +36,22 @@ class EventRepository {
         return try {
             RetrofitClient.reviewApi.getReviewsByEvent(eventId)
         } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getAllPastEvents(): List<GetEventData> {
+        return try {
+            val response = apievents.getAllPastEvents()
+            if (response.isSuccessful) {
+                Log.d("EventRepository", "Fetched past events: ${response.body()?.size ?: 0}")
+                response.body() ?: emptyList()
+            } else {
+                Log.e("EventRepository", "Error fetching past events: ${response.errorBody()?.string()}")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception in getAllPastEvents(): ${e.message}")
             emptyList()
         }
     }
