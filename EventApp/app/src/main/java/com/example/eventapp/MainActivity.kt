@@ -1,6 +1,7 @@
 package com.example.eventapp
 
 import PreviousEventsScreen
+import ReviewInputScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -18,12 +19,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.eventapp.navigation.components.AllPastEventsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EventDetailScreen
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
@@ -43,8 +46,11 @@ import com.example.ws.network.MusicianRetrofit
 import com.example.eventapp.navigation.components.MusicianProfile
 import com.example.eventapp.navigation.components.MusicianProfileViewOnly
 import com.example.ws.network.NetworkModule
+import com.example.ws.network.RetrofitClient
+import com.example.ws.repository.EventRepository
 import com.example.ws.repository.UserRepository
 import com.example.ws.services.MusicianService
+import com.example.ws.services.ReviewService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -52,6 +58,7 @@ import com.google.android.gms.common.api.ApiException
 import com.facebook.FacebookSdk
 import com.facebook.CallbackManager
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
 
 
 class MainActivity : ComponentActivity() {
@@ -100,6 +107,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
+                val eventRepository = remember { EventRepository() }
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(key1 = isLoggedIn.value) {
@@ -114,6 +122,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
+
                         startDestination = "loginAndRegistration"
                     ) {
                         composable("loginAndRegistration") {
@@ -257,6 +266,19 @@ class MainActivity : ComponentActivity() {
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
                             PastEventsForOrganizer(navController = navController, organizerId = organizerId)
                         }
+                        composable("eventDetailsScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            EventDetailScreen(navController, eventId, eventRepository = EventRepository())
+                        }
+                        composable("reviewInputScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) } // ✅ Kreiraj ReviewService
+                            ReviewInputScreen(navController, reviewService, eventId)
+                        }
+                        composable("allPastEventsScreen") {
+                            AllPastEventsScreen(navController)
+                        }
+
                     }
                 }
             }

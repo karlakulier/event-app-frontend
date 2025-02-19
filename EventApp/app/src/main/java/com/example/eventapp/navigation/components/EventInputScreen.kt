@@ -59,11 +59,11 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
     val dateTimeFormatted = try {
         if (date.isNotEmpty() && startTime.isNotEmpty()) {
-            val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault()) // Format koji korisnik unosi
-            val parsedDate = inputFormat.parse("$date $startTime") // Spajamo datum i vrijeme
+            val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
+            val parsedDate = inputFormat.parse("$date $startTime")
 
             val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-            outputFormat.timeZone = TimeZone.getTimeZone("UTC") // Postavi UTC vremensku zonu
+            outputFormat.timeZone = TimeZone.getTimeZone("UTC")
             outputFormat.format(parsedDate)
         } else {
             ""
@@ -175,7 +175,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unos za vrijeme početka i završetka
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -186,7 +186,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
                 Icon(
                     painter = painterResource(id = R.drawable.time),
                     contentDescription = "Pick start time",
-                    modifier = Modifier.size(20.dp) // Ikona sata za početno vrijeme
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = if (startTime.isEmpty()) "Pick start time" else startTime)
@@ -197,7 +197,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             ) { Icon(
                 painter = painterResource(id = R.drawable.time),
                 contentDescription = "Pick end time",
-                modifier = Modifier.size(20.dp) // Ikona sata za završno vrijeme
+                modifier = Modifier.size(20.dp)
             )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = if (endTime.isEmpty()) "Pick end time" else endTime)
@@ -304,7 +304,7 @@ fun DatePickerDialog(onDateSelected: (String) -> Unit, onDismissRequest: () -> U
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
-        // Onemogućava odabir prošlih datuma
+
         datePickerDialog.datePicker.minDate = currentDateMillis
 
         datePickerDialog.show()
@@ -338,7 +338,7 @@ fun LocationPickerField(location: String, onLocationSelected: (String) -> Unit) 
             value = query,
             onValueChange = {
                 query = it
-                onLocationSelected(it) // Ažurira lokaciju čim korisnik unese ručno
+                onLocationSelected(it)
             },
             label = { Text("Enter location") },
             trailingIcon = {
@@ -351,7 +351,7 @@ fun LocationPickerField(location: String, onLocationSelected: (String) -> Unit) 
                             isLoading = true
                             getCurrentLocation(context, fusedLocationClient) { address ->
                                 query = address
-                                onLocationSelected(address) // Ažurira kada dohvaća automatsku lokaciju
+                                onLocationSelected(address)
                                 isLoading = false
                             }
                         }

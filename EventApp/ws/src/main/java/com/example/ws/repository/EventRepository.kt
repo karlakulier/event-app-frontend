@@ -1,13 +1,19 @@
 package com.example.ws.repository
 
 import android.util.Log
+import com.example.core.network.models.OrganizerProfile
+import com.example.core.network.models.Review
 import com.example.ws.models.GetEventData
 import com.example.ws.network.ApiClient
-import com.example.ws.network.UserApi
+import com.example.ws.network.ApiEvents
+import com.example.ws.network.OrganizerAPI
+import com.example.ws.network.RetrofitClient
+import com.example.ws.network.RetrofitClient.apiService
 import retrofit2.Response
 
 class EventRepository {
     private val api = ApiClient.api
+    private val apievents = RetrofitClient.apiEvents
 
     suspend fun getSortedEvents(sortBy: String): Response<List<GetEventData>> {
         return try {
@@ -24,6 +30,29 @@ class EventRepository {
         } catch (e: Exception) {
             Log.e("EventRepository", "Exception in getSortedEvents()", e)
             Response.error(500, okhttp3.ResponseBody.create(null, "Internal error"))
+        }
+    }
+    suspend fun getEventReviews(eventId: Int): List<Review> {
+        return try {
+            RetrofitClient.reviewApi.getReviewsByEvent(eventId)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getAllPastEvents(): List<GetEventData> {
+        return try {
+            val response = apievents.getAllPastEvents()
+            if (response.isSuccessful) {
+                Log.d("EventRepository", "Fetched past events: ${response.body()?.size ?: 0}")
+                response.body() ?: emptyList()
+            } else {
+                Log.e("EventRepository", "Error fetching past events: ${response.errorBody()?.string()}")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception in getAllPastEvents(): ${e.message}")
+            emptyList()
         }
     }
 }

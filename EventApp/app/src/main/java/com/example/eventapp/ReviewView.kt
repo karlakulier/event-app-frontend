@@ -1,91 +1,112 @@
-package com.example.eventapp
+package com.example.eventapps
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.eventapp.models.Review
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.core.network.models.Review
+import com.example.eventapp.viewmodels.GetEventViewModel
 
 @Composable
-fun ReviewDetailScreen(navController: NavController, review: Review) {
-    var updatedLikes by remember { mutableStateOf(review.likes) }
-    var updatedDislikes by remember { mutableStateOf(review.dislikes) }
+fun ReviewViewDetail(eventId: Int, viewModel: GetEventViewModel = viewModel()) {
+    val reviews by viewModel.reviews.observeAsState(emptyList())
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Back Button
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-        }
+    LaunchedEffect(eventId) {
+        viewModel.fetchEventReviews(eventId)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Reviews",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Name of Event and Date
-        Text(text = "Name of event and Date", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        if (reviews.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No reviews available.",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            }
+        } else {
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Review Details
-        Text(text = "${review.author} - ${review.date}", fontSize = 14.sp, color = Color.Gray)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Rating (Stars)
-        Row {
-            repeat(review.rating) {
-                Icon(imageVector = Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(reviews) { review ->
+                    ReviewItem(review)
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Review Text
-        Text(text = review.text, fontSize = 16.sp)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Likes and Dislikes
-        Row {
-            IconButton(onClick = { updatedLikes++ }) {
-                Icon(imageVector = Icons.Default.ThumbUp, contentDescription = "Like", tint = Color.Green)
-            }
-            Text(text = "$updatedLikes Likes", fontSize = 14.sp)
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            IconButton(onClick = { updatedDislikes++ }) {
-                Icon(imageVector = Icons.Default.ThumbDown, contentDescription = "Dislike", tint = Color.Red)
-            }
-            Text(text = "$updatedDislikes Dislikes", fontSize = 14.sp)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewReviewDetailScreen() {
-    val navController = rememberNavController()
-    val review = Review(
-        id = 1,
-        author = "John Doe",
-        date = "22nd Jan 2025",
-        rating = 5,
-        text = "This was amazing!!! Lorem Ipsum is simply dummy text of the printing and typesetting industry...",
-        likes = 243,
-        dislikes = 12
-    )
+fun ReviewItem(review: Review) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Visitor: ${review.visitorId}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            StarRating(review.musicianGrade)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = review.text,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
 
-    ReviewDetailScreen(navController = navController, review = review)
+@Composable
+fun StarRating(rating: Int) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (i in 1..5) {
+            Icon(
+                imageVector = if (i <= rating) Icons.Default.Star else Icons.Default.StarBorder,
+                contentDescription = "Star $i",
+                tint = if (rating >= i) Color.Yellow else Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
 }

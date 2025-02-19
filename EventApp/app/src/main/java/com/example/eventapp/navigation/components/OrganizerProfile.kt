@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.ws.services.OrganizerService
 import com.example.core.network.models.OrganizerProfile
-import com.example.ws.network.OrganizerRetrofit
+import com.example.ws.network.RetrofitClient
 import kotlinx.coroutines.launch
 
 @Composable
@@ -105,7 +105,7 @@ fun OrganizerProfile(
         }
     }
 
-    // ✅ Ispravljen AlertDialog s navigacijom na organizerProfileViewOnly
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -149,7 +149,7 @@ fun ProfileEditField(label: String, value: String, onValueChange: (String) -> Un
 @Preview
 @Composable
 fun PreviewOrganizerProfile() {
-    val organizerService = OrganizerService(OrganizerRetrofit.api)
+    val organizerService = OrganizerService(RetrofitClient.organizerApi)
     val organizerId = 1
     val navController = rememberNavController()
     OrganizerProfile(organizerId = organizerId, organizerService = organizerService, navController = navController)

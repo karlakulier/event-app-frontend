@@ -15,32 +15,38 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.eventapp.navigation.components.ClassicFooter
+import com.example.core.network.models.Review
 import com.example.eventapp.navigation.components.Header
-import com.example.eventapp.navigation.components.OrganizerFooter
 import kotlinx.coroutines.launch
+import com.example.ws.network.RetrofitClient
+import com.example.ws.services.ReviewService
+
 
 @Composable
-fun ReviewInputScreen(navController: NavController) {
+fun ReviewInputScreen(navController: NavController, reviewService: ReviewService, eventId: Int) {
     var organizationRating by remember { mutableStateOf(0f) }
     var venueRating by remember { mutableStateOf(0f) }
     var reviewText by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
-    // Using coroutine scope to show Toast
+
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Header()
-
-        // Organization Rating
-        Text(text = "Organization", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        RatingBar(rating = organizationRating, onRatingChanged = { organizationRating = it })
+        Text("Write your Review", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Venue Rating
+
+        Text(text = "Organization", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        RatingBar(rating = organizationRating, onRatingChanged = { newRating -> organizationRating = newRating })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
         Text(text = "Venue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        RatingBar(rating = venueRating, onRatingChanged = { venueRating = it })
+        RatingBar(rating = venueRating, onRatingChanged = { newRating -> venueRating = newRating })
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -59,13 +65,32 @@ fun ReviewInputScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Submit Button
+
         Button(
             onClick = {
                 if (reviewText.isNotEmpty()) {
-                    // Show Toast using coroutine scope
+                    isLoading = true
+                    val review = Review(
+                        id = 0,
+                        text = reviewText,
+                        musicianGrade = organizationRating.toInt(),
+                        organizerGrade = venueRating.toInt(),
+                        eventId = eventId,
+                        visitorId = 1, //  stvarni ID posjetitelja
+                        musicianId = 1, //  stvarni ID muzičara
+                        organizerId = 1 //  stvarni ID organizatora
+                    )
+
                     coroutineScope.launch {
-                        Toast.makeText(navController.context, "Review submitted!", Toast.LENGTH_SHORT).show()
+                        try {
+                            reviewService.createReview(review)
+                            Toast.makeText(navController.context, "Review submitted successfully!", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        } catch (e: Exception) {
+                            Toast.makeText(navController.context, "Failed to submit review: ${e.message}", Toast.LENGTH_SHORT).show()
+                        } finally {
+                            isLoading = false
+                        }
                     }
                 } else {
                     coroutineScope.launch {
@@ -73,12 +98,13 @@ fun ReviewInputScreen(navController: NavController) {
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
         ) {
-            Text(text = "Submit Review")
+            Text(text = if (isLoading) "Submitting..." else "Submit Review", color = Color.White)
         }
 
-        ClassicFooter(navController)
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -106,8 +132,7 @@ fun RatingBar(rating: Float, onRatingChanged: (Float) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewReviewInputScreen() {
-    // Mock NavController for Preview
     val navController = rememberNavController()
-
-    ReviewInputScreen(navController = navController)
+    val reviewService = ReviewService(reviewApi = RetrofitClient.reviewApi)
+    ReviewInputScreen(navController = navController, reviewService = reviewService, eventId = 1)
 }

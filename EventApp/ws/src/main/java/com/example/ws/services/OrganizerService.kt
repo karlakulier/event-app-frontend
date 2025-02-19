@@ -14,7 +14,7 @@ class OrganizerService(private val apiService: OrganizerAPI) : IOrganizerService
 
 
     override suspend fun getOrganizerById(organizerId: Int): OrganizerProfile? {
-        Log.d("OrganizerService", "Dohvaćam organizatora s ID-em: $organizerId") // Logirajte ID koji šaljete
+        Log.d("OrganizerService", "Dohvaćam organizatora s ID-em: $organizerId")
 
         return withContext(Dispatchers.IO) {
             try {
