@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
+import com.example.core.login.Auth
 import com.example.eventapp.R
 import com.example.core.network.models.EventDto
 
@@ -53,6 +55,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     var isStartTimePickerOpen by remember { mutableStateOf(false) }
     var isEndTimePickerOpen by remember { mutableStateOf(false) }
     var relevanceScore by remember { mutableStateOf(0) }
+    val loggedInUserRole = remember { Auth.loggedInUserData?.role }
 
     val finished = false
     val organizerId = 1
@@ -81,7 +84,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Unos za naziv događaja
+        Header()
         TextField(
             value = eventName,
             onValueChange = { eventName = it },
@@ -91,7 +94,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unos za kapacitet
+
         TextField(
             value = capacity,
             onValueChange = { capacity = it },
@@ -112,12 +115,12 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unos za lokaciju
+
         LocationPickerField(location) { selectedLocation -> location = selectedLocation }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unos za žanr glazbe
+
         TextField(
             value = musicGenre,
             onValueChange = { musicGenre = it },
@@ -127,7 +130,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unos za relevance score
+
         TextField(
             value = relevanceScore.toString(),
             onValueChange = {
@@ -140,7 +143,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Odabir datuma
+
         OutlinedTextField(
             value = date,
             onValueChange = { },
@@ -282,9 +285,15 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ClassicFooter(navController)
+
+            if (loggedInUserRole == "Organizer") {
+                OrganizerFooter(navController = navController)
+            } else {
+                ClassicFooter(navController = navController)
+            }
+        }
     }
-}
+
 
 
 @Composable

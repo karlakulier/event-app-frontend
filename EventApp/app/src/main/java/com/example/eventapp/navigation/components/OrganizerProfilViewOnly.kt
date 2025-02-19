@@ -29,7 +29,7 @@ fun OrganizerProfileViewOnly(
     var contact by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
 
-
+    val loggedInUserRole = remember { Auth.loggedInUserData?.role }
     LaunchedEffect(organizerId) {
         val organizer = organizerService.getOrganizerById(organizerId)
         if (organizer != null) {
@@ -82,7 +82,10 @@ fun OrganizerProfileViewOnly(
                 if (isLoggedInOrganizer) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                        horizontalArrangement = Arrangement.spacedBy(
+                            16.dp,
+                            Alignment.CenterHorizontally
+                        )
                     ) {
                         Button(onClick = { onEditClick() }) {
                             Text("Edit Profile")
@@ -110,7 +113,7 @@ fun OrganizerProfileViewOnly(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         ) {
-            if (isLoggedInOrganizer) {
+            if (loggedInUserRole == "Organizer") {
                 OrganizerFooter(navController = navController)
             } else {
                 ClassicFooter(navController = navController)
