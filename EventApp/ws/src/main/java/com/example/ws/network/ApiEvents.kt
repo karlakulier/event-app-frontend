@@ -3,6 +3,7 @@ package com.example.ws.network
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -27,4 +28,7 @@ interface ApiEvents {
 
     @GET("api/Events/details/{eventId}")
     fun getEventDetails(@Path("eventId") eventId: Int): Call<GetEventData>
+
+    @GET("api/Events/past-events")
+    suspend fun getAllPastEvents(): Response<List<GetEventData>>
 }

@@ -35,8 +35,12 @@ fun OrganizerFooter(navController: NavController) {
     ) {
         Icon(
             imageVector = Icons.Default.AccessTime,
-            contentDescription = "History",
-            modifier = Modifier.size(24.dp)
+            contentDescription = "Past Events",
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    navController.navigate("allPastEventsScreen")
+                }
         )
 
         Icon(

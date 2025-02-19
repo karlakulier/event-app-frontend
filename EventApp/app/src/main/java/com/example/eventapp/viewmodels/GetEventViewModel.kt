@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import com.example.core.network.ResponseListener
 import com.example.core.network.models.ErrorResponseBody
 import androidx.lifecycle.viewModelScope
+import com.example.core.network.models.OrganizerProfile
+import com.example.core.network.models.Review
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import com.example.ws.network.RetrofitClient
@@ -24,6 +26,13 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
     val events: LiveData<List<GetEventData>> = _events
     private val _eventDetails = MutableLiveData<GetEventData>()
     val eventDetails: LiveData<GetEventData> = _eventDetails
+    private val _reviews = MutableLiveData<List<Review>>()
+    val reviews: LiveData<List<Review>> = _reviews
+    private val _organizer = MutableLiveData<OrganizerProfile?>()
+    val organizer: LiveData<OrganizerProfile?> = _organizer
+    private val _pastEvents = MutableLiveData<List<GetEventData>>()
+    val pastEvents: LiveData<List<GetEventData>> = _pastEvents
+
 
 
     private val eventRequestHandler = GetEventRequestHandler()
@@ -50,6 +59,7 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
             }
         })
     }
+
     fun fetchFilteredEvents(location: String, date: String, genres: List<String>) {
         viewModelScope.launch {
             try {
@@ -72,39 +82,45 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
 
 
     fun fetchPastEventsForMusician(musicianId: Int) {
-        eventRequestHandler.fetchPastEventsForMusician(musicianId, object : ResponseListener<List<GetEventData>> {
-            override fun onSuccessfulResponse(response: List<GetEventData>) {
-                _events.postValue(response)
-            }
+        eventRequestHandler.fetchPastEventsForMusician(
+            musicianId,
+            object : ResponseListener<List<GetEventData>> {
+                override fun onSuccessfulResponse(response: List<GetEventData>) {
+                    _events.postValue(response)
+                }
 
-            override fun onErrorResponse(error: ErrorResponseBody) {
-                Log.e("GetEventViewModel", "Error: ${error.statusCode} - ${error.message}")
-                _events.postValue(emptyList())
-            }
+                override fun onErrorResponse(error: ErrorResponseBody) {
+                    Log.e("GetEventViewModel", "Error: ${error.statusCode} - ${error.message}")
+                    _events.postValue(emptyList())
+                }
 
-            override fun onNetworkFailure(t: Throwable) {
-                Log.e("GetEventViewModel", "Failed to fetch past events", t)
-                _events.postValue(emptyList())
-            }
-        })
+                override fun onNetworkFailure(t: Throwable) {
+                    Log.e("GetEventViewModel", "Failed to fetch past events", t)
+                    _events.postValue(emptyList())
+                }
+            })
     }
+
     fun fetchPastEventsByOrganizer(organizerId: Int) {
         val handler = GetEventRequestHandler()
 
-        handler.fetchPastEventsByOrganizer(organizerId, object : ResponseListener<List<GetEventData>> {
-            override fun onSuccessfulResponse(response: List<GetEventData>) {
-                _events.postValue(response)
-            }
+        handler.fetchPastEventsByOrganizer(
+            organizerId,
+            object : ResponseListener<List<GetEventData>> {
+                override fun onSuccessfulResponse(response: List<GetEventData>) {
+                    _events.postValue(response)
+                }
 
-            override fun onErrorResponse(errorResponse: ErrorResponseBody) {
-                Log.e("GetEventViewModel", "Error fetching events: ${errorResponse.message}")
-            }
+                override fun onErrorResponse(errorResponse: ErrorResponseBody) {
+                    Log.e("GetEventViewModel", "Error fetching events: ${errorResponse.message}")
+                }
 
-            override fun onNetworkFailure(t: Throwable) {
-                Log.e("GetEventViewModel", "Network failure: ${t.message}")
-            }
-        })
+                override fun onNetworkFailure(t: Throwable) {
+                    Log.e("GetEventViewModel", "Network failure: ${t.message}")
+                }
+            })
     }
+
     fun fetchEventDetails(eventId: Int) {
         val call = RetrofitClient.apiEvents.getEventDetails(eventId)
 
@@ -125,6 +141,7 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
             }
         })
     }
+
     fun fetchSortedEvents(sortBy: String) {
         viewModelScope.launch {
             try {
@@ -135,12 +152,30 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
                     Log.d("GetEventViewModel", "Fetched events: ${response.body()?.size ?: 0}")
                     _events.postValue(response.body() ?: emptyList())
                 } else {
-                    Log.e("GetEventViewModel", "Error fetching sorted events: ${response.errorBody()?.string()}")
+                    Log.e(
+                        "GetEventViewModel",
+                        "Error fetching sorted events: ${response.errorBody()?.string()}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("GetEventViewModel", "Exception fetching events", e)
             }
         }
     }
-
+    fun fetchEventReviews(eventId: Int) {
+        viewModelScope.launch {
+            try {
+                val reviewsList = eventRepository.getEventReviews(eventId)
+                _reviews.postValue(reviewsList)
+            } catch (e: Exception) {
+                _reviews.postValue(emptyList())
+            }
+        }
+    }
+    fun fetchAllPastEvents() {
+        viewModelScope.launch {
+            val events = eventRepository.getAllPastEvents()
+            _pastEvents.postValue(events)
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.eventapp
 
 import PreviousEventsScreen
+import ReviewInputScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -21,12 +22,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.add_album_ep_single.MusicService
 import com.example.eventapp.navigation.components.AlbumDetailsScreen
+import com.example.eventapp.navigation.components.AllPastEventsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
 import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
+import com.example.eventapp.navigation.components.EventDetailScreen
 import com.example.eventapp.navigation.components.EpDetailsScreen
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
@@ -39,7 +42,6 @@ import com.example.eventapp.navigation.components.OrganizerProfile
 import com.example.eventapp.navigation.components.OrganizerProfileViewOnly
 import com.example.eventapp.navigation.components.PastEvents
 import com.example.eventapp.navigation.components.PastEventsForOrganizer
-import com.example.ws.network.OrganizerRetrofit
 import com.example.ws.services.OrganizerService
 import com.example.eventapp.ui.theme.EventAppTheme
 import com.example.eventapp.viewmodels.ArtistProfileViewModel
@@ -50,8 +52,11 @@ import com.example.ws.network.MusicianRetrofit
 import com.example.eventapp.navigation.components.MusicianProfile
 import com.example.eventapp.navigation.components.MusicianProfileViewOnly
 import com.example.ws.network.NetworkModule
+import com.example.ws.network.RetrofitClient
+import com.example.ws.repository.EventRepository
 import com.example.ws.repository.UserRepository
 import com.example.ws.services.MusicianService
+import com.example.ws.services.ReviewService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -59,6 +64,7 @@ import com.google.android.gms.common.api.ApiException
 import com.facebook.FacebookSdk
 import com.facebook.CallbackManager
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -109,6 +115,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventAppTheme {
                 val navController = rememberNavController()
+                val eventRepository = remember { EventRepository() }
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 LaunchedEffect(key1 = isLoggedIn.value) {
@@ -171,7 +178,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
-                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+                            val organizerService = OrganizerService(RetrofitClient.organizerApi)
 
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
@@ -185,7 +192,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("organizerProfile/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
-                            val organizerService = OrganizerService(OrganizerRetrofit.api)
+                            val organizerService = OrganizerService(RetrofitClient.organizerApi)
 
                             OrganizerProfile(
                                 organizerId = organizerId,
@@ -266,6 +273,19 @@ class MainActivity : ComponentActivity() {
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 0
                             PastEventsForOrganizer(navController = navController, organizerId = organizerId)
                         }
+                        composable("eventDetailsScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            EventDetailScreen(navController, eventId, eventRepository = EventRepository())
+                        }
+                        composable("reviewInputScreen/{eventId}") { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
+                            val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) } // ✅ Kreiraj ReviewService
+                            ReviewInputScreen(navController, reviewService, eventId)
+                        }
+                        composable("allPastEventsScreen") {
+                            AllPastEventsScreen(navController)
+                        }
+
 
                         composable("albumDetails/{albumId}") { backStackEntry ->
                             val albumId = backStackEntry.arguments?.getString("albumId")?.toInt() ?: return@composable
