@@ -32,6 +32,7 @@ import com.example.eventapp.navigation.components.ChatListScreen
 import com.example.eventapp.navigation.components.EditProfileScreen
 import com.example.eventapp.navigation.components.EventDetailScreen
 import com.example.eventapp.navigation.components.EpDetailsScreen
+import com.example.eventapp.navigation.components.EventDetailsGlobal
 import com.example.eventapp.navigation.components.EventInputScreen
 import com.example.eventapp.navigation.components.FacebookAndGoogleLoginHandler
 import com.example.eventapp.navigation.components.HomeScreen
@@ -304,6 +305,14 @@ class MainActivity : ComponentActivity() {
                             ActiveEventListScreen(navController)
                         }
 
+                        composable("eventDetailsGlobalForOrganizer/{eventId}") { backStackEntry ->
+                            val eventId =
+                                backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                            if (eventId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                EventDetailsGlobal(eventId, navController)
+                            }
+                        }
 
                         composable("albumDetails/{albumId}") { backStackEntry ->
                             val albumId = backStackEntry.arguments?.getString("albumId")?.toInt() ?: return@composable
