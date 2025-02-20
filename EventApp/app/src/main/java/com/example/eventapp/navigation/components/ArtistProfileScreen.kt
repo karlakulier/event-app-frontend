@@ -40,6 +40,7 @@ import com.example.ws.models.SongData
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel) {
+    val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
     var selectedItemForEdit by remember { mutableStateOf<Any?>(null) }
     var isEditDialogVisible by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) }
@@ -80,6 +81,8 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
         }
     }
 
+    val artistName = Auth.loggedInUserData?.musician?.artistName
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -96,12 +99,12 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Profile action */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Menu action */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu")
                     }
                 },
@@ -117,12 +120,10 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     thickness = 1.dp,
                     modifier = Modifier.fillMaxWidth()
                 )
-                BottomAppBar(containerColor = Color.White) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { /* Home action */ }) {
-                        Icon(Icons.Default.Home, contentDescription = "Home")
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
+                if (isOrganizer) {
+                    OrganizerFooter(navController = navController)
+                } else {
+                    ClassicFooter(navController = navController)
                 }
             }
         }
@@ -160,58 +161,19 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.TopStart)
                         .padding(16.dp)
-                ) {
-                    CustomSearchBar(
-                        query = searchQuery,
-                        onQueryChanged = { searchQuery = it }
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .align(Alignment.BottomStart) // Poravnanje na dno sive pozadine
+                        .align(Alignment.BottomStart)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isEditing) {
-                            if (isEditModeEnabled) {
-                                OutlinedTextField(
-                                    value = newArtistName,
-                                    onValueChange = { newArtistName = it },
-                                    label = { Text("Edit Name") },
-                                    modifier = Modifier.weight(1f).padding(4.dp)
-                                )
-                            } else {
-                                Text(
-                                    text = newArtistName,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp,
-                                    modifier = Modifier.padding(end = 10.dp)
-                                )
-                                Icon(
-                                    painter = painterResource(id = R.drawable.editing_pen),
-                                    contentDescription = "Edit Artist Name",
-                                    modifier = Modifier
-                                        .size(25.dp)
-                                        .clickable {
-                                            originalArtistName = newArtistName
-                                            isEditModeEnabled = true
-                                        }
-                                )
-                            }
-                        } else {
-                            Text(
-                                text = newArtistName,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        Text(
+                        text = artistName ?: "Unknown Artist",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.weight(1f)
+                    )
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -364,7 +326,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                         contentDescription = "Concerts",
                         modifier = Modifier
                             .size(40.dp)
-                            .clickable { /* Concerts action */ }
+                            .clickable { navController.navigate("pastEventsForMusician") }
                     )
                     Image(
                         painter = painterResource(R.drawable.profile_info_musician),
@@ -617,7 +579,7 @@ fun <T> MusicCard(
             Text(itemName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (!isEditing) { // Prikazuj Spotify i YouTube samo ako nije editing mode
+                if (!isEditing) {
                     if (item is SongData) {
                         if (!item.linkSpotify.isNullOrEmpty()) {
                             Icon(

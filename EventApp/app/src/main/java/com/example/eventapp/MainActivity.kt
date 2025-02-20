@@ -79,8 +79,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val musicService = MusicService(apiArtistProfile) // Napravi instancu servisa
-        val viewModelFactory = ArtistProfileViewModelFactory(musicService) // Kreiraj Factory
+        val musicService = MusicService(apiArtistProfile)
+        val viewModelFactory = ArtistProfileViewModelFactory(musicService)
         val artistProfileViewModel = ViewModelProvider(this, viewModelFactory).get(ArtistProfileViewModel::class.java)
 
         FacebookSdk.sdkInitialize(applicationContext)

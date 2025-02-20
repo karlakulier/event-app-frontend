@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,21 +35,32 @@ import androidx.navigation.NavController
 import com.example.core.login.Auth.loggedInUserData
 
 import com.example.eventapp.viewmodels.GetEventViewModel
+import com.example.eventapp.viewmodels.GetEventViewModelFactory
+import com.example.ws.repository.EventRepository
 
 
 @Composable
 fun PastEventsForMusician(navController: NavController) {
-    val viewModel: GetEventViewModel = viewModel()
+    val eventRepository = remember { EventRepository() }
+    val viewModel: GetEventViewModel = viewModel(
+        factory = GetEventViewModelFactory(eventRepository)
+    )
+
     val events by viewModel.events.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPastEventsForMusician(loggedInUserData?.musician?.id!!)
+        loggedInUserData?.musician?.id?.let {
+            viewModel.fetchPastEventsForMusician(it)
+        }
     }
-
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
     ) {
         Header(navController)
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(Icons.Default.ArrowBack, contentDescription = "Back") }
         Box(modifier = Modifier.fillMaxSize()) {
             when {
                 events.isEmpty() -> Text(
@@ -56,12 +71,14 @@ fun PastEventsForMusician(navController: NavController) {
                 )
                 else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(events) { event ->
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                //navController.navigate("eventDetails/${event.id}")
-                            }) {
-                            EventCard(event = event,navController)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    //navController.navigate("eventDetails/${event.id}")
+                                }
+                        ) {
+                            EventCard(event = event, navController)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -70,3 +87,4 @@ fun PastEventsForMusician(navController: NavController) {
         }
     }
 }
+
