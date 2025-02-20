@@ -55,6 +55,14 @@ fun ChatListScreen(navController: NavController) {
             .fillMaxSize()
     ) {
         Header(navController)
+        Text(
+            text = "All Chats",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(

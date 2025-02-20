@@ -136,7 +136,7 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
             .fillMaxSize()
     ) {
         Header(navController)
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(
                     text = "Loading...",
@@ -166,5 +166,6 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
                 }
             }
         }
+        OrganizerFooter(navController)
     }
 }
