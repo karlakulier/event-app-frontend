@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -62,7 +63,19 @@ fun MusicianProfile(
 
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Scaffold(
+        topBar = {
+            Header(navController)
+        },
+        bottomBar = {
+                ClassicFooter(navController = navController)
+        }
+    ) { paddingValues ->
+
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .padding(paddingValues)
+    ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Edit Profile",
@@ -150,7 +163,7 @@ fun MusicianProfile(
             )
         }
     }
-}
+}}
 
 @Composable
 fun ProfileEditFields(label: String, value: String, onValueChange: (String) -> Unit) {

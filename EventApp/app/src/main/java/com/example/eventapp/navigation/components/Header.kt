@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -36,25 +38,26 @@ import com.example.core.login.Auth
 import com.example.eventapp.R
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(navController: NavController) {
-    TopAppBar(
+    androidx.compose.material3.TopAppBar(
         title = {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.group),
+                Icon(
+                    painter = painterResource(R.drawable.app_logo),
                     contentDescription = "Logo",
-                    modifier = Modifier.size(200.dp), // Povećana veličina
-                    contentScale = ContentScale.Fit
+                    modifier = Modifier.size(200.dp)
                 )
             }
         },
         navigationIcon = {
             IconButton(onClick = {
                 val userRole = Auth.loggedInUserData?.role
+                Log.d("Navigation", "User role: $userRole")
                 val destination = if (userRole == "Organizer") {
                     "organizerProfileViewOnly/${Auth.loggedInUserData?.organizer?.id}"
                 } else {
@@ -62,16 +65,21 @@ fun Header(navController: NavController) {
                 }
                 navController.navigate(destination)
             }) {
-                Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp))
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "User Icon",
+                    modifier = Modifier.padding(start = 16.dp)
+                )
             }
         },
         actions = {
-            IconButton(onClick = { /* Dodaj akciju za meni */ }) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu Icon", modifier = Modifier.padding(end = 16.dp))
-            }
+            Icon(
+                Icons.Default.Menu,
+                contentDescription = "Menu Icon",
+                modifier = Modifier.padding(end = 16.dp)
+            )
         },
-        backgroundColor = Color.Transparent, // Postavljanje pozadine kao transparentne
-        elevation = 0.dp // Uklanjanje sjene i obruba
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
     )
 }
 

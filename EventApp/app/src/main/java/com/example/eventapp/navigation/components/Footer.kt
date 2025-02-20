@@ -24,8 +24,8 @@ fun ClassicFooter(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .background(Color.White),
+            .padding(16.dp),
+            //.background(Color.White),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
