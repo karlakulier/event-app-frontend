@@ -29,8 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.eventapp.ui.theme.ProfileField
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviousEvents(navController: NavController) {
     Scaffold(
@@ -74,7 +72,6 @@ fun PreviousEvents(navController: NavController) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Previous events button
             Button(
                 onClick = { navController.navigate("previousEventsScreen") },
                 modifier = Modifier

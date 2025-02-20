@@ -40,7 +40,7 @@ fun AddNewAlbumEpSingleDialog(
             },
             text = {
                 Column {
-                    // Opcija za Album
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -58,7 +58,6 @@ fun AddNewAlbumEpSingleDialog(
                         Icon(Icons.Default.ArrowForward, contentDescription = "Album")
                     }
 
-                    // Opcija za EP
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -76,7 +75,6 @@ fun AddNewAlbumEpSingleDialog(
                         Icon(Icons.Default.ArrowForward, contentDescription = "EP")
                     }
 
-                    // Opcija za Single
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -96,7 +94,6 @@ fun AddNewAlbumEpSingleDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Cancel Button
                     Button(
                         onClick = { onDismiss() },
                         modifier = Modifier.align(Alignment.CenterHorizontally),

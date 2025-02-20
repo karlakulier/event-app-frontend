@@ -157,7 +157,6 @@ fun EventDetailScreen(
             }
         }
 
-        // Footer na dnu ekrana
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

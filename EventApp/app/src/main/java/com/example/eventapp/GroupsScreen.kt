@@ -37,7 +37,7 @@ import com.example.eventapp.navigation.components.SearchBar
 
 @Composable
 fun GroupsScreen(navController: NavController) {
-    val groups = listOf("Artist/Group 1", "Artist/Group 2", "Artist/Group 3") // Testni podaci
+    val groups = listOf("Artist/Group 1", "Artist/Group 2", "Artist/Group 3")
     var selectedGroup by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -58,22 +58,20 @@ fun GroupsScreen(navController: NavController) {
                     )
                 }
 
-                // Glavni popis
                 items(groups) { groupName ->
                     GroupItem(
                         groupName = groupName,
-                        onEvaluateClick = { selectedGroup = groupName }, // Otvara modal
-                        onDetailsClick = { /* Navigacija na detalje */ }
+                        onEvaluateClick = { selectedGroup = groupName },
+                        onDetailsClick = {  }
                     )
                 }
             }
 
-            // Modal za evaluaciju
             if (selectedGroup != null) {
                 EvaluateModal(
                     groupName = selectedGroup!!,
                     onDismiss = { selectedGroup = null },
-                    onSave = { /* Backend dio za spremanje ocjene */ }
+                    onSave = {  }
                 )
             }
         }
@@ -93,7 +91,6 @@ fun GroupItem(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Placeholder slika
         Box(
             modifier = Modifier
                 .size(64.dp)
@@ -103,7 +100,6 @@ fun GroupItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Tekstualni dio
         Column(modifier = Modifier.weight(1f)) {
             Text(text = groupName, style = MaterialTheme.typography.bodyMedium)
             Text(
@@ -115,15 +111,12 @@ fun GroupItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Strelica
         Icon(
             imageVector = Icons.Default.ArrowCircleRight,
             contentDescription = "Details",
             modifier = Modifier
                 .size(24.dp)
                 .clickable { }
-
-
         )
     }
 }
