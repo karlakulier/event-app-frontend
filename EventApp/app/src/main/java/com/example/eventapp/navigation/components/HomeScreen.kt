@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.eventapp.R
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import com.example.core.login.Auth
@@ -41,6 +42,8 @@ import com.example.eventapp.viewmodels.GetEventViewModel
 import com.example.ws.models.GetEventData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.air.eventapplication.ApplicationModul
+import com.example.eventapp.viewmodels.EventSearchViewModel
+import com.example.eventapp.viewmodels.EventSearchViewModelFactory
 import com.example.eventapp.viewmodels.GetEventViewModelFactory
 import com.example.ws.repository.EventRepository
 import java.time.LocalDateTime
@@ -54,6 +57,10 @@ fun HomeScreen(
     navController: NavController,
     viewModel: GetEventViewModel = viewModel(factory = GetEventViewModelFactory(EventRepository()))
 ) {
+    val searchViewModel: EventSearchViewModel = viewModel(factory = EventSearchViewModelFactory(EventRepository()))
+    val query by searchViewModel.query.collectAsState()
+    val searchResults by searchViewModel.searchResults.collectAsState()
+
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
@@ -114,14 +121,12 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .drawBehind {
-                    // Gornji border
                     drawLine(
                         color = Color.Black,
                         start = Offset(0f, 0f),
                         end = Offset(size.width, 0f),
                         strokeWidth = 1.dp.toPx()
                     )
-                    // Donji border
                     drawLine(
                         color = Color.Black,
                         start = Offset(0f, size.height),
@@ -131,12 +136,11 @@ fun HomeScreen(
                 }
                 .padding(horizontal = 16.dp)
         ) {
-            //Spacer(modifier = Modifier.height(16.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 8.dp), // Adjust padding if necessary
-                contentAlignment = Alignment.CenterEnd // Aligns content to the right
+                    .padding(end = 8.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -157,7 +161,7 @@ fun HomeScreen(
                     )
                     if (hasActiveFilters) {
                         Icon(
-                            painter = painterResource(R.drawable.abandon_edit), // Zamijeni s pravim resursom
+                            painter = painterResource(R.drawable.abandon_edit),
                             contentDescription = "Clear Filters",
                             modifier = Modifier
                                 .size(20.dp)
@@ -181,11 +185,28 @@ fun HomeScreen(
 
             }
             CustomSearchBar(
-                query = searchQuery,
-                onQueryChanged = { searchQuery = it }
+                query = query,
+                onQueryChanged = { searchViewModel.onQueryChanged(it) }
             )
+
             Spacer(modifier = Modifier.height(16.dp))
-            ActiveEventsSection(navController)
+            val eventsToShow = if (query.isEmpty()) viewModel.events.observeAsState(emptyList()).value else searchResults
+
+
+            if (eventsToShow.isEmpty()) {
+                Text(
+                    text = "No events found.",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.Gray,
+                    fontSize = 16.sp
+                )
+            } else {
+                LazyColumn {
+                    items(eventsToShow) { event ->
+                        EventCard(event, navController)
+                    }
+                }
+            }
         }
         if (isFilterDialogVisible) {
             FilterDialog(
@@ -241,7 +262,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-             //
             }
     ) {
         Box(
@@ -249,7 +269,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
                 .fillMaxWidth()
                 .height(200.dp)
         ) {
-            // Prikaz slike eventa
             Image(
                 painter = rememberAsyncImagePainter("https://via.placeholder.com/300"),
                 contentDescription = "Event Image",
@@ -257,7 +276,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
                 contentScale = ContentScale.Crop
             )
 
-            // Gumb za prijavu
             if (loggedUser?.role == "Musician" && event.finished==false) {
                 Button(
                     onClick = {
@@ -273,7 +291,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
             }
         }
 
-        // Naziv i datum eventa
         Column(
             modifier = Modifier
                 .fillMaxWidth()

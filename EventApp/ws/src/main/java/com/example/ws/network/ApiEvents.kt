@@ -1,5 +1,6 @@
 package com.example.ws.network
 
+import com.example.core.network.models.EventDto
 import com.example.ws.models.EventFilterData
 import com.example.ws.models.GetEventData
 import retrofit2.Call
@@ -34,4 +35,7 @@ interface ApiEvents {
 
     @GET("api/Events/past-events")
     suspend fun getAllPastEvents(): Response<List<GetEventData>>
+
+    @GET("api/Events/search")
+    suspend fun searchEvents(@Query("keyword") keyword: String): Response<List<GetEventData>>
 }

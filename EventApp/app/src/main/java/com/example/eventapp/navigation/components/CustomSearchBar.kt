@@ -24,53 +24,47 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun CustomSearchBar(
     query: String,
-    onQueryChanged: (String) -> Unit
+    onQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(), // Ispunjava cijeli prostor roditelja
-        contentAlignment = Alignment.Center // Centriranje sadržaja unutar Box-a
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.99f) // Širina 90% roditeljskog prostora
-                .height(35.dp) // Visina
-                .clip(RoundedCornerShape(20.dp)) // Zaobljeni rubovi
-                .border(1.dp, Color.Black, RoundedCornerShape(20.dp)) // Crni obrub na zaobljenim rubovima
-                .background(Color.White), // Bijela pozadina
+                .fillMaxWidth(0.99f)
+                .height(35.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .border(1.dp, Color.Black, RoundedCornerShape(20.dp))
+                .background(Color.White),
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp), // Unutarnji razmak
-                verticalAlignment = Alignment.CenterVertically // Centriranje elemenata vertikalno
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search Icon",
-                    tint = Color.Black, // Crna boja ikone
-                    modifier = Modifier.size(20.dp) // Veličina ikone
+                    tint = Color.Black,
+                    modifier = Modifier.size(20.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp)) // Razmak između ikone i teksta
+                Spacer(modifier = Modifier.width(8.dp))
                 BasicTextField(
                     value = query,
                     onValueChange = { onQueryChanged(it) },
-                    textStyle = TextStyle(
-                        color = Color.Black, // Crni tekst
-                        fontSize = 16.sp // Veličina fonta
-                    ),
-                    singleLine = true, // Ograniči tekst na jedan red
+                    textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+                    singleLine = true,
                     decorationBox = { innerTextField ->
                         if (query.isEmpty()) {
-                            Text(
-                                text = "Search",
-                                color = Color.Gray, // Placeholder boja
-                                fontSize = 16.sp
-                            )
+                            Text(text = "Search events...", color = Color.Gray, fontSize = 16.sp)
                         }
                         innerTextField()
                     },
-                    modifier = Modifier.fillMaxWidth() // Tekst zauzima ostatak prostora
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

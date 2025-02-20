@@ -8,6 +8,7 @@ import com.example.ws.network.ApiClient
 import com.example.ws.network.ApiEvents
 import com.example.ws.network.OrganizerAPI
 import com.example.ws.network.RetrofitClient
+import com.example.ws.network.RetrofitClient.apiEvents
 import com.example.ws.network.RetrofitClient.apiService
 import retrofit2.Response
 
@@ -59,5 +60,24 @@ class EventRepository {
     suspend fun getActiveEventsByOrganizer(organizerId : Int) : List<GetEventData> {
             return  apievents.getActiveEventsByOrganizer(organizerId)
     }
+
+    suspend fun searchEvents(query: String): Response<List<GetEventData>> {
+        return try {
+            Log.d("EventRepository", "Searching events with keyword: $query")
+            val response = apiEvents.searchEvents(query)
+
+            if (response.isSuccessful) {
+                Log.d("EventRepository", "Received events: ${response.body()?.size ?: 0}")
+            } else {
+                Log.e("EventRepository", "API error: ${response.errorBody()?.string()}")
+            }
+
+            response
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception in searchEvents()", e)
+            Response.error(500, okhttp3.ResponseBody.create(null, "Internal error"))
+        }
+    }
+
 
 }

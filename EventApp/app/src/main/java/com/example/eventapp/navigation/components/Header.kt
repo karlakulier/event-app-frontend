@@ -47,7 +47,7 @@ fun Header(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.group),
                     contentDescription = "Logo",
-                    modifier = Modifier.size(200.dp), // Povećana veličina
+                    modifier = Modifier.size(200.dp),
                     contentScale = ContentScale.Fit
                 )
             }
@@ -66,12 +66,12 @@ fun Header(navController: NavController) {
             }
         },
         actions = {
-            IconButton(onClick = { /* Dodaj akciju za meni */ }) {
+            IconButton(onClick = {  }) {
                 Icon(Icons.Default.Menu, contentDescription = "Menu Icon", modifier = Modifier.padding(end = 16.dp))
             }
         },
-        backgroundColor = Color.Transparent, // Postavljanje pozadine kao transparentne
-        elevation = 0.dp // Uklanjanje sjene i obruba
+        backgroundColor = Color.Transparent,
+        elevation = 0.dp
     )
 }
 
@@ -80,6 +80,8 @@ fun Header(navController: NavController) {
 
 @Composable
 fun SearchBar() {
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
