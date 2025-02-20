@@ -58,7 +58,8 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
     val loggedInUserRole = remember { Auth.loggedInUserData?.role }
 
     val finished = false
-    val organizerId = 1
+    val organizerId = Auth.loggedInUserData?.organizer?.id ?: -1
+
 
     val dateTimeFormatted = try {
         if (date.isNotEmpty() && startTime.isNotEmpty()) {
@@ -233,7 +234,7 @@ fun EventInputScreen(navController: NavController, modifier: Modifier = Modifier
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Unutar EventInputScreen
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
