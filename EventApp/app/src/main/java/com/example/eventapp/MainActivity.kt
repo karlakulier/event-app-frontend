@@ -181,9 +181,6 @@ class MainActivity : ComponentActivity() {
                         composable("artistProfileScreen") {
                             ArtistProfileScreen(navController = navController, artistProfileViewModel)
                         }
-                        composable("eventInputScreen") {
-                            EventInputScreen(navController = navController)
-                        }
 
                         composable("artistProfileScreen/{musicianId}") { backStackEntry ->
                             val musicianId = backStackEntry.arguments?.getString("musicianId")?.toInt() ?: return@composable
