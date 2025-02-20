@@ -49,63 +49,80 @@ fun MusicianProfileViewOnly(
     Log.d("MusicianProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Musician ID: $musicianId")
     Log.d("MusicianProfile", "isLoggedInMusician: $isLoggedInMusician")
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Header(navController)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 56.dp) // Rezervacija prostora za footer
+        ) {
+            Header(navController)
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Profile",
-            fontSize = 30.sp,
-            modifier = Modifier.padding(bottom = 24.dp),
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF000000)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ProfileDetailFields("Artist Name", artistName)
-        ProfileDetailFields("Name", name)
-        ProfileDetailFields("Surname", surname)
-        ProfileDetailFields("Email", email)
-        ProfileDetailFields("Contact", contact)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isLoggedInMusician) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
-            ) {
-                Button(onClick = { onEditClick() }) {
-                    Text("Edit Profile")
-                }
-
-                Button(onClick = {
-                    val userId = Auth.loggedInUserData?.id
-                    Log.d("Navigation", "User ID: $userId")
-                    val destination =
-                        "changePasswordScreen/${Auth.loggedInUserData?.id}"
-                    navController.navigate(destination)
-                }) {
-                    Text("Edit Password")
-                }
-            }
-        } else {
             Text(
-                "You do not have permission to edit this profile.",
-                fontSize = 14.sp,
-                color = Color.Gray
+                text = "Profile",
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 24.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF000000)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ProfileDetailFields("Artist Name", artistName)
+            ProfileDetailFields("Name", name)
+            ProfileDetailFields("Surname", surname)
+            ProfileDetailFields("Email", email)
+            ProfileDetailFields("Contact", contact)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoggedInMusician) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                ) {
+                    Button(onClick = { onEditClick() }) {
+                        Text("Edit Profile")
+                    }
+
+                    Button(onClick = {
+                        val userId = Auth.loggedInUserData?.id
+                        Log.d("Navigation", "User ID: $userId")
+                        val destination =
+                            "changePasswordScreen/${Auth.loggedInUserData?.id}"
+                        navController.navigate(destination)
+                    }) {
+                        Text("Edit Password")
+                    }
+                }
+            } else {
+                Text(
+                    "You do not have permission to edit this profile.",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-
-        ClassicFooter(navController)
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            ClassicFooter(navController)
+        }
     }
 }
-
 
 @Composable
 fun ProfileDetailFields(label: String, value: String) {

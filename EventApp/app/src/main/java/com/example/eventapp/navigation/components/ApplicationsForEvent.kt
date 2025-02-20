@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun ApplicationCard(application: ApplicationGet) {
+fun ApplicationCard(application: ApplicationGet,navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     var showConfirmation by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(application.status) } // Lokalno stanje za status
+    var status by remember { mutableStateOf(application.status) }
     var context = LocalContext.current
 
     Column(
@@ -42,11 +42,14 @@ fun ApplicationCard(application: ApplicationGet) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.weight(1f)) { // Lijeva strana (ime i status)
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${application.musicianName} ${application.musicianSurname}",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        //navController.navigate("artistProfileScreen")
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -55,7 +58,6 @@ fun ApplicationCard(application: ApplicationGet) {
                 )
             }
 
-            // Desna strana (gumb)
             Button(
                 onClick = { showDialog = true }
             ) {
@@ -64,7 +66,6 @@ fun ApplicationCard(application: ApplicationGet) {
         }
     }
 
-    // Dijalog za odabir statusa
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -94,7 +95,6 @@ fun ApplicationCard(application: ApplicationGet) {
         )
     }
 
-    // Potvrda odabira
     if (showConfirmation) {
         AlertDialog(
             onDismissRequest = { showConfirmation = false },
@@ -103,7 +103,7 @@ fun ApplicationCard(application: ApplicationGet) {
             confirmButton = {
                 Button(
                     onClick = {
-                        status = selectedStatus // Ažuriraj lokalni status
+                        status = selectedStatus
                         ApplicationModul.UpdateApplicationStatus(context,application.id,status)
                         showConfirmation = false
                     }
@@ -136,7 +136,7 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
             .fillMaxSize()
     ) {
         Header(navController)
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(
                     text = "Loading...",
@@ -154,18 +154,18 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(applications) { application ->
-                        // Postavljanje clickable direktno na ChatCard
                         Box(modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                //navController.navigate("messages/${application.id}") // Pravilna destinacija
+
                             }) {
-                            ApplicationCard(application = application,)
+                            ApplicationCard(application = application,navController)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
         }
+        OrganizerFooter(navController)
     }
 }

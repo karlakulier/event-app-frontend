@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.core.login.Auth.loggedInUserData
+
 
 @Composable
 fun ClassicFooter(navController: NavController) {
@@ -32,7 +34,9 @@ fun ClassicFooter(navController: NavController) {
         Icon(
             imageVector = Icons.Default.StarBorder,
             contentDescription = "Favorites",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("applicationsForMusician/${loggedInUserData?.musician?.id}")
+            }
         )
 
         Icon(

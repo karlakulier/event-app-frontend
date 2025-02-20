@@ -19,7 +19,6 @@ import com.example.core.login.Auth.loggedInUserData
 import com.example.core.network.models.Chat
 import com.example.ws.services.ChatService
 
-// Composable za prikaz pojedinog chata
 @Composable
 fun ChatCard(chat: Chat) {
     Column(
@@ -53,9 +52,17 @@ fun ChatListScreen(navController: NavController) {
     }
     Column(
         modifier = Modifier
-            .fillMaxSize() // Ako treba dodatni razmak
+            .fillMaxSize()
     ) {
         Header(navController)
+        Text(
+            text = "All Chats",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             if (isLoading) {
                 Text(
@@ -74,7 +81,7 @@ fun ChatListScreen(navController: NavController) {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(chats) { chat ->
-                        // Postavljanje clickable direktno na ChatCard
+
                         Box(modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
