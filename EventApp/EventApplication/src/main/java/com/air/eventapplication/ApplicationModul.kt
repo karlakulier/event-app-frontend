@@ -9,6 +9,7 @@ import com.air.eventapplication.Service.ApplicationService
 import com.air.eventapplication.Service.IApplicationService
 import com.air.eventapplication.models.Application
 import com.air.eventapplication.models.ApplicationGet
+import com.air.eventapplication.models.ApplicationMusician
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +60,24 @@ object ApplicationModul {
     suspend fun GetApplicationsByEvent(context: Context, eventId: Int): List<ApplicationGet> {
         return withContext(Dispatchers.IO) {
             val rezultat = applicationService.GetApplicationsByEvent(eventId)
+            if (rezultat.isSuccess) {
+                val applications = rezultat.getOrNull()
+                return@withContext applications ?: emptyList()
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Greška: ${rezultat.exceptionOrNull()?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                return@withContext emptyList() // Ako je greška, vratite praznu listu
+            }
+        }
+    }
+    suspend fun GetApplicationsForMusician(context: Context, eventId: Int): List<ApplicationMusician> {
+        return withContext(Dispatchers.IO) {
+            val rezultat = applicationService.GetApplicationsForMusician(eventId)
             if (rezultat.isSuccess) {
                 val applications = rezultat.getOrNull()
                 return@withContext applications ?: emptyList()

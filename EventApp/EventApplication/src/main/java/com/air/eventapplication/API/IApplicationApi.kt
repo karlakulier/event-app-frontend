@@ -1,7 +1,9 @@
 package com.air.eventapplication.API
 
+
 import com.air.eventapplication.models.Application
 import com.air.eventapplication.models.ApplicationGet
+import com.air.eventapplication.models.ApplicationMusician
 import com.air.eventapplication.models.ApplicationUpdateStatus
 import retrofit2.Response
 import retrofit2.http.Body
@@ -24,4 +26,8 @@ interface IApplicationApi {
         @Path("id") id: Int
     ): Response<List<ApplicationGet>>
 
+    @GET("api/Applications/ByMusician/{id}")
+    suspend fun GetApplicationsForMusician(
+        @Path("id") id: Int
+    ): Response<List<ApplicationMusician>>
 }

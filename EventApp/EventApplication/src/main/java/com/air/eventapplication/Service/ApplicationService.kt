@@ -3,6 +3,7 @@ package com.air.eventapplication.Service
 import com.air.eventapplication.API.IApplicationApi
 import com.air.eventapplication.models.Application
 import com.air.eventapplication.models.ApplicationGet
+import com.air.eventapplication.models.ApplicationMusician
 import com.air.eventapplication.models.ApplicationUpdateStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,6 +47,25 @@ class ApplicationService (private val api: IApplicationApi) : IApplicationServic
         return withContext(Dispatchers.IO) {
             try {
                 val response = api.GetApplicationsByEvent(EventId)
+                if (response.isSuccessful) {
+                    val applications = response.body()
+                    if (applications != null) {
+                        Result.success(applications)
+                    } else {
+                        Result.failure(Exception("Prazan odgovor od servera."))
+                    }
+                } else {
+                    Result.failure(Exception("Greška kod dohvaćanja prijava: ${response.message()}"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+    override suspend fun GetApplicationsForMusician(EventId: Int): Result<List<ApplicationMusician>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = api.GetApplicationsForMusician(EventId)
                 if (response.isSuccessful) {
                     val applications = response.body()
                     if (applications != null) {

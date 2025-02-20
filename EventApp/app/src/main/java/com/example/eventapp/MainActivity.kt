@@ -25,6 +25,7 @@ import com.example.eventapp.navigation.components.ActiveEventListScreen
 import com.example.eventapp.navigation.components.AlbumDetailsScreen
 import com.example.eventapp.navigation.components.AllPastEventsScreen
 import com.example.eventapp.navigation.components.ApplicationsForEvent
+import com.example.eventapp.navigation.components.ApplicationsForMusician
 import com.example.eventapp.navigation.components.PreviousEvents
 import com.example.eventapp.navigation.components.ArtistProfileScreen
 import com.example.eventapp.navigation.components.ChangePasswordScreen
@@ -280,6 +281,14 @@ class MainActivity : ComponentActivity() {
                             if (eventId != null) {
                                 Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
                                 ApplicationsForEvent(navController, eventId)
+                            }
+                        }
+                        composable("applicationsForMusician/{musicainId}") { backStackEntry ->
+                            val musicainId =
+                                backStackEntry.arguments?.getString("musicainId")?.toIntOrNull()
+                            if (musicainId != null) {
+                                Log.d("ChatId", "Navigated to chatId: $musicainId")  // Provjera chatId
+                                ApplicationsForMusician(navController, musicainId)
                             }
                         }
                         composable("pastEventsForMusician") {

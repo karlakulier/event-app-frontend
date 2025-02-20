@@ -69,7 +69,7 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
 
             if (isLoading) {
                 Text(
-                    text = "Učitavanje...",
+                    text = "Lodading...",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(16.dp)
