@@ -1,9 +1,11 @@
 package com.example.eventapp.navigation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -63,100 +66,115 @@ fun MusicianProfile(
 
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        // Header (umjesto Scaffold topBar)
-        Header(navController)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Edit Profile",
-            fontSize = 30.sp,
-            modifier = Modifier.padding(bottom = 24.dp),
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF000000)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ProfileEditFields("Name", name) { name = it }
-        ProfileEditFields("Surname", surname) { surname = it }
-        ProfileEditFields("Email", email) { email = it }
-        ProfileEditFields("Contact", contact) { contact = it }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 56.dp) // Rezervacija prostora za footer
         ) {
-            Button(
-                onClick = {
-                    navController.navigate("musicianProfileViewOnly/$musicianId") {
-                        popUpTo("musicianProfile/$musicianId") { inclusive = true }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(Color.Red)
-            ) {
-                Text("Cancel")
-            }
+            Header(navController)
 
-            Button(
-                onClick = {
-                    val updatedProfile = MusicianProfile(
-                        id = musicianId,
-                        name = name,
-                        surname = surname,
-                        email = email,
-                        contact = contact,
-                        artistName = artistName,
-                        description = description,
-                        userId = musicianId
-                    )
-                    coroutineScope.launch {
-                        val result = musicianService.updateMusicianProfile(musicianId, updatedProfile)
-                        dialogMessage = "Podaci su uspješno ažurirani!"
-                        showDialog = true
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-            ) {
-                Text("Save")
-            }
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDialog = false
-                    navController.navigate("musicianProfileViewOnly/$musicianId") {
-                        popUpTo("musicianProfile/$musicianId") { inclusive = true }
-                    }
-                },
-                title = { Text("Profile Update") },
-                text = { Text(dialogMessage) },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            showDialog = false
-                            navController.navigate("musicianProfileViewOnly/$musicianId") {
-                                popUpTo("musicianProfile/$musicianId") { inclusive = true }
-                            }
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                }
+            Text(
+                text = "Edit Profile",
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 24.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF000000)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ProfileEditFields("Name", name) { name = it }
+            ProfileEditFields("Surname", surname) { surname = it }
+            ProfileEditFields("Email", email) { email = it }
+            ProfileEditFields("Contact", contact) { contact = it }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("musicianProfileViewOnly/$musicianId") {
+                            popUpTo("musicianProfile/$musicianId") { inclusive = true }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.Red)
+                ) {
+                    Text("Cancel")
+                }
+
+                Button(
+                    onClick = {
+                        val updatedProfile = MusicianProfile(
+                            id = musicianId,
+                            name = name,
+                            surname = surname,
+                            email = email,
+                            contact = contact,
+                            artistName = artistName,
+                            description = description,
+                            userId = musicianId
+                        )
+                        coroutineScope.launch {
+                            val result = musicianService.updateMusicianProfile(musicianId, updatedProfile)
+                            dialogMessage = "Podaci su uspješno ažurirani!"
+                            showDialog = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Save")
+                }
+            }
+
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog = false
+                        navController.navigate("musicianProfileViewOnly/$musicianId") {
+                            popUpTo("musicianProfile/$musicianId") { inclusive = true }
+                        }
+                    },
+                    title = { Text("Profile Update") },
+                    text = { Text(dialogMessage) },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                showDialog = false
+                                navController.navigate("musicianProfileViewOnly/$musicianId") {
+                                    popUpTo("musicianProfile/$musicianId") { inclusive = true }
+                                }
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
+
+            // Ovo zauzima sav dostupan prostor prije footera
+            Spacer(modifier = Modifier.weight(1f))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        ClassicFooter(navController)
+        // Footer na dnu ekrana
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            ClassicFooter(navController)
+        }
     }
 }
-
 
 @Composable
 fun ProfileEditFields(label: String, value: String, onValueChange: (String) -> Unit) {
@@ -171,4 +189,3 @@ fun ProfileEditFields(label: String, value: String, onValueChange: (String) -> U
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
-
