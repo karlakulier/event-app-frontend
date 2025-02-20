@@ -85,33 +85,7 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.app_logo),
-                            contentDescription = "Logo",
-                            modifier = Modifier.size(200.dp)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {  }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {  }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
-            )
+            Header(navController)
         },
         bottomBar = {
             Column {
