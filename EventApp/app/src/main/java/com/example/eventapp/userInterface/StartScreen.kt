@@ -50,7 +50,6 @@ fun StartScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        //Text(text = stringResource(id = R.string.existing_user))
         Button(
             onClick = onLoginClick,
             modifier = Modifier

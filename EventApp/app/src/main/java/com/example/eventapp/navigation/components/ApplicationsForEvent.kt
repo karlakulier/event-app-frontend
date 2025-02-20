@@ -48,7 +48,6 @@ fun ApplicationCard(application: ApplicationGet,navController: NavController) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        //navController.navigate("artistProfileScreen")
                     }
                 )
                 Spacer(modifier = Modifier.height(4.dp))

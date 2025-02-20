@@ -70,7 +70,6 @@ fun AddNewEPDialog(
                         .verticalScroll(rememberScrollState())
                         .padding(8.dp)
                 ) {
-                    // EP name input
                     OutlinedTextField(
                         value = epName.value,
                         onValueChange = { epName.value = it },
@@ -80,7 +79,7 @@ fun AddNewEPDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Release date input with DatePicker
+
                     OutlinedTextField(
                         value = releaseDate.value,
                         onValueChange = {},
@@ -92,13 +91,13 @@ fun AddNewEPDialog(
                                 modifier = Modifier.clickable { showDatePicker = true }
                             )
                         },
-                        readOnly = true, // Sprečava direktno uređivanje
+                        readOnly = true,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Songs Section
+
                     songs.forEachIndexed { index, song ->
                         Column(
                             modifier = Modifier
@@ -144,7 +143,7 @@ fun AddNewEPDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Add Song Button
+
                     Button(
                         onClick = {
                             songs.add(
@@ -166,12 +165,10 @@ fun AddNewEPDialog(
             shape = RoundedCornerShape(16.dp)
         )
 
-        // DatePicker Modal
         if (showDatePicker) {
             DatePickerModal(
-                onDateSelected = { displayDate, apiDate ->  // Očekujemo dva parametra
-                    releaseDate.value = apiDate  // Prikaz korisniku
-                    // Ovdje možeš spremiti apiDate ako ga trebaš slati u API
+                onDateSelected = { displayDate, apiDate ->
+                    releaseDate.value = apiDate
                     showDatePicker = false
                 },
                 onDismiss = { showDatePicker = false }

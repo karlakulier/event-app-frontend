@@ -103,7 +103,6 @@ fun UpdateEPDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Prikaz postojećih pjesama
                     existingSongs.forEachIndexed { index, song ->
                         Column(
                             modifier = Modifier
@@ -142,7 +141,6 @@ fun UpdateEPDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Prikaz novih pjesama
                     newSongs.forEachIndexed { index, song ->
                         Column(
                             modifier = Modifier
@@ -183,7 +181,7 @@ fun UpdateEPDialog(
                         onClick = {
                             newSongs.add(
                                 SongData(
-                                    id = 0, // Nova pjesma ima ID 0
+                                    id = 0,
                                     name = "",
                                     linkYT = "",
                                     linkSpotify = "",

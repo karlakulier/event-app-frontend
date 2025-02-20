@@ -23,7 +23,6 @@ fun CancelEventScreen(eventId: Int) {
     val isOrganizer = remember { mutableStateOf(false) }
     val cancelMessage = remember { mutableStateOf("") }
 
-    // Dohvati detalje o događaju
     EventRetrofitInstance.apievent.getEventDetails(eventId)
         .enqueue(object : Callback<EventDto> {
             override fun onResponse(call: Call<EventDto>, response: Response<EventDto>) {
@@ -94,8 +93,7 @@ fun cancelEvent(eventId: Int, context: android.content.Context, cancelMessage: M
 }
 
 fun getCurrentUserId(): Int {
-    // ovo je samo primjer
-    return 1  // Pretpostavljamo da je ovo ID za trenutno prijavljenog korisnika
+    return 1
 }
 
 @Preview(showBackground = true)

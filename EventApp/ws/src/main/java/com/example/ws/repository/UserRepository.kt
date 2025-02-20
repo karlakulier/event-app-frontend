@@ -63,7 +63,7 @@ class UserRepository(private val api: UserApi) {
             email = email,
             contact = contact,
             artistName = artistName,
-            description = "Default description" // Dodajemo default vrijednost
+            description = "Default description"
         )
         val requestBody = RegisterBodyMusician(
             username = username,

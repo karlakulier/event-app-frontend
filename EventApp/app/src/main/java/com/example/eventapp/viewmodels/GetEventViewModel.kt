@@ -130,7 +130,7 @@ class GetEventViewModel(private val eventRepository: EventRepository) : ViewMode
                 response: Response<GetEventData>
             ) {
                 if (response.isSuccessful) {
-                    _eventDetails.postValue(response.body()) // Post the single event to _eventDetails
+                    _eventDetails.postValue(response.body())
                 } else {
                     Log.e("GetEventViewModel", "Error: ${response.code()} - ${response.message()}")
                 }

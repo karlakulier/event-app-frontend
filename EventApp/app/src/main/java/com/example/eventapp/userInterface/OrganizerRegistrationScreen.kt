@@ -53,7 +53,7 @@ fun OrganizerRegistrationScreen(
 
     var showErrors by remember { mutableStateOf(false) }
 
-    // Kalendarski dijalog
+
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
@@ -71,7 +71,6 @@ fun OrganizerRegistrationScreen(
         Text(text = "Welcome Organizer!", fontSize = 30.sp, modifier = Modifier.padding(bottom = 24.dp))
         Text(text = "Please fill in your information", fontSize = 20.sp, modifier = Modifier.padding(bottom = 16.dp))
 
-        // Username
         TextFieldWithValidation(
             value = username,
             onValueChange = { if (it.length <= 40) username = it },
@@ -81,7 +80,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Name
         TextFieldWithValidation(
             value = name,
             onValueChange = { if (it.length <= 30) name = it },
@@ -91,7 +89,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Surname
         TextFieldWithValidation(
             value = surname,
             onValueChange = { if (it.length <= 30) surname = it },
@@ -101,7 +98,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Password
         TextField(
             value = password,
             onValueChange = { password = it },
@@ -122,7 +118,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Confirm Password
         TextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -137,7 +132,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Email
         TextField(
             value = email,
             onValueChange = { email = it },
@@ -151,7 +145,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Contact
         TextField(
             value = contact,
             onValueChange = { if (it.length <= 15 && it.all { char -> char.isDigit() }) contact = it },
@@ -162,21 +155,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Date of Birth
-        /*TextField(
-            value = dateOfBirth,
-            onValueChange = { dateOfBirth = it },
-            label = { Text("Date of Birth") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = {
-                    //datePickerDialog.show()
-                }) {
-                    Icon(imageVector = Icons.Default.CalendarToday, contentDescription = "Select Date")
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )*/
         OutlinedButton(onClick = {
             DatePickerDialog(
                 context,
@@ -228,7 +206,6 @@ fun OrganizerRegistrationScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Back
         Button(
             onClick = { onBackClick() },
             modifier = Modifier
@@ -242,194 +219,3 @@ fun OrganizerRegistrationScreen(
 
     }
 }
-
-
-/*
-@Composable
-fun OrganizerRegistrationScreen(
-    onBackClick: () -> Unit,
-    onRegisterClick: (Map<String, String>) -> Unit,
-) {
-    val context = LocalContext.current
-
-    // State za unos
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
-    var dateOfBirth by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
-    var showErrors by remember { mutableStateOf(false) }
-
-    // Kalendarski dijalog
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, selectedYear, selectedMonth, selectedDay ->
-            dateOfBirth = "${selectedDay}/${selectedMonth + 1}/${selectedYear}"
-        },
-        year,
-        month,
-        day
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(text = "Welcome Organizer!", fontSize = 30.sp, modifier = Modifier.padding(bottom = 24.dp))
-        Text(text = "Please fill in your information", fontSize = 20.sp, modifier = Modifier.padding(bottom = 16.dp))
-
-        // Name
-        TextFieldWithValidation(
-            value = name,
-            onValueChange = { if (it.length <= 30) name = it },
-            label = "Name",
-            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Words)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Surname
-        TextFieldWithValidation(
-            value = surname,
-            onValueChange = { if (it.length <= 30) surname = it },
-            label = "Surname",
-            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Words)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Password
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            trailingIcon = {
-                val icon = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                    Icon(imageVector = icon, contentDescription = "Toggle Password Visibility")
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (showErrors && !isPasswordValid(password)) {
-            Text("Password must contain at least 8 characters, 1 uppercase, and 1 number", color = Color.Red, fontSize = 12.sp)
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Confirm Password
-        TextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (showErrors && confirmPassword != password) {
-            Text("Passwords do not match", color = Color.Red, fontSize = 12.sp)
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Email
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("E-mail address") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth()
-        )
-        if (showErrors && !isEmailValid(email)) {
-            Text("Invalid email format", color = Color.Red, fontSize = 12.sp)
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Contact
-        TextField(
-            value = contact,
-            onValueChange = { if (it.length <= 15 && it.all { char -> char.isDigit() }) contact = it },
-            label = { Text("Contact") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Date of Birth
-        TextField(
-            value = dateOfBirth,
-            onValueChange = { dateOfBirth = it },
-            label = { Text("Date of Birth") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = {
-                    datePickerDialog.show()
-                }) {
-                    Icon(imageVector = Icons.Default.CalendarToday, contentDescription = "Select Date")
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Register
-        Button(
-            onClick = {
-                showErrors = true
-                if (name.isNotEmpty() && surname.isNotEmpty()
-                    && isPasswordValid(password) && confirmPassword == password
-                    && isEmailValid(email) && contact.isNotEmpty() && dateOfBirth.isNotEmpty()
-                ) {
-                    onRegisterClick(
-                        mapOf(
-                            "name" to name,
-                            "surname" to surname,
-                            "password" to password,
-                            "email" to email,
-                            "contact" to contact,
-                            "dateOfBirth" to dateOfBirth
-                        )
-                    )
-                } else {
-                    Toast.makeText(context, "Please fill all fields correctly", Toast.LENGTH_SHORT).show()
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Register")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Back
-        Button(
-            onClick = { onBackClick() },
-            modifier = Modifier
-                .width(150.dp)
-                .height(48.dp)
-                .border(1.dp, Color.Red, MaterialTheme.shapes.small),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-        ) {
-            Text(text = "Back", color = Color.Red)
-        }
-    }
-}
-*/

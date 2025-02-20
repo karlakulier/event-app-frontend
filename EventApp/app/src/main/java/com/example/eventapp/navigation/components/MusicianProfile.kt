@@ -74,7 +74,7 @@ fun MusicianProfile(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 56.dp) // Rezervacija prostora za footer
+                .padding(bottom = 56.dp)
         ) {
             Header(navController)
 
@@ -161,11 +161,9 @@ fun MusicianProfile(
                 )
             }
 
-            // Ovo zauzima sav dostupan prostor prije footera
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        // Footer na dnu ekrana
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

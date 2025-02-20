@@ -62,7 +62,6 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
                 }
                 Log.d("ArtistProfileViewModel", "Album added successfully")
             }.onFailure { error ->
-                // Došlo je do greške
                 Log.e("ArtistProfileViewModel", "Error adding album: ${error.message}")
             }
         }

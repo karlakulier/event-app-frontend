@@ -57,7 +57,7 @@ fun MusicianProfileViewOnly(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 56.dp) // Rezervacija prostora za footer
+                .padding(bottom = 56.dp)
         ) {
             Header(navController)
 

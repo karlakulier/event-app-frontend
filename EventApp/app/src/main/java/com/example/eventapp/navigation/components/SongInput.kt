@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Komponenta za unos pojedinosti o pjesmi
 @Composable
 fun SongInput(songNumber: Int, song: Song, onSongChange: (Song) -> Unit) {
     Column(
@@ -58,8 +57,6 @@ fun SongInput(songNumber: Int, song: Song, onSongChange: (Song) -> Unit) {
 }
 
 
-
-// Data klasa za pjesmu
 data class Song(
     var name: String,
     var youtubeLink: String,

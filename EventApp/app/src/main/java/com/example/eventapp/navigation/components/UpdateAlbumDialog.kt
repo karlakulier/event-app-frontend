@@ -45,7 +45,7 @@ fun UpdateAlbumDialog(
                             name = albumName.value,
                             releaseDate = releaseDate.value,
                             existingSongs = existingSongs,
-                            newSongs = newSongs // Nova pjesma ide ovdje
+                            newSongs = newSongs
                         )
                         onUpdate(updatedAlbum)
                         onDismiss()
@@ -177,7 +177,7 @@ fun UpdateAlbumDialog(
                         onClick = {
                             newSongs.add(
                                 SongData(
-                                    id = 0, // Nova pjesma ima ID 0
+                                    id = 0,
                                     name = "",
                                     linkYT = "",
                                     linkSpotify = "",

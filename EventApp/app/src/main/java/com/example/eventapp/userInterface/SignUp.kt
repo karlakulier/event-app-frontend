@@ -24,8 +24,8 @@ import com.example.eventapp.R
 
 @Composable
 fun SignUp(
-    onNextClick: (String) -> Unit, // Funkcija koja prima odabranu ulogu (role)
-    onBackClick: () -> Unit // Funkcija za gumb "Back"
+    onNextClick: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var selectedRole by remember { mutableStateOf("") }
 
@@ -36,7 +36,7 @@ fun SignUp(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // EventApp logo
+
         Image(
             painter = painterResource(id = R.drawable.app_logo),
             contentDescription = stringResource(id = R.string.app_logo),
@@ -45,10 +45,10 @@ fun SignUp(
 
         )
 
-        // Naslov
+
         Text(text = "Sign Up", fontSize = 30.sp, modifier = Modifier.padding(bottom = 24.dp))
 
-        // Podnaslov: Odabir uloge
+
         Text(text = "Choose your role", fontSize = 20.sp, modifier = Modifier.padding(bottom = 16.dp))
 
         listOf("Organizer", "Musician", "Visitor").forEach { role ->
@@ -69,7 +69,7 @@ fun SignUp(
             }
         }
 
-        // Gumb "Next"
+
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = { if (selectedRole.isNotEmpty()) onNextClick(selectedRole) },
@@ -81,7 +81,7 @@ fun SignUp(
             Text(text = "Next")
         }
 
-        // Gumb "Back"
+
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = { onBackClick() },

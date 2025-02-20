@@ -145,7 +145,7 @@ fun AlbumDetailsScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp)) // Razmak između ikona
+                            Spacer(modifier = Modifier.width(8.dp))
 
                             if (!song.linkYT.isNullOrEmpty()) {
                                 Icon(

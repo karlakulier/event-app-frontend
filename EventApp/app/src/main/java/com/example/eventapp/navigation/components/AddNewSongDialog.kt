@@ -62,7 +62,6 @@ fun AddNewSongDialog(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    // Song name input
                     OutlinedTextField(
                         value = songName.value,
                         onValueChange = { songName.value = it },
@@ -72,7 +71,7 @@ fun AddNewSongDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // YouTube link input
+
                     OutlinedTextField(
                         value = youtubeLink.value,
                         onValueChange = { youtubeLink.value = it },
@@ -82,7 +81,6 @@ fun AddNewSongDialog(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Spotify link input
                     OutlinedTextField(
                         value = spotifyLink.value,
                         onValueChange = { spotifyLink.value = it },

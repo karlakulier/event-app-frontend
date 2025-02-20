@@ -36,7 +36,7 @@ class GetEventRequestHandler {
         })
     }
     fun fetchPastEventsForMusician(musicianId: Int, responseListener: ResponseListener<List<GetEventData>>) {
-        val call = apiEvents.getPastEventsForMusician(musicianId)  // Prosljeđujemo ID glazbenika
+        val call = apiEvents.getPastEventsForMusician(musicianId)
 
         call.enqueue(object : Callback<List<GetEventData>> {
             override fun onResponse(

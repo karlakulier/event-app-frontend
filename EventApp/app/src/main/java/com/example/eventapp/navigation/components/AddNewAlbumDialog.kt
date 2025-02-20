@@ -162,7 +162,6 @@ fun AddNewAlbumDialog(
             shape = RoundedCornerShape(16.dp)
         )
 
-        // DatePicker Modal
         if (showDatePicker) {
             DatePickerModal(
                 onDateSelected = { displayDate, apiDate ->

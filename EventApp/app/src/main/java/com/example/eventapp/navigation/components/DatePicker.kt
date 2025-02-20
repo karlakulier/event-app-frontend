@@ -14,7 +14,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    onDateSelected: (String, String) -> Unit, // Prvi string: Prikaz korisniku, Drugi string: Slanje API-ju
+    onDateSelected: (String, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
@@ -50,6 +50,6 @@ fun convertMillisToDisplayDate(millis: Long): String {
 }
 
 fun convertMillisToApiDate(millis: Long): String {
-    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Format za API
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return formatter.format(Date(millis))
 }

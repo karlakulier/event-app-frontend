@@ -75,7 +75,6 @@ fun PastEventsForMusician(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    //navController.navigate("eventDetails/${event.id}")
                                 }
                         ) {
                             EventCard(event = event, navController)

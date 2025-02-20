@@ -189,7 +189,7 @@ class MainActivity : ComponentActivity() {
                             OrganizerProfileViewOnly(
                                 organizerId = organizerId,
                                 organizerService = organizerService,
-                                navController = navController, // Dodali smo navController
+                                navController = navController,
                                 onEditClick = {
                                     navController.navigate("organizerProfile/$organizerId")
                                 }
@@ -271,7 +271,7 @@ class MainActivity : ComponentActivity() {
                             val chatId =
                                 backStackEntry.arguments?.getString("chatId")?.toIntOrNull()
                             if (chatId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $chatId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $chatId")
                                 MessageListScreen(chatId = chatId,navController)
                             }
                         }
@@ -279,7 +279,7 @@ class MainActivity : ComponentActivity() {
                             val eventId =
                                 backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
                             if (eventId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $eventId")
                                 ApplicationsForEvent(navController, eventId)
                             }
                         }
@@ -287,7 +287,7 @@ class MainActivity : ComponentActivity() {
                             val musicainId =
                                 backStackEntry.arguments?.getString("musicainId")?.toIntOrNull()
                             if (musicainId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $musicainId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $musicainId")
                                 ApplicationsForMusician(navController, musicainId)
                             }
                         }
@@ -304,7 +304,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("reviewInputScreen/{eventId}") { backStackEntry ->
                             val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: return@composable
-                            val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) } // ✅ Kreiraj ReviewService
+                            val reviewService = remember { ReviewService(reviewApi = RetrofitClient.reviewApi) }
                             ReviewInputScreen(navController, reviewService, eventId)
                         }
                         composable("allPastEventsScreen") {
@@ -318,7 +318,7 @@ class MainActivity : ComponentActivity() {
                             val eventId =
                                 backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
                             if (eventId != null) {
-                                Log.d("ChatId", "Navigated to chatId: $eventId")  // Provjera chatId
+                                Log.d("ChatId", "Navigated to chatId: $eventId")
                                 EventDetailsGlobal(eventId, navController)
                             }
                         }

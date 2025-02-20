@@ -24,7 +24,6 @@ fun PastEvents(navController: NavController, organizerId: Int) {
     val viewModel: GetEventViewModel = viewModel()
     val events by viewModel.events.observeAsState(emptyList())
 
-    // Fetch past events for the organizer
     LaunchedEffect(organizerId) {
         viewModel.fetchPastEventsByOrganizer(organizerId)
     }
@@ -49,7 +48,6 @@ fun PastEvents(navController: NavController, organizerId: Int) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    // Navigate to the event details screen
                                     navController.navigate("eventDetails/${event.id}")
                                 }
                         ) {
@@ -65,7 +63,6 @@ fun PastEvents(navController: NavController, organizerId: Int) {
 
 @Composable
 fun EventCard(event: GetEventData) {
-    // Display individual event card
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Text(text = event.description, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Text(text = "Location: ${event.location}", fontSize = 16.sp, color = Color.Gray)

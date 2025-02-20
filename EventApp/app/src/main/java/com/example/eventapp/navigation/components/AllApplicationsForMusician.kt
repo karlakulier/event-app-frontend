@@ -54,7 +54,7 @@ fun ApplicationCardForMusician(application: ApplicationMusician, navController: 
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        //navController.navigate("detalji eventa")
+
                     }
                 )
                 Spacer(modifier = Modifier.height(4.dp))

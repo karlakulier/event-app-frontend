@@ -50,7 +50,6 @@ fun PreviousEventsScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Placeholder za pretraživanje
             var searchText by remember { mutableStateOf(TextFieldValue("")) }
             Box(
                 modifier = Modifier
@@ -81,12 +80,11 @@ fun PreviousEventsScreen(navController: NavController) {
                 )
             }
 
-            // Lista događaja
             LazyColumn(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(10) { index -> // 10 probnih događaja
+                items(10) { index ->
                     EventItem(
                         title = "Name of event $index",
                         description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel est at elit cursus luctus.",
@@ -115,12 +113,10 @@ fun EventItem(
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Naslov i datum događaja
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(text = date, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Opis događaja
             Text(text = description, style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(8.dp))
 

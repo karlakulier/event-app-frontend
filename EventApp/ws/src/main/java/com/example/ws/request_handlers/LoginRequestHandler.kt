@@ -23,7 +23,7 @@ class LoginRequestHandler(private val loginBody: LoginBody) {
                 response: Response<LoggedInUserData>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    val userData = response.body() // Nema .data, jer API vraća direktno korisničke podatke
+                    val userData = response.body()
                     responseListener.onSuccessfulResponse(userData!!)
                 } else {
                     responseListener.onErrorResponse(ErrorResponseBody(response.code(), "No user data"))

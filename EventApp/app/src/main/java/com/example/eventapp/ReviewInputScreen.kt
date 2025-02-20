@@ -76,9 +76,9 @@ fun ReviewInputScreen(navController: NavController, reviewService: ReviewService
                         musicianGrade = organizationRating.toInt(),
                         organizerGrade = venueRating.toInt(),
                         eventId = eventId,
-                        visitorId = 1, //  stvarni ID posjetitelja
-                        musicianId = 1, //  stvarni ID muzičara
-                        organizerId = 1 //  stvarni ID organizatora
+                        visitorId = 1,
+                        musicianId = 1,
+                        organizerId = 1
                     )
 
                     coroutineScope.launch {

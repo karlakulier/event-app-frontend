@@ -91,7 +91,6 @@ fun EditProfileScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            //
             Button(
                 onClick = { navController.navigate("changePasswordScreen") },
                 modifier = Modifier
