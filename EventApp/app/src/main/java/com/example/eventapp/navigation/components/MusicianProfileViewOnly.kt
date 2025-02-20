@@ -49,21 +49,18 @@ fun MusicianProfileViewOnly(
     Log.d("MusicianProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Musician ID: $musicianId")
     Log.d("MusicianProfile", "isLoggedInMusician: $isLoggedInMusician")
 
-    Scaffold(
-        topBar = {
-            Header(navController)
-        },
-        bottomBar = {
-            ClassicFooter(navController = navController)
-        }
-    ) { paddingValues ->
+    Column(modifier = Modifier.padding(16.dp)) {
+        Header(navController)
 
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .padding(paddingValues)
-        )  {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Profile", fontSize = 30.sp, modifier = Modifier.padding(bottom = 24.dp), fontWeight = FontWeight.Bold, color = Color(0xFF000000))
+
+        Text(
+            text = "Profile",
+            fontSize = 30.sp,
+            modifier = Modifier.padding(bottom = 24.dp),
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF000000)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -93,13 +90,22 @@ fun MusicianProfileViewOnly(
                 }) {
                     Text("Edit Password")
                 }
-
             }
         } else {
-            Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
+            Text(
+                "You do not have permission to edit this profile.",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        ClassicFooter(navController)
     }
-}}
+}
+
 
 @Composable
 fun ProfileDetailFields(label: String, value: String) {

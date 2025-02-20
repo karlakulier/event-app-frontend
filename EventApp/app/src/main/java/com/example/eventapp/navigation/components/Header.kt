@@ -40,7 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.core.login.Auth
 import com.example.eventapp.R
@@ -108,19 +110,26 @@ fun SideMenu(onClose: () -> Unit, onSignOut: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(200.dp)
+                .width(250.dp)
                 .background(Color.White)
-                .align(Alignment.TopStart) // Menija otvara s lijeve strane
+                .align(Alignment.TopStart)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text("Menu", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            Spacer(modifier = Modifier.height(16.dp))
+
+
             Spacer(modifier = Modifier.weight(1f))
+
             Button(
                 onClick = {
                     onSignOut()
                     onClose()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 35.dp)
             ) {
                 Text("Sign out")
             }
