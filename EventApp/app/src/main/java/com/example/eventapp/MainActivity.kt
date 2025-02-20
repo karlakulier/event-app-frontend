@@ -182,6 +182,13 @@ class MainActivity : ComponentActivity() {
                             ArtistProfileScreen(navController = navController, artistProfileViewModel)
                         }
 
+                        composable("artistProfileScreen/{musicianId}") { backStackEntry ->
+                            val musicianId = backStackEntry.arguments?.getString("musicianId")?.toInt() ?: return@composable
+                            artistProfileViewModel.musicianId = musicianId
+                            artistProfileViewModel.fetchArtistData(musicianId)
+                            ArtistProfileScreen(navController = navController, viewModel = artistProfileViewModel)
+                        }
+
                         composable("organizerProfileViewOnly/{organizerId}") { backStackEntry ->
                             val organizerId = backStackEntry.arguments?.getString("organizerId")?.toInt() ?: 1
                             val organizerService = OrganizerService(RetrofitClient.organizerApi)

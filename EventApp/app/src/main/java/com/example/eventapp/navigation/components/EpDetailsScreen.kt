@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.core.login.Auth
 import com.example.eventapp.R
 import com.example.eventapp.viewmodels.ArtistProfileViewModel
 import com.example.ws.models.SongData
@@ -75,7 +76,8 @@ fun EpDetailsScreen(
             }
 
             Row {
-                if (!isEditingSongs) {
+                val isCurrentMusician = Auth.loggedInUserData?.musician?.id == ep.musicianId
+                if (isCurrentMusician && !isEditingSongs) {
                     Icon(
                         painter = painterResource(id = R.drawable.add_musician_profile),
                         contentDescription = "Edit EP",
@@ -91,7 +93,7 @@ fun EpDetailsScreen(
                             .size(30.dp)
                             .clickable { isEditingSongs = true }
                     )
-                } else {
+                } else if (isCurrentMusician && isEditingSongs) {
                     Icon(
                         painter = painterResource(R.drawable.approve_edit),
                         contentDescription = "Save Changes",
