@@ -38,4 +38,9 @@ interface ApiEvents {
 
     @GET("api/Events/past-events")
     suspend fun getAllPastEvents(): Response<List<GetEventData>>
+
+    @POST("api/Events/CancelEvent/{eventId}")
+    suspend fun cancelEvent(@Path("eventId") eventId: Int): Response<Void>
+
+
 }

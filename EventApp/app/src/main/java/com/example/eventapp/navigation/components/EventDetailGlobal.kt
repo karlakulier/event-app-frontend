@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +44,18 @@ import com.example.ws.models.EventDetails
 import com.example.ws.models.GetEventData
 import com.example.ws.repository.EventRepository
 import com.example.ws.services.ChatService
+import kotlinx.coroutines.launch
 
 @Composable
 fun EventDetailsGlobal(eventId: Int, navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
-    val eventservice = EventRepository()
+    val eventService = EventRepository()
     var eventData by remember { mutableStateOf<EventDetails?>(null) }
+    var cancelMessage by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(eventId) {
-        eventData = eventservice.getEventDetailsGlobal(eventId)
+        eventData = eventService.getEventDetailsGlobal(eventId)
         isLoading = false
     }
 
@@ -63,87 +67,73 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
         ) {
             Header(navController)
 
-            eventData?.let { e ->
-                Spacer(modifier = Modifier.height(16.dp))
-
+            if (isLoading) {
                 Text(
-                    text = e.description,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .wrapContentHeight()
-                        .align(Alignment.CenterHorizontally)
+                    text = "Učitavanje...",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(16.dp)
                 )
+            } else if (eventData != null) { // Proveri je li eventData dohvaćen
+                eventData?.let { e ->
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = e.description,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .wrapContentHeight()
+                            .align(Alignment.CenterHorizontally)
+                    )
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
                     ) {
-                        Text(
-                            text = "🎵 Glazbeni žanr: ${e.musicGenre}",
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(text = "🎵 Glazbeni žanr: ${e.musicGenre}", style = MaterialTheme.typography.bodyLarge)
+                            Text(text = "📍 Lokacija: ${e.location}", style = MaterialTheme.typography.bodyLarge)
+                            Text(text = "📅 Datum i vrijeme: ${e.dateTime}", style = MaterialTheme.typography.bodyLarge)
+                            Divider(color = Color.LightGray, thickness = 1.dp)
 
-                        Text(
-                            text = "📍 Lokacija: ${e.location}",
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                            if (e.musicians.isNotEmpty()) {
+                                Text(
+                                    text = "🎤 Glazbenici:",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
-                        Text(
-                            text = "📅 Datum i vrijeme: ${e.dateTime}",
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-
-
-
-                        Divider(color = Color.LightGray, thickness = 1.dp)
-
-                        if (e.musicians.isNotEmpty()) {
-                            Text(
-                                text = "🎤 Glazbenici:",
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp)
-                            ) {
-                                items(e.musicians) { musician ->
-                                    Text(
-                                        text = musician,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.DarkGray
-                                    )
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(120.dp)
+                                ) {
+                                    items(e.musicians) { musician ->
+                                        Text(text = musician, style = MaterialTheme.typography.bodyMedium, color = Color.DarkGray)
+                                    }
                                 }
+                            } else {
+                                Text(text = "Nema prijavljenih glazbenika.", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
                             }
-                        } else {
-                            Text(
-                                text = "Nema prijavljenih glazbenika.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
-                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                if(loggedInUserData?.role=="Organizer"){
-                    if(eventData?.organizerId == loggedInUserData?.organizer?.id!!) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (loggedInUserData?.role == "Organizer" && eventData?.organizerId == loggedInUserData?.organizer?.id!!) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth().padding(16.dp)
@@ -157,7 +147,16 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
                             }
 
                             Button(
-                                onClick = { /* handle more info action */ },
+                                onClick = {
+                                    coroutineScope.launch {
+                                        val success = eventService.cancelEvent(eventId)
+                                        cancelMessage = if (success) {
+                                            "Otkazali ste događaj"
+                                        } else {
+                                            "Došlo je do pogreške pri otkazivanju događaja"
+                                        }
+                                    }
+                                },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                             ) {
@@ -165,18 +164,25 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
                             }
                         }
                     }
-                }
 
-            } ?: run {
+                    cancelMessage?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            } else {
                 Text(
                     text = "Event not found.",
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
-
         }
-
         // Footer na dnu ekrana
         Box(
             modifier = Modifier
