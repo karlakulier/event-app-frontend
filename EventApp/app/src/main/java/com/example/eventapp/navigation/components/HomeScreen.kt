@@ -83,7 +83,6 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            // Glavni sadržaj zauzima sav prostor osim footera
             Box(
                 modifier = Modifier.weight(1f)
             ) {
