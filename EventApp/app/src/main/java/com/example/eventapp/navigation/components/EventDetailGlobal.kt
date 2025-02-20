@@ -142,27 +142,31 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                if(eventData?.organizerId == loggedInUserData?.organizer?.id!!)
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(16.dp)
-                    ) {
-                        Button(
-                            onClick = { navController.navigate("applicationsForEvent/${eventId}") },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                if(loggedInUserData?.role=="Organizer"){
+                    if(eventData?.organizerId == loggedInUserData?.organizer?.id!!) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
                         ) {
-                            Text(text = "Applications", color = Color.White)
-                        }
+                            Button(
+                                onClick = { navController.navigate("applicationsForEvent/${eventId}") },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Text(text = "Applications", color = Color.White)
+                            }
 
-                        Button(
-                            onClick = { /* handle more info action */ },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                        ) {
-                            Text(text = "Cancel", color = Color.White)
+                            Button(
+                                onClick = { /* handle more info action */ },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                            ) {
+                                Text(text = "Cancel", color = Color.White)
+                            }
                         }
                     }
+                }
+
             } ?: run {
                 Text(
                     text = "Event not found.",

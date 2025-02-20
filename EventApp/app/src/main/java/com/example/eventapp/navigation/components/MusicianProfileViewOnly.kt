@@ -26,6 +26,7 @@ fun MusicianProfileViewOnly(
     navController: NavController,
     onEditClick: () -> Unit
 ) {
+    var artistName by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -34,6 +35,7 @@ fun MusicianProfileViewOnly(
     LaunchedEffect(musicianId) {
         val musician = musicianService.getMusicianById(musicianId)
         if (musician != null) {
+            artistName = musician.artistName
             name = musician.name
             surname = musician.surname
             email = musician.email
@@ -47,12 +49,25 @@ fun MusicianProfileViewOnly(
     Log.d("MusicianProfile", "Logged-in user ID: ${Auth.loggedInUserData?.id}, Musician ID: $musicianId")
     Log.d("MusicianProfile", "isLoggedInMusician: $isLoggedInMusician")
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Scaffold(
+        topBar = {
+            Header(navController)
+        },
+        bottomBar = {
+            ClassicFooter(navController = navController)
+        }
+    ) { paddingValues ->
+
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .padding(paddingValues)
+        )  {
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Profile", fontSize = 30.sp, modifier = Modifier.padding(bottom = 24.dp), fontWeight = FontWeight.Bold, color = Color(0xFF000000))
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        ProfileDetailFields("Artist Name", artistName)
         ProfileDetailFields("Name", name)
         ProfileDetailFields("Surname", surname)
         ProfileDetailFields("Email", email)
@@ -84,7 +99,7 @@ fun MusicianProfileViewOnly(
             Text("You do not have permission to edit this profile.", fontSize = 14.sp, color = Color.Gray)
         }
     }
-}
+}}
 
 @Composable
 fun ProfileDetailFields(label: String, value: String) {

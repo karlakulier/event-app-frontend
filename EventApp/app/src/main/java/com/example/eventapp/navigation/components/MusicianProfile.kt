@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.core.login.Auth
 import com.example.ws.services.MusicianService
 import kotlinx.coroutines.launch
 import com.example.core.network.models.MusicianProfile
@@ -55,14 +57,26 @@ fun MusicianProfile(
             surname = musician.surname
             email = musician.email
             contact = musician.contact
-            artistName = musician.artistName ?: ""
+            artistName = musician.artistName
             description = musician.description ?: ""
         }
     }
 
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Scaffold(
+        topBar = {
+            Header(navController)
+        },
+        bottomBar = {
+                ClassicFooter(navController = navController)
+        }
+    ) { paddingValues ->
+
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .padding(paddingValues)
+    ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Edit Profile",
@@ -74,6 +88,7 @@ fun MusicianProfile(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        ProfileEditFields("Artist name", artistName) { artistName = it }
         ProfileEditFields("Name", name) { name = it }
         ProfileEditFields("Surname", surname) { surname = it }
         ProfileEditFields("Email", email) { email = it }
@@ -113,6 +128,16 @@ fun MusicianProfile(
 
                         val result =
                             musicianService.updateMusicianProfile(musicianId, updatedProfile)
+                        Auth.loggedInUserData = Auth.loggedInUserData?.copy(
+                            musician = Auth.loggedInUserData?.musician?.copy(
+                                artistName = artistName,
+                                name = name,
+                                surname = surname,
+                                email = email,
+                                contact = contact,
+                                description = description
+                            )
+                        )
                         dialogMessage = "Podaci su uspješno ažurirani!"
                         showDialog = true
                     }
@@ -150,7 +175,7 @@ fun MusicianProfile(
             )
         }
     }
-}
+}}
 
 @Composable
 fun ProfileEditFields(label: String, value: String, onValueChange: (String) -> Unit) {

@@ -44,7 +44,7 @@ fun ApplicationCard(application: ApplicationGet) {
         ) {
             Column(modifier = Modifier.weight(1f)) { // Lijeva strana (ime i status)
                 Text(
-                    text = "${application.musicianName} ${application.musicianSurname} ${application.id}",
+                    text = "${application.musicianName} ${application.musicianSurname}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -52,7 +52,6 @@ fun ApplicationCard(application: ApplicationGet) {
                 Text(
                     text = status,
                     fontSize = 14.sp,
-                    color = Color.White
                 )
             }
 

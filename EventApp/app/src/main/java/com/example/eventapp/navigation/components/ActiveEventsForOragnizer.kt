@@ -1,5 +1,6 @@
 package com.example.eventapp.navigation.components
 
+import android.util.Log
 import com.example.core.login.Auth.loggedInUserData
 import com.example.ws.models.GetEventData
 import com.example.ws.repository.EventRepository
@@ -31,12 +32,10 @@ fun ActiveEventListScreen(navController: NavController) {
         }
         isLoading = false
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        // Header sada ide skroz do vrha ekrana i zauzima punu širinu
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -44,8 +43,6 @@ fun ActiveEventListScreen(navController: NavController) {
         ) {
             Header(navController) // Header sada ide skroz do vrha i preko cijele širine ekrana
         }
-
-        // Naslov "Aktivni eventi" s paddingom samo horizontalno
         Text(
             text = "Aktivni eventi",
             fontSize = 22.sp,
@@ -74,18 +71,29 @@ fun ActiveEventListScreen(navController: NavController) {
                     )
                 }
                 else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+                    ) {
                         items(events) { event ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { navController.navigate("eventDetails/${event.id}") }
-                                    .padding(vertical = 8.dp)
+                                    .padding(vertical = 8.dp) // Padding za razmak između kartica
                             ) {
-                                EventCard(event = event, navController)
+                                EventCard(event = event, navController) // Prikaz same kartice
+
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize() // Osigurava da klikabilni sloj prekriva cijelu karticu
+                                        .clickable {
+                                            navController.navigate("eventDetailsGlobalForOrganizer/${event.id}")
+                                        }
+                                )
                             }
                         }
                     }
+
+
                 }
             }
         }

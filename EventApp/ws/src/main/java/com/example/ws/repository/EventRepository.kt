@@ -3,6 +3,7 @@ package com.example.ws.repository
 import android.util.Log
 import com.example.core.network.models.OrganizerProfile
 import com.example.core.network.models.Review
+import com.example.ws.models.EventDetails
 import com.example.ws.models.GetEventData
 import com.example.ws.network.ApiClient
 import com.example.ws.network.ApiEvents
@@ -80,4 +81,14 @@ class EventRepository {
     }
 
 
+    suspend fun getEventDetailsGlobal(eventId: Int): EventDetails? {
+        return try {
+            val response = apievents.getEventDetailsGlobal(eventId)
+            Log.d("API_CALL", "Response: $response")
+            response // Retrofit automatski obrađuje odgovor
+        } catch (e: Exception) {
+            Log.e("API_EXCEPTION", "Exception occurred", e)
+            null
+        }
+    }
 }
