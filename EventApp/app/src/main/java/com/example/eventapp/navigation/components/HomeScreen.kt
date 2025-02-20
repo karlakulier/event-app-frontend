@@ -182,20 +182,7 @@ fun ActiveEventsSection(
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(events) { event ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                EventCard(event = event, navController) // Prikaz same kartice
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize() // Osigurava da klikabilni sloj prekriva cijelu karticu
-                        .clickable {
-                            navController.navigate("eventDetailsGlobalForOrganizer/${event.id}")
-                        }
-                )
-            }
+            EventCard(event = event, navController) // Prikaz same kartice
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -214,7 +201,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-             //
+                navController.navigate("eventDetailsGlobalForOrganizer/${event.id}")
             }
     ) {
         Box(
