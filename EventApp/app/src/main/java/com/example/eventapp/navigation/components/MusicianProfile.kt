@@ -31,7 +31,8 @@ import androidx.navigation.NavController
 import com.example.ws.services.MusicianService
 import kotlinx.coroutines.launch
 import com.example.core.network.models.MusicianProfile
-import kotlinx.coroutines.delay
+
+
 
 @Composable
 fun MusicianProfile(
@@ -48,7 +49,6 @@ fun MusicianProfile(
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
-
     LaunchedEffect(musicianId) {
         val musician = musicianService.getMusicianById(musicianId)
         if (musician != null) {
@@ -63,20 +63,12 @@ fun MusicianProfile(
 
     val coroutineScope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            Header(navController)
-        },
-        bottomBar = {
-                ClassicFooter(navController = navController)
-        }
-    ) { paddingValues ->
+    Column(modifier = Modifier.padding(16.dp)) {
+        // Header (umjesto Scaffold topBar)
+        Header(navController)
 
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .padding(paddingValues)
-    ) {
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Edit Profile",
             fontSize = 30.sp,
@@ -111,7 +103,6 @@ fun MusicianProfile(
 
             Button(
                 onClick = {
-
                     val updatedProfile = MusicianProfile(
                         id = musicianId,
                         name = name,
@@ -123,9 +114,7 @@ fun MusicianProfile(
                         userId = musicianId
                     )
                     coroutineScope.launch {
-
-                        val result =
-                            musicianService.updateMusicianProfile(musicianId, updatedProfile)
+                        val result = musicianService.updateMusicianProfile(musicianId, updatedProfile)
                         dialogMessage = "Podaci su uspješno ažurirani!"
                         showDialog = true
                     }
@@ -133,10 +122,8 @@ fun MusicianProfile(
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
             ) {
                 Text("Save")
-
             }
         }
-
 
         if (showDialog) {
             AlertDialog(
@@ -162,8 +149,14 @@ fun MusicianProfile(
                 }
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        ClassicFooter(navController)
     }
-}}
+}
+
 
 @Composable
 fun ProfileEditFields(label: String, value: String, onValueChange: (String) -> Unit) {
