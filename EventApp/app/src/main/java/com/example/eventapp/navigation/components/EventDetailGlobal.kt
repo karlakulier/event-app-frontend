@@ -183,7 +183,6 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
                 )
             }
         }
-        // Footer na dnu ekrana
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

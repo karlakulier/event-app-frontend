@@ -28,7 +28,7 @@ fun ApplicationCard(application: ApplicationGet) {
     var showDialog by remember { mutableStateOf(false) }
     var showConfirmation by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(application.status) } // Lokalno stanje za status
+    var status by remember { mutableStateOf(application.status) }
     var context = LocalContext.current
 
     Column(
@@ -42,7 +42,7 @@ fun ApplicationCard(application: ApplicationGet) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.weight(1f)) { // Lijeva strana (ime i status)
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${application.musicianName} ${application.musicianSurname}",
                     fontSize = 18.sp,
@@ -55,7 +55,6 @@ fun ApplicationCard(application: ApplicationGet) {
                 )
             }
 
-            // Desna strana (gumb)
             Button(
                 onClick = { showDialog = true }
             ) {
@@ -64,7 +63,6 @@ fun ApplicationCard(application: ApplicationGet) {
         }
     }
 
-    // Dijalog za odabir statusa
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -94,7 +92,6 @@ fun ApplicationCard(application: ApplicationGet) {
         )
     }
 
-    // Potvrda odabira
     if (showConfirmation) {
         AlertDialog(
             onDismissRequest = { showConfirmation = false },
@@ -103,7 +100,7 @@ fun ApplicationCard(application: ApplicationGet) {
             confirmButton = {
                 Button(
                     onClick = {
-                        status = selectedStatus // Ažuriraj lokalni status
+                        status = selectedStatus
                         ApplicationModul.UpdateApplicationStatus(context,application.id,status)
                         showConfirmation = false
                     }
@@ -154,11 +151,10 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(applications) { application ->
-                        // Postavljanje clickable direktno na ChatCard
                         Box(modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                //navController.navigate("messages/${application.id}") // Pravilna destinacija
+
                             }) {
                             ApplicationCard(application = application,)
                         }

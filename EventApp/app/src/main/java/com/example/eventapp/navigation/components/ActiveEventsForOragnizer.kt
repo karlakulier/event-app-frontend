@@ -41,7 +41,7 @@ fun ActiveEventListScreen(navController: NavController) {
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            Header(navController) // Header sada ide skroz do vrha i preko cijele širine ekrana
+            Header(navController)
         }
         Text(
             text = "Aktivni eventi",
@@ -52,7 +52,7 @@ fun ActiveEventListScreen(navController: NavController) {
                 .fillMaxWidth()
         )
 
-        Box(modifier = Modifier.weight(1f)) { // Lista evenata zauzima preostali prostor
+        Box(modifier = Modifier.weight(1f)) {
             when {
                 isLoading -> {
                     Text(
@@ -78,13 +78,13 @@ fun ActiveEventListScreen(navController: NavController) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp) // Padding za razmak između kartica
+                                    .padding(vertical = 8.dp)
                             ) {
-                                EventCard(event = event, navController) // Prikaz same kartice
+                                EventCard(event = event, navController)
 
                                 Box(
                                     modifier = Modifier
-                                        .matchParentSize() // Osigurava da klikabilni sloj prekriva cijelu karticu
+                                        .matchParentSize()
                                         .clickable {
                                             navController.navigate("eventDetailsGlobalForOrganizer/${event.id}")
                                         }
@@ -98,7 +98,7 @@ fun ActiveEventListScreen(navController: NavController) {
             }
         }
 
-        Box(modifier = Modifier.fillMaxWidth()) { // Footer na dnu
+        Box(modifier = Modifier.fillMaxWidth()) {
             when (userRole) {
                 "Musician" -> ClassicFooter(navController)
                 "Organizer" -> OrganizerFooter(navController)
