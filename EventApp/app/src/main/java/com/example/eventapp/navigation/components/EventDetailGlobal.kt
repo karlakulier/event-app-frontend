@@ -74,7 +74,7 @@ fun EventDetailsGlobal(eventId: Int, navController: NavController) {
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(16.dp)
                 )
-            } else if (eventData != null) { 
+            } else if (eventData != null) {
                 eventData?.let { e ->
                     Spacer(modifier = Modifier.height(16.dp))
 

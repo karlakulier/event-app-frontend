@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun ApplicationCard(application: ApplicationGet) {
+fun ApplicationCard(application: ApplicationGet,navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     var showConfirmation by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf("") }
@@ -46,7 +46,10 @@ fun ApplicationCard(application: ApplicationGet) {
                 Text(
                     text = "${application.musicianName} ${application.musicianSurname}",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        //navController.navigate("artistProfileScreen")
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -156,7 +159,7 @@ fun ApplicationsForEvent(navController: NavController,eventId: Int) {
                             .clickable {
 
                             }) {
-                            ApplicationCard(application = application,)
+                            ApplicationCard(application = application,navController)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
