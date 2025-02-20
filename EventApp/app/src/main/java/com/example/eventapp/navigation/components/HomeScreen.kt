@@ -64,55 +64,24 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var isFilterDialogVisible by remember { mutableStateOf(false) }
     var hasActiveFilters by remember { mutableStateOf(false) }
-    val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
+    val loggedInUserRole = remember { Auth.loggedInUserData?.role }
 
     LaunchedEffect(Unit) {
         viewModel.fetchSortedEvents("relevance")
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.app_logo),
-                            contentDescription = "Logo",
-                            modifier = Modifier.size(200.dp)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        val userRole = Auth.loggedInUserData?.role
-                        Log.d("Navigation", "User role: $userRole")
-                        val destination = if (userRole == "Organizer") {
-                            "organizerProfileViewOnly/${Auth.loggedInUserData?.organizer?.id}"
-                        } else {
-                            "artistProfileScreen"
-                        }
-                        navController.navigate(destination)
-                    }) {
-                        Icon(Icons.Default.Person, contentDescription = "User Icon", modifier = Modifier.padding(start = 16.dp)) }
-                    },
-                    actions = {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = "Menu Icon",
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },
+        topBar = { Header(navController) },
         bottomBar = {
-            if (isOrganizer) {
-                OrganizerFooter(navController = navController)
-            } else {
-                ClassicFooter(navController = navController)
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+            ) {
+                if (loggedInUserRole == "Organizer") {
+                    OrganizerFooter(navController = navController)
+                } else {
+                    ClassicFooter(navController = navController)
+                }
             }
         }
     ) { paddingValues ->
@@ -120,94 +89,88 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .drawBehind {
-                    drawLine(
-                        color = Color.Black,
-                        start = Offset(0f, 0f),
-                        end = Offset(size.width, 0f),
-                        strokeWidth = 1.dp.toPx()
-                    )
-                    drawLine(
-                        color = Color.Black,
-                        start = Offset(0f, size.height),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = 2.dp.toPx()
-                    )
-                }
-                .padding(horizontal = 16.dp)
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 8.dp),
-                contentAlignment = Alignment.CenterEnd
+                modifier = Modifier.weight(1f)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .padding(horizontal = 16.dp)
-                ) { Row(
-                    horizontalArrangement = Arrangement.Start,
-                ){
-                    Text(
-                        text = "Filter",
-                        fontSize = 14.sp,
-                        color = Color.Black,
+                ) {
+                    Box(
                         modifier = Modifier
-                            .clickable { isFilterDialogVisible = true }
-                            .padding(end = 16.dp)
-                    )
-                    if (hasActiveFilters) {
-                        Icon(
-                            painter = painterResource(R.drawable.abandon_edit),
-                            contentDescription = "Clear Filters",
+                            .fillMaxWidth()
+                            .padding(end = 8.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
-                                .size(20.dp)
-                                .clickable {
-                                    hasActiveFilters = false
-                                    viewModel.fetchEvents()
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Row(horizontalArrangement = Arrangement.Start) {
+                                Text(
+                                    text = "Filter",
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .clickable { isFilterDialogVisible = true }
+                                        .padding(end = 16.dp)
+                                )
+                                if (hasActiveFilters) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.abandon_edit),
+                                        contentDescription = "Clear Filters",
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .clickable {
+                                                hasActiveFilters = false
+                                                viewModel.fetchEvents()
+                                            }
+                                    )
                                 }
-                        )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Sort by:",
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier.padding(end = 2.dp)
+                                )
+                                SortByDropdown()
+                            }
+                        }
                     }
-                }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    CustomSearchBar(
+                        query = query,
+                        onQueryChanged = { searchViewModel.onQueryChanged(it) }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val eventsToShow = if (query.isEmpty()) viewModel.events.observeAsState(emptyList()).value else searchResults
+
+
+                    if (eventsToShow.isEmpty()) {
                         Text(
-                            text = "Sort by:",
-                            fontSize = 14.sp,
-                            color = Color.Black,
-                            modifier = Modifier.padding(end = 2.dp)
+                            text = "No events found.",
+                            modifier = Modifier.padding(16.dp),
+                            color = Color.Gray,
+                            fontSize = 16.sp
                         )
-                        SortByDropdown()
-                    }
-                }
-
-            }
-            CustomSearchBar(
-                query = query,
-                onQueryChanged = { searchViewModel.onQueryChanged(it) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            val eventsToShow = if (query.isEmpty()) viewModel.events.observeAsState(emptyList()).value else searchResults
-
-
-            if (eventsToShow.isEmpty()) {
-                Text(
-                    text = "No events found.",
-                    modifier = Modifier.padding(16.dp),
-                    color = Color.Gray,
-                    fontSize = 16.sp
-                )
-            } else {
-                LazyColumn {
-                    items(eventsToShow) { event ->
-                        EventCard(event, navController)
+                    } else {
+                        LazyColumn {
+                            items(eventsToShow) { event ->
+                                EventCard(event, navController)
+                            }
+                        }
                     }
                 }
             }
         }
+
         if (isFilterDialogVisible) {
             FilterDialog(
                 isVisible = isFilterDialogVisible,
@@ -262,6 +225,7 @@ fun EventCard(event: GetEventData, navController: NavController) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
+                //
             }
     ) {
         Box(
@@ -325,39 +289,6 @@ fun EventCard(event: GetEventData, navController: NavController) {
 }
 
 
-@Composable
-fun BottomNavigationBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.favourites),
-            contentDescription = "Favorites",
-            modifier = Modifier
-                .size(35.dp)
-                .clickable{}
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.home),
-            contentDescription = "Home",
-            modifier = Modifier
-                .size(35.dp)
-                .clickable{}
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.chat_bubble),
-            contentDescription = "History",
-            modifier = Modifier
-                .size(35.dp)
-                .clickable{}
-        )
-    }
-}
 
 @Composable
 fun SortByDropdown(viewModel: GetEventViewModel = viewModel()) {
