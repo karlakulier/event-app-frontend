@@ -91,4 +91,20 @@ class EventRepository {
             null
         }
     }
+    suspend fun cancelEvent(eventId: Int): Boolean {
+        return try {
+            val response = apievents.cancelEvent(eventId)
+            if (response.isSuccessful) {
+                Log.d("EventRepository", "Event $eventId canceled successfully")
+                true
+            } else {
+                Log.e("EventRepository", "Failed to cancel event: ${response.errorBody()?.string()}")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("EventRepository", "Exception in cancelEvent()", e)
+            false
+        }
+    }
+
 }

@@ -42,4 +42,9 @@ interface ApiEvents {
 
     @GET("api/Events/search")
     suspend fun searchEvents(@Query("keyword") keyword: String): Response<List<GetEventData>>
+
+    @POST("api/Events/CancelEvent/{eventId}")
+    suspend fun cancelEvent(@Path("eventId") eventId: Int): Response<Void>
+
+
 }
