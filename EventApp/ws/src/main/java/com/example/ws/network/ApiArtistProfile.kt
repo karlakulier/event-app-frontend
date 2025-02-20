@@ -1,8 +1,10 @@
 package com.example.ws.network
 
+import com.example.core.network.models.MusicianProfile
 import com.example.ws.models.AlbumData
 import com.example.ws.models.EpData
 import com.example.ws.models.SongData
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -47,4 +49,7 @@ interface ApiArtistProfile {
 
     @PUT("api/Music/UpdateEp/{id}")
     suspend fun updateEp(@Path("id") epId: Int, @Body ep: EpData): Response<Unit>
+
+    @GET("api/Musicians/GetMusician/{musicianId}")
+    suspend fun getMusicianById(@Path("musicianId") musicianId: Int): Response<MusicianProfile>
 }

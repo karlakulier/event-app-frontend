@@ -41,6 +41,7 @@ import com.example.ws.models.SongData
 @Composable
 fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileViewModel) {
     val isOrganizer = Auth.loggedInUserData?.role == "Organizer"
+    val isCurrentMusician = Auth.loggedInUserData?.musician?.id == viewModel.musicianId
     var selectedItemForEdit by remember { mutableStateOf<Any?>(null) }
     var isEditDialogVisible by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) }
@@ -74,18 +75,16 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
     val eps by viewModel.eps.collectAsState()
     val songs by viewModel.songs.collectAsState()
     Auth.loggedInUserData?.musician?.id?.let { musicianId ->
-        LaunchedEffect(Unit) {
+        LaunchedEffect(musicianId) {
+            Log.d("MusicianProfile", "Fetching data for musician ID: $musicianId")
+            viewModel.musicianId = musicianId
+            viewModel.fetchArtistData(musicianId)
             viewModel.fetchAlbums(musicianId)
             viewModel.fetchEPs(musicianId)
             viewModel.fetchSongs(musicianId)
         }
     }
-
-    var artistName by remember { mutableStateOf(Auth.loggedInUserData?.musician?.artistName ?: "Unknown Artist") }
-
-    LaunchedEffect(Auth.loggedInUserData?.musician?.artistName) {
-        artistName = Auth.loggedInUserData?.musician?.artistName ?: "Unknown Artist"
-    }
+    val artistName by viewModel.artistName.collectAsState()
 
     Scaffold(
         topBar = {
@@ -248,51 +247,53 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                     modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
-                    if (isEditing) {
-                        Image(
-                            painter = painterResource(R.drawable.approve_edit),
-                            contentDescription = "Save Changes",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable {
-                                    isEditing = false
-                                    isEditModeEnabled = false
-                                    isGenreDialogVisible = false
-                                    if (newProfileImage != null) {
-                                        currentProfileImage = newProfileImage
+                    if (isCurrentMusician) {
+                        if (isEditing) {
+                            Image(
+                                painter = painterResource(R.drawable.approve_edit),
+                                contentDescription = "Save Changes",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable {
+                                        isEditing = false
+                                        isEditModeEnabled = false
+                                        isGenreDialogVisible = false
+                                        if (newProfileImage != null) {
+                                            currentProfileImage = newProfileImage
+                                        }
                                     }
-                                }
-                        )
-                        Image(
-                            painter = painterResource(R.drawable.abandon_edit),
-                            contentDescription = "Cancel Changes",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable {
-                                    selectedGenre = originalGenre
-                                    newArtistName = originalArtistName
-                                    isEditing = false
-                                    isEditModeEnabled = false
-                                    isGenreDialogVisible = false
-                                    newProfileImage = null
-                                    currentProfileImage = null
-                                }
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(R.drawable.add_musician_profile),
-                            contentDescription = "Add",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable { isDialogVisible = true }
-                        )
-                        Image(
-                            painter = painterResource(R.drawable.edit_musician_profile),
-                            contentDescription = "Edit",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clickable { isEditing = true }
-                        )
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.abandon_edit),
+                                contentDescription = "Cancel Changes",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable {
+                                        selectedGenre = originalGenre
+                                        newArtistName = originalArtistName
+                                        isEditing = false
+                                        isEditModeEnabled = false
+                                        isGenreDialogVisible = false
+                                        newProfileImage = null
+                                        currentProfileImage = null
+                                    }
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.add_musician_profile),
+                                contentDescription = "Add",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable { isDialogVisible = true }
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.edit_musician_profile),
+                                contentDescription = "Edit",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable { isEditing = true }
+                            )
+                        }
                     }
                 }
                 Row(
@@ -306,22 +307,24 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
                             .size(40.dp)
                             .clickable { navController.navigate("pastEventsForMusician") }
                     )
-                    Image(
-                        painter = painterResource(R.drawable.profile_info_musician),
-                        contentDescription = "Profile",
-                        modifier = Modifier
-                            .size(45.dp)
-                            .clickable {
-                                val userRole = Auth.loggedInUserData?.role
-                                Log.d("Navigation", "User role: $userRole")
-                                val destination = if (userRole == "Musician") {
-                                    "musicianProfileViewOnly/${Auth.loggedInUserData?.musician?.id}"
-                                } else {
-                                    "artistProfileScreen"
+                    if (isCurrentMusician) {
+                        Image(
+                            painter = painterResource(R.drawable.profile_info_musician),
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(45.dp)
+                                .clickable {
+                                    val userRole = Auth.loggedInUserData?.role
+                                    Log.d("Navigation", "User role: $userRole")
+                                    val destination = if (userRole == "Musician") {
+                                        "musicianProfileViewOnly/${Auth.loggedInUserData?.musician?.id}"
+                                    } else {
+                                        "artistProfileScreen"
+                                    }
+                                    navController.navigate(destination)
                                 }
-                                navController.navigate(destination)
-                            }
-                    )
+                        )
+                    }
                 }
             }
 

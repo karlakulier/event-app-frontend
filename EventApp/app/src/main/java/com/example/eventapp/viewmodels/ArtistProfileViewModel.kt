@@ -5,15 +5,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.login.Auth
 import com.example.core.musician_profile.IMusicService
+import com.example.core.network.models.MusicianProfile
 import com.example.ws.models.AlbumData
 import com.example.ws.models.EpData
 import com.example.ws.models.SongData
+import com.example.ws.network.RetrofitClient
 import com.example.ws.network.RetrofitClient.apiArtistProfile
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ArtistProfileViewModel(private val musicService: IMusicService) : ViewModel() {
+    var musicianId: Int? = null
 
     private val _albums = MutableStateFlow<List<AlbumData>>(emptyList())
     val albums: StateFlow<List<AlbumData>> = _albums
@@ -23,6 +28,31 @@ class ArtistProfileViewModel(private val musicService: IMusicService) : ViewMode
 
     private val _songs = MutableStateFlow<List<SongData>>(emptyList())
     val songs: StateFlow<List<SongData>> = _songs
+
+    private val _artistName = MutableStateFlow("Unknown Artist")
+    val artistName: StateFlow<String> = _artistName
+
+    fun fetchArtistData(musicianId: Int) {
+        this.musicianId = musicianId
+        viewModelScope.launch {
+            try {
+                val response = apiArtistProfile.getMusicianById(musicianId)
+                if (response.isSuccessful) {
+                    response.body()?.let { musicianProfile ->
+                        _artistName.value = musicianProfile.artistName ?: "Unknown Artist"
+                    }
+                } else {
+                    Log.e("ArtistProfileViewModel", "Error fetching musician: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("ArtistProfileViewModel", "Exception fetching musician", e)
+            }
+            fetchAlbums(musicianId)
+            fetchEPs(musicianId)
+            fetchSongs(musicianId)
+        }
+    }
+
 
     fun fetchAlbums(musicianId: Int) {
         viewModelScope.launch {

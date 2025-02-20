@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.core.login.Auth
 
 @Composable
 fun ApplicationCard(application: ApplicationGet,navController: NavController) {
@@ -44,11 +45,17 @@ fun ApplicationCard(application: ApplicationGet,navController: NavController) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${application.musicianName} ${application.musicianSurname}",
+                    text = "${application.musicianName} ${application.musicianName}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        //navController.navigate("artistProfileScreen")
+                        val loggedInUserId = Auth.loggedInUserData?.musician?.id
+                        val destination = if (loggedInUserId == application.musicianId) {
+                            "artistProfileScreen"
+                        } else {
+                            "artistProfileScreen/${application.musicianId}"
+                        }
+                        navController.navigate(destination)
                     }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
