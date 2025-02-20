@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.eventapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -53,6 +53,16 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.transition)
+    implementation(libs.androidx.animation.core.lint)
+    implementation(libs.play.services.base)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,6 +70,34 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.fragment)
+    implementation(libs.coil.compose)
+
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
 
     implementation (project(":EventApplication"))
+    implementation(libs.google.auth) // Google Sign-In
+    implementation("androidx.compose.material:material-icons-extended:<latest-version>")
+    implementation("com.facebook.android:facebook-login:latest.release")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
+    implementation ("io.coil-kt:coil-compose:2.2.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2@aar")
+    //api retrofit
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    //korutine
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    // Gson
+    implementation (libs.gson)
+    implementation(project(":core"))
+    implementation(project(":ws"))
+    implementation(project(":login_username_password"))
+    implementation(project(":add_album_ep_single"))
 }

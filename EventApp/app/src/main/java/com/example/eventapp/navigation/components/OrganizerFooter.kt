@@ -1,0 +1,82 @@
+package com.example.eventapp.navigation.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+
+@Composable
+fun OrganizerFooter(navController: NavController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(Color.White),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.AccessTime,
+            contentDescription = "Past Events",
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    navController.navigate("allPastEventsScreen")
+                }
+        )
+
+        Icon(
+            imageVector = Icons.Default.FormatListNumbered,
+            contentDescription = "Favorites",
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("allActiveEventsForOrganizer")
+            }
+        )
+
+        Icon(
+            imageVector = Icons.Default.Home,
+            contentDescription = "Home",
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("home")
+            }
+        )
+
+        Icon(
+            imageVector = Icons.Default.AddCircle,
+            contentDescription = "Add",
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    navController.navigate("eventInputScreen")
+                }
+        )
+
+
+        Icon(
+            imageVector = Icons.Default.ChatBubbleOutline,
+            contentDescription = "Menu",
+            modifier = Modifier.size(24.dp).clickable {
+                navController.navigate("chatListScreen")
+            }
+        )
+    }
+}

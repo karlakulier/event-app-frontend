@@ -11,7 +11,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/EventApplication" />
+            <option value="$PROJECT_DIR$/add_album_ep_single" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/login_username_password" />
+            <option value="$PROJECT_DIR$/ws" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

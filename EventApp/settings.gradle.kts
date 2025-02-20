@@ -22,3 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "EventApp"
 include(":app")
 include(":EventApplication")
+include(":core")
+include(":login_username_password")
+include(":ws")
+include(":add_album_ep_single")

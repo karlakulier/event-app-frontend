@@ -1,0 +1,180 @@
+package com.example.eventapp.navigation.components
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+
+@Composable
+fun AddNewEPDialog(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onAddEp: (String, String, List<Map<String, String>>) -> Unit
+) {
+    if (isVisible) {
+        val epName = remember { mutableStateOf("") }
+        val releaseDate = remember { mutableStateOf("") }
+        val songs = remember { mutableStateListOf<Map<String, String>>() }
+        var showDatePicker by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onAddEp(epName.value, releaseDate.value, songs)
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text("Add", color = Color.White)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { onDismiss() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+            },
+            title = {
+                Text(
+                    text = "ADD NEW EP",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = epName.value,
+                        onValueChange = { epName.value = it },
+                        label = { Text("EP name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+
+                    OutlinedTextField(
+                        value = releaseDate.value,
+                        onValueChange = {},
+                        label = { Text("Release date") },
+                        trailingIcon = {
+                            Icon(
+                                Icons.Default.CalendarToday,
+                                contentDescription = "Select date",
+                                modifier = Modifier.clickable { showDatePicker = true }
+                            )
+                        },
+                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    songs.forEachIndexed { index, song ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "${index + 1}. Song",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            OutlinedTextField(
+                                value = song["name"] ?: "",
+                                onValueChange = { updatedValue ->
+                                    songs[index] = song.toMutableMap().apply { put("name", updatedValue) }
+                                },
+                                label = { Text("Name") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = song["youtubeLink"] ?: "",
+                                onValueChange = { updatedValue ->
+                                    songs[index] = song.toMutableMap().apply { put("youtubeLink", updatedValue) }
+                                },
+                                label = { Text("Youtube link") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = song["spotifyLink"] ?: "",
+                                onValueChange = { updatedValue ->
+                                    songs[index] = song.toMutableMap().apply { put("spotifyLink", updatedValue) }
+                                },
+                                label = { Text("Spotify link") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+
+                    Button(
+                        onClick = {
+                            songs.add(
+                                mapOf(
+                                    "name" to "",
+                                    "youtubeLink" to "",
+                                    "spotifyLink" to ""
+                                )
+                            )
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Song", tint = Color.White)
+                    }
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+
+        if (showDatePicker) {
+            DatePickerModal(
+                onDateSelected = { displayDate, apiDate ->
+                    releaseDate.value = apiDate
+                    showDatePicker = false
+                },
+                onDismiss = { showDatePicker = false }
+            )
+        }
+    }
+}
+
+

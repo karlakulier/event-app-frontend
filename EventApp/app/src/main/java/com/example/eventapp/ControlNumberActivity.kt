@@ -51,7 +51,7 @@ fun ControlNumberScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { navController.navigate("home") },
+            onClick = {  navController.navigate("home") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
