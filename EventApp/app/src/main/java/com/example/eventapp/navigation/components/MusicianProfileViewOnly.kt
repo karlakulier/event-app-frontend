@@ -26,6 +26,7 @@ fun MusicianProfileViewOnly(
     navController: NavController,
     onEditClick: () -> Unit
 ) {
+    var artistName by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -34,6 +35,7 @@ fun MusicianProfileViewOnly(
     LaunchedEffect(musicianId) {
         val musician = musicianService.getMusicianById(musicianId)
         if (musician != null) {
+            artistName = musician.artistName
             name = musician.name
             surname = musician.surname
             email = musician.email
@@ -65,6 +67,7 @@ fun MusicianProfileViewOnly(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        ProfileDetailFields("Artist Name", artistName)
         ProfileDetailFields("Name", name)
         ProfileDetailFields("Surname", surname)
         ProfileDetailFields("Email", email)

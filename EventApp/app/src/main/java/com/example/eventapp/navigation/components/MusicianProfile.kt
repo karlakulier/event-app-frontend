@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.core.login.Auth
 import com.example.ws.services.MusicianService
 import kotlinx.coroutines.launch
 import com.example.core.network.models.MusicianProfile
@@ -56,7 +57,7 @@ fun MusicianProfile(
             surname = musician.surname
             email = musician.email
             contact = musician.contact
-            artistName = musician.artistName ?: ""
+            artistName = musician.artistName
             description = musician.description ?: ""
         }
     }
@@ -87,6 +88,7 @@ fun MusicianProfile(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        ProfileEditFields("Artist name", artistName) { artistName = it }
         ProfileEditFields("Name", name) { name = it }
         ProfileEditFields("Surname", surname) { surname = it }
         ProfileEditFields("Email", email) { email = it }
@@ -126,6 +128,16 @@ fun MusicianProfile(
 
                         val result =
                             musicianService.updateMusicianProfile(musicianId, updatedProfile)
+                        Auth.loggedInUserData = Auth.loggedInUserData?.copy(
+                            musician = Auth.loggedInUserData?.musician?.copy(
+                                artistName = artistName,
+                                name = name,
+                                surname = surname,
+                                email = email,
+                                contact = contact,
+                                description = description
+                            )
+                        )
                         dialogMessage = "Podaci su uspješno ažurirani!"
                         showDialog = true
                     }

@@ -81,7 +81,11 @@ fun ArtistProfileScreen(navController: NavController, viewModel: ArtistProfileVi
         }
     }
 
-    val artistName = Auth.loggedInUserData?.musician?.artistName
+    var artistName by remember { mutableStateOf(Auth.loggedInUserData?.musician?.artistName ?: "Unknown Artist") }
+
+    LaunchedEffect(Auth.loggedInUserData?.musician?.artistName) {
+        artistName = Auth.loggedInUserData?.musician?.artistName ?: "Unknown Artist"
+    }
 
     Scaffold(
         topBar = {
